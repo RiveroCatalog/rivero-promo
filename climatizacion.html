@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="colors_and_type.css">
+  <link rel="stylesheet" href="catalog.css">
+  <style>
+    html,body{margin:0;background:#0a0a0a}
+    deck-stage:not(:defined){visibility:hidden}
+    .rv-slide img{display:block}
+  </style>
+  <script src="inventory-data.js"></script>
+  <script src="deck-stage.js"></script>
+  <script src="catalog-render.js"></script>
+</helmet>
+<deck-stage id="rivero-deck" width="1920" height="1080"></deck-stage>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;},&quot;showRetail&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;showSku&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  componentDidMount() { this._tries = 0; this._boot(); }
+  componentDidUpdate() { this._build(); }
+  _boot() {
+    const r = window.INVENTORY && window.RiveroCatalog && customElements.get('deck-stage') && document.getElementById('rivero-deck');
+    if (r) { this._build(); return; }
+    if (this._tries++ > 120) return;
+    setTimeout(() => this._boot(), 50);
+  }
+  _build() {
+    const s = document.getElementById('rivero-deck');
+    if (!s) return;
+    window.RiveroCatalog.build(s, { category: 'Climatización', showRetail: this.props.showRetail !== false, showSku: this.props.showSku !== false });
+  }
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+/* RIVERO — Catálogo de inventario · estilos de slides (1920×1080) */
+
+.rv-slide{
+  font-family:var(--font-sans);
+  color:var(--fg1);
+  overflow:hidden;
+  --pad:104px;
+}
+.rv-eyebrow{
+  display:inline-flex;align-items:center;gap:16px;
+  font-size:21px;font-weight:var(--weight-semi);
+  text-transform:uppercase;letter-spacing:.18em;white-space:nowrap;
+}
+.rv-eyebrow i{display:inline-block;width:44px;height:3px;background:currentColor;border-radius:2px}
+.rv-eyebrow-accent{color:var(--cat,var(--orange-juice))}
+.rv-accent{color:var(--cat,var(--orange-juice))}
+
+/* ===================== COVER / CLOSING (dark) ===================== */
+.rv-cover{
+  display:flex;flex-direction:column;justify-content:space-between;
+  background:var(--reversed-grey);color:#fff;
+  padding:var(--pad);
+}
+.rv-cover-symbol{
+  position:absolute;right:-120px;top:50%;transform:translateY(-50%);
+  height:880px;opacity:.05;pointer-events:none;
+}
+.rv-topbar{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
+.rv-logo{height:42px;width:auto}
+.rv-topbar-meta{font-size:18px;font-weight:var(--weight-medium);text-transform:uppercase;letter-spacing:.2em;color:rgba(255,255,255,.6)}
+.rv-cover-body{position:relative;z-index:1;margin:auto 0}
+.rv-cover-title{
+  font-size:118px;font-weight:var(--weight-bold);line-height:.96;
+  letter-spacing:-.01em;margin:22px 0 0;max-width:16ch;text-wrap:balance;color:#fff;
+}
+.rv-cover-headline{font-size:46px;font-weight:var(--weight-medium);color:var(--retro-blue);margin:34px 0 0;letter-spacing:-.01em}
+.rv-disc-tag{display:inline-block;margin-left:14px;vertical-align:middle;background:var(--orange-juice);color:#111;
+  font-size:24px;font-weight:var(--weight-bold);letter-spacing:.06em;padding:6px 16px;border-radius:8px}
+.rv-cover-stats s{color:rgba(255,255,255,.4);text-decoration-thickness:1px}
+.rv-cover-intro{font-size:26px;font-weight:var(--weight-light);line-height:1.55;color:rgba(255,255,255,.72);margin:26px 0 0;max-width:62ch}
+.rv-cover-stats{display:flex;gap:0;position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.16);padding-top:38px}
+.rv-stat{flex:1;display:flex;flex-direction:column;gap:10px;padding-right:40px}
+.rv-stat-num{font-size:82px;font-weight:var(--weight-bold);line-height:.9;letter-spacing:-.02em}
+.rv-stat-lbl{font-size:19px;font-weight:var(--weight-medium);text-transform:uppercase;letter-spacing:.16em;color:rgba(255,255,255,.6)}
+
+/* Closing variant */
+.rv-closing-title{font-size:92px;max-width:18ch}
+.rv-closing-link{
+  display:inline-flex;align-items:center;gap:16px;margin-top:46px;
+  font-size:38px;font-weight:var(--weight-semi);color:#fff;text-decoration:none;
+  border-bottom:3px solid var(--orange-juice);padding-bottom:8px;
+}
+.rv-closing-link span{color:var(--orange-juice)}
+.rv-closing-contact{position:relative;z-index:1;display:flex;flex-direction:column;gap:0;border-top:1px solid rgba(255,255,255,.16);padding-top:34px}
+.rv-contact-row{display:flex;align-items:baseline;gap:34px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.rv-contact-row:last-child{border-bottom:0}
+.rv-contact-k{width:150px;font-size:18px;text-transform:uppercase;letter-spacing:.16em;color:rgba(255,255,255,.5)}
+.rv-contact-v{font-size:30px;font-weight:var(--weight-medium);letter-spacing:.01em}
+
+/* ===================== PRODUCT SLIDE (light) ===================== */
+.rv-product{display:grid;grid-template-columns:45% 55%;background:var(--white)}
+.rv-prod-media{
+  position:relative;background:var(--ink-50);
+  display:flex;align-items:center;justify-content:center;
+  border-right:1px solid var(--border);
+}
+.rv-prod-index{
+  position:absolute;top:64px;left:72px;
+  font-size:40px;font-weight:var(--weight-bold);color:var(--ink-300);letter-spacing:.02em;
+}
+.rv-prod-index em{font-style:normal;color:var(--cat,var(--orange-juice))}
+.rv-prod-cat{
+  position:absolute;top:64px;right:72px;display:inline-flex;align-items:center;gap:12px;
+  font-size:17px;font-weight:var(--weight-semi);text-transform:uppercase;letter-spacing:.14em;
+  color:var(--fg2);background:#fff;border:1px solid var(--border);border-radius:var(--radius-pill);
+  padding:9px 18px;box-shadow:var(--shadow-sm);max-width:46%;
+}
+.rv-prod-cat i{width:11px;height:11px;border-radius:3px;background:var(--cat,var(--orange-juice));flex:none}
+.rv-prod-tile{
+  width:74%;aspect-ratio:1/1;background:#fff;border:1px solid var(--border);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;padding:44px;
+}
+.rv-prod-tile img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;margin:auto}
+.rv-stock-dot{
+  position:absolute;bottom:60px;left:72px;display:inline-flex;align-items:center;gap:12px;
+  background:#fff;border:1px solid var(--border);border-radius:var(--radius-pill);
+  padding:11px 20px;font-size:19px;font-weight:var(--weight-medium);color:var(--fg1);box-shadow:var(--shadow-sm);
+}
+.rv-stock-dot i{width:11px;height:11px;border-radius:50%;background:var(--cat,var(--orange-juice));box-shadow:0 0 0 4px color-mix(in srgb,var(--cat,var(--orange-juice)) 22%,transparent)}
+
+.rv-prod-info{display:flex;flex-direction:column;justify-content:flex-start;padding:84px 92px}
+.rv-prod-info > *{flex-shrink:0}
+.rv-prod-info-top .rv-eyebrow{font-size:18px;letter-spacing:.15em;white-space:normal}
+.rv-prod-brand{margin-top:30px;font-size:21px;font-weight:var(--weight-semi);text-transform:uppercase;letter-spacing:.2em;color:var(--fg3)}
+.rv-prod-name{font-size:54px;font-weight:var(--weight-bold);line-height:1.05;letter-spacing:-.015em;margin:14px 0 0;color:var(--fg1);text-wrap:balance}
+.rv-prod-sku{margin-top:20px;font-family:var(--font-sans);font-size:19px;font-weight:var(--weight-medium);color:var(--fg3);letter-spacing:.06em}
+
+.rv-prod-stats{display:grid;grid-template-columns:1fr 1fr;gap:30px 40px;margin:44px 0 0}
+.rv-pstat{display:flex;flex-direction:column;gap:10px;border-top:2px solid var(--ink-200);padding-top:18px}
+.rv-pstat-price{grid-column:1/-1;border-top-color:var(--cat,var(--orange-juice))}
+.rv-pstat-lbl{font-size:18px;font-weight:var(--weight-semi);text-transform:uppercase;letter-spacing:.15em;color:var(--fg3)}
+.rv-pstat-val{font-size:46px;font-weight:var(--weight-bold);letter-spacing:-.02em;color:var(--fg1)}
+.rv-pstat-val small{font-size:22px;font-weight:var(--weight-medium);color:var(--fg3);letter-spacing:0}
+.rv-pstat-price .rv-pstat-val{font-size:70px}
+.rv-disc-pill{display:inline-block;margin-left:10px;background:var(--cat,var(--orange-juice));color:#111;
+  font-size:15px;font-weight:var(--weight-bold);letter-spacing:.04em;padding:3px 11px;border-radius:var(--radius-pill);vertical-align:middle}
+.rv-price-line{display:flex;align-items:baseline;gap:22px;flex-wrap:wrap}
+.rv-retail-strike{font-size:26px;font-weight:var(--weight-medium);color:var(--fg3);text-decoration:line-through;text-decoration-thickness:2px;letter-spacing:0}
+
+.rv-prod-foot{display:flex;align-items:center;gap:16px;margin-top:auto;padding-top:34px}
+.rv-chip{
+  display:inline-flex;align-items:center;gap:11px;
+  font-size:18px;font-weight:var(--weight-semi);text-transform:uppercase;letter-spacing:.12em;
+  padding:11px 20px;border-radius:var(--radius-pill);background:var(--ink-50);color:var(--fg2);border:1px solid var(--border);
+}
+.rv-chip-ok{background:color-mix(in srgb,var(--cat,var(--orange-juice)) 12%,#fff);color:#080808;border-color:color-mix(in srgb,var(--cat,var(--orange-juice)) 32%,#fff)}
+.rv-chip-ok i{width:9px;height:9px;border-radius:50%;background:var(--cat,var(--orange-juice))}
+
+/* ===================== SECTION DIVIDER (dark, color por categoría) ===================== */
+.rv-divider{overflow:hidden}
+.rv-divider::before{content:"";position:absolute;left:0;top:0;bottom:0;width:20px;background:var(--cat);z-index:2}
+.rv-divider-ghost{
+  position:absolute;right:-10px;top:50%;transform:translateY(-50%);
+  font-size:600px;font-weight:var(--weight-bold);line-height:.8;letter-spacing:-.05em;
+  color:var(--cat);opacity:.18;z-index:0;pointer-events:none;
+}
+.rv-divider .rv-topbar,.rv-divider .rv-cover-body,.rv-divider .rv-cover-stats{position:relative;z-index:1}
+.rv-divider-title{font-size:104px;max-width:15ch;margin-top:24px}
+.rv-divider-brands{font-size:24px;font-weight:var(--weight-medium);letter-spacing:.04em;color:rgba(255,255,255,.62);text-transform:uppercase;margin-top:30px}
+.rv-divider .rv-cover-stats{border-top-color:rgba(255,255,255,.18)}
+
+/* ===================== TABLA DE CONTENIDO (dark) ===================== */
+.rv-toc{display:flex;flex-direction:column;background:var(--reversed-grey);color:#fff;padding:var(--pad)}
+.rv-toc-head{margin:8px 0 6px}
+.rv-toc-title{font-size:56px;font-weight:var(--weight-bold);letter-spacing:-.015em;margin:16px 0 0;color:#fff}
+.rv-toc-list{list-style:none;margin:auto 0 0;padding:0;display:flex;flex-direction:column}
+.rv-toc-row{display:flex;align-items:center;gap:26px;padding:11px 0;border-top:1px solid rgba(255,255,255,.12)}
+.rv-toc-row:last-child{border-bottom:1px solid rgba(255,255,255,.12)}
+.rv-toc-num{font-size:24px;font-weight:var(--weight-bold);color:var(--cat);width:48px;letter-spacing:.02em}
+.rv-toc-dot{width:16px;height:16px;border-radius:4px;background:var(--cat);flex:none}
+.rv-toc-name{font-size:29px;font-weight:var(--weight-semi);letter-spacing:-.01em;color:#fff}
+.rv-toc-meta{margin-left:auto;font-size:21px;font-weight:var(--weight-medium);text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.55)}
+.rv-prod-logo{height:30px;margin-left:auto;opacity:.85}

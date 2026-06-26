@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Rivero — Catálogo por categoría</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="colors_and_type.css">
+  <script src="inventory-data.js"></script>
+</helmet>
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 1200 1200" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="1200" fill="#235CF2"/>
+    <g transform="translate(360,360)">
+      <rect x="0" y="0" width="220" height="220" rx="18" fill="#fff"/>
+      <rect x="260" y="0" width="220" height="220" rx="18" fill="#FF8001"/>
+      <rect x="0" y="260" width="220" height="220" rx="18" fill="#04B704"/>
+      <rect x="260" y="260" width="220" height="220" rx="18" fill="#C2000B"/>
+    </g>
+  </svg>
+</template>
+<div style="min-height:100vh;background:#080808;color:#fff;font-family:var(--font-sans);padding:72px 80px 96px;box-sizing:border-box">
+  <header style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.16);padding-bottom:28px">
+    <img src="assets/rivero-logo-lineal-white.png" alt="Rivero" style="height:40px;display:block">
+    <span style="font-size:15px;font-weight:500;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,255,255,.6)">Depósito Miami · USD FOB</span>
+  </header>
+
+  <div style="margin:54px 0 14px">
+    <span style="display:inline-flex;align-items:center;gap:14px;font-size:15px;font-weight:600;text-transform:uppercase;letter-spacing:.18em;color:var(--orange-juice)"><i style="display:inline-block;width:40px;height:3px;background:currentColor;border-radius:2px"></i>Nuevos ingresos · Junio 2026</span>
+    <h1 style="font-size:64px;font-weight:700;line-height:1.02;letter-spacing:-.01em;margin:18px 0 0;max-width:18ch">Catálogo por categoría</h1>
+    <p style="font-size:20px;font-weight:300;line-height:1.55;color:rgba(255,255,255,.72);margin:18px 0 0;max-width:64ch">Elegí una categoría para abrir su catálogo, o mirá el inventario completo. Cada documento es independiente y liviano. Precios mayoristas USD; medidas en sistema métrico.</p>
+  </div>
+
+  <a href="{{ fullHref }}" style="display:flex;align-items:center;justify-content:space-between;gap:24px;margin:32px 0 40px;padding:30px 36px;border-radius:14px;background:var(--retro-blue);color:#fff;text-decoration:none" style-hover="filter:brightness(1.06)">
+    <div>
+      <div style="font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:.16em;color:rgba(255,255,255,.78)">Catálogo completo</div>
+      <div style="font-size:30px;font-weight:700;margin-top:6px">Todo el inventario en un documento</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:34px">
+      <div style="text-align:right"><div style="font-size:34px;font-weight:700;line-height:1">{{ totalSkus }}</div><div style="font-size:13px;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,.75)">SKUs</div></div>
+      <div style="text-align:right"><div style="font-size:34px;font-weight:700;line-height:1">{{ totalValue }}</div><div style="font-size:13px;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,.75)">Valor USD</div></div>
+      <span style="font-size:34px;line-height:1">→</span>
+    </div>
+  </a>
+
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:22px">
+    <sc-for list="{{ cats }}" as="c" hint-placeholder-count="12">
+      <a href="{{ c.href }}" style="display:flex;flex-direction:column;gap:0;background:#fff;border-radius:12px;overflow:hidden;text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,.28)" style-hover="transform:translateY(-3px)">
+        <span style="height:8px;background:{{ c.color }};display:block"></span>
+        <span style="display:flex;flex-direction:column;flex:1;padding:26px 28px 24px">
+          <span style="display:flex;align-items:center;gap:11px;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:#565a62">
+            <i style="width:11px;height:11px;border-radius:3px;background:{{ c.color }};display:inline-block"></i>{{ c.num }}
+          </span>
+          <span style="font-size:27px;font-weight:700;letter-spacing:-.01em;color:#080808;margin-top:14px;line-height:1.1">{{ c.name }}</span>
+          <span style="display:flex;gap:22px;margin-top:auto;padding-top:26px">
+            <span style="display:flex;flex-direction:column"><b style="font-size:24px;font-weight:700;color:#080808">{{ c.skus }}</b><small style="font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:#757a84">SKUs</small></span>
+            <span style="display:flex;flex-direction:column"><b style="font-size:24px;font-weight:700;color:#080808">{{ c.units }}</b><small style="font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:#757a84">Unidades</small></span>
+            <span style="display:flex;flex-direction:column"><b style="font-size:24px;font-weight:700;color:{{ c.color }}">{{ c.value }}</b><small style="font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:#757a84">Valor USD</small></span>
+          </span>
+        </span>
+      </a>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  componentDidMount() { this._tries = 0; this._poll(); }
+  _poll() {
+    if (window.INVENTORY) { this.forceUpdate(); return; }
+    if (this._tries++ > 120) return;
+    setTimeout(() => this._poll(), 50);
+  }
+  renderVals() {
+    const C = window.INVENTORY;
+    const CATS = [
+      { name: 'Muebles & hogar',           color: '#B23A48', file: 'muebles-y-hogar.html' },
+      { name: 'Iluminación',               color: '#E2960F', file: 'iluminacion.html' },
+      { name: 'Cocina',                    color: '#235CF2', file: 'cocina.html' },
+      { name: 'Baño',                      color: '#1593AE', file: 'bano.html' },
+      { name: 'Climatización',             color: '#2E5FD0', file: 'climatizacion.html' },
+      { name: 'Organización & closet',     color: '#1F9E7A', file: 'organizacion-y-closet.html' },
+      { name: 'Cortinas & ventanas',       color: '#3E8FD0', file: 'cortinas-y-ventanas.html' },
+      { name: 'Jardín & exterior',         color: '#0E9E4A', file: 'jardin-y-exterior.html' },
+      { name: 'Equipos de jardín',         color: '#FF8001', file: 'equipos-de-jardin.html' },
+      { name: 'Herramientas & taller',     color: '#565A62', file: 'herramientas-y-taller.html' },
+      { name: 'Ferretería & construcción', color: '#C2000B', file: 'ferreteria-y-construccion.html' },
+      { name: 'Plomería & electricidad',   color: '#6B7785', file: 'plomeria-y-electricidad.html' },
+    ];
+    const units = (n) => Number(n || 0).toLocaleString('es-AR');
+    const compact = (n) => (n >= 1000 ? '$' + (n / 1000).toFixed(n >= 10000 ? 0 : 1) + 'K' : '$' + Math.round(n || 0));
+    if (!C) {
+      return { ready: false, cats: CATS.map((c, i) => ({ ...c, href: encodeURI(c.file), num: 'Categoría ' + String(i + 1).padStart(2, '0'), skus: '—', units: '—', value: '—' })),
+        totalSkus: '—', totalValue: '—', totalUnits: '—', fullHref: encodeURI('completo.html') };
+    }
+    const cats = CATS.map((c, i) => {
+      const items = C.products.filter((p) => p.cat === c.name);
+      const u = items.reduce((a, p) => a + p.qty, 0);
+      const v = items.reduce((a, p) => a + p.price * p.qty, 0);
+      return { name: c.name, color: c.color, href: encodeURI(c.file), num: 'Categoría ' + String(i + 1).padStart(2, '0'),
+        skus: items.length, units: units(u), value: compact(v) };
+    });
+    return {
+      ready: true,
+      cats,
+      totalSkus: C.products.length,
+      totalUnits: units(C.products.reduce((a, p) => a + p.qty, 0)),
+      totalValue: compact(C.products.reduce((a, p) => a + p.price * p.qty, 0)),
+      fullHref: encodeURI('completo.html'),
+    };
+  }
+}
+</script>
+</body>
+</html>
