@@ -56,6 +56,10 @@
 .rv-contact-row:last-child{border-bottom:0}
 .rv-contact-k{width:150px;font-size:18px;text-transform:uppercase;letter-spacing:.16em;color:rgba(255,255,255,.5)}
 .rv-contact-v{font-size:30px;font-weight:var(--weight-medium);letter-spacing:.01em}
+.rv-contact-link{color:#fff;text-decoration:none;transition:color .15s ease;border-bottom:1px solid transparent}
+.rv-contact-link:hover{color:var(--orange-juice);border-bottom-color:var(--orange-juice)}
+.rv-flags{display:flex;flex-wrap:wrap;gap:14px;margin-top:46px;position:relative;z-index:1}
+.rv-flag{width:46px;height:31px;object-fit:cover;border-radius:4px;box-shadow:0 1px 0 rgba(255,255,255,.18),0 4px 14px rgba(0,0,0,.35)}
 
 /* ===================== PRODUCT SLIDE (light) ===================== */
 .rv-product{display:grid;grid-template-columns:45% 55%;background:var(--white)}

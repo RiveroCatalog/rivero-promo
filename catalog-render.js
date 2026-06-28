@@ -103,18 +103,21 @@
 
   function closing(add, C) {
     const ct = C.contact;
+    const flags = (ct.countries || [])
+      .map((c) => `<img class="rv-flag" src="assets/flags/${c.code}.svg" alt="${c.name}" title="${c.name}">`)
+      .join('');
+    const waDigits = (ct.whatsapp || ct.phone || '').replace(/\D/g, '');
     add('Próximos pasos', 'rv-slide rv-cover rv-closing', `
       <img class="rv-cover-symbol" src="assets/rivero-symbol-white.png" alt="">
       ${topbar(C)}
       <div class="rv-cover-body">
         <span class="rv-eyebrow rv-eyebrow-accent"><i></i>${up(ct.eyebrow)}</span>
         <h1 class="rv-cover-title rv-closing-title">${ct.headline}</h1>
-        <a class="rv-closing-link" href="https://${ct.link}">${ct.link} <span>→</span></a>
+        ${flags ? `<div class="rv-flags">${flags}</div>` : ''}
       </div>
       <div class="rv-closing-contact">
-        <div class="rv-contact-row"><span class="rv-contact-k">Contacto</span><span class="rv-contact-v">${ct.person}</span></div>
-        <div class="rv-contact-row"><span class="rv-contact-k">Email</span><span class="rv-contact-v">${ct.email}</span></div>
-        <div class="rv-contact-row"><span class="rv-contact-k">Tel</span><span class="rv-contact-v">${ct.phone}</span></div>
+        <div class="rv-contact-row"><span class="rv-contact-k">Email</span><a class="rv-contact-v rv-contact-link" href="mailto:${ct.email}">${ct.email}</a></div>
+        <div class="rv-contact-row"><span class="rv-contact-k">WhatsApp</span><a class="rv-contact-v rv-contact-link" href="https://wa.me/${waDigits}" target="_blank" rel="noopener">${ct.phone}</a></div>
       </div>
     `);
   }
