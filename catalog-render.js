@@ -20,10 +20,16 @@
   ];
 
   const money = (n, d = 0) => '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
-  const units = (n) => Number(n).toLocaleString('es-AR');
+  const LANG = () => (window.RV_LANG === 'en' ? 'en' : 'es');
+  const units = (n) => Number(n).toLocaleString(LANG() === 'en' ? 'en-US' : 'es-AR');
   const compact = (n) => (n >= 1000 ? '$' + (n / 1000).toFixed(n >= 10000 ? 0 : 1) + 'K' : money(n));
   const up = (s) => (s || '').toUpperCase();
   const clean = (s) => (s || '').replace(/"/g, '\u201D');
+  const T = (k) => { const d = (window.RV_I18N && window.RV_I18N.ui) || { es: {}, en: {} }; return ((d[LANG()] || d.es || {})[k]) || ((d.es || {})[k]) || ''; };
+  const catN = (n) => (LANG() === 'en' && window.RV_I18N && window.RV_I18N.catEN[n]) ? window.RV_I18N.catEN[n] : n;
+  const pn = (p) => (LANG() === 'en' ? (p.name_en || p.name) : p.name);
+  const mm = (C) => (LANG() === 'en' ? Object.assign({}, C.meta, C.meta_en) : C.meta);
+  const ctc = (C) => (LANG() === 'en' ? Object.assign({}, C.contact, C.contact_en) : C.contact);
 
   function groupAll(C) {
     const known = CATS.map((c) => c.name);
@@ -48,9 +54,10 @@
   }
 
   function topbar(C) {
+    const M = mm(C);
     return `<header class="rv-topbar">
       <img class="rv-logo" src="assets/rivero-logo-lineal-white.png" alt="Rivero">
-      <span class="rv-topbar-meta">${up(C.meta.location)} &nbsp;·&nbsp; ${up(C.meta.terms)}</span>
+      <span class="rv-topbar-meta">${up(M.location)} &nbsp;·&nbsp; ${up(M.terms)}</span>
     </header>`;
   }
 
@@ -60,41 +67,44 @@
     const lote = p.price * p.qty;
     const hasDisc = opts.showRetail && p.retail > p.price && p.price > 0;
     const discPct = hasDisc ? Math.round((1 - p.price / p.retail) * 100) : 0;
+    const M = mm(C);
+    const gname = catN(g.name);
+    const nm = pn(p);
     const priceBlock = hasPrice
       ? `<span class="rv-pstat-val rv-accent">${money(p.price, 2)}</span>` +
         (hasDisc ? ` <s class="rv-retail-strike">retail ${money(p.retail, 2)}</s>` : '')
-      : `<span class="rv-pstat-val rv-accent" style="font-size:48px">A consultar</span>`;
-    add(`${idx} · ${p.name}`, 'rv-slide rv-product', `
+      : `<span class="rv-pstat-val rv-accent" style="font-size:48px">${T('onRequest')}</span>`;
+    add(`${idx} · ${nm}`, 'rv-slide rv-product', `
       <div class="rv-prod-media">
         <span class="rv-prod-index">${idx} <em>/ ${tot}</em></span>
-        <span class="rv-prod-cat"><i></i>${up(g.name)}</span>
-        <div class="rv-prod-tile"><img src="${p.img}" alt="${clean(p.name)}"></div>
-        <span class="rv-stock-dot"><i></i>${low ? 'Consultar disponibilidad' : units(p.qty) + ' unidades en stock'}</span>
+        <span class="rv-prod-cat"><i></i>${up(gname)}</span>
+        <div class="rv-prod-tile"><img src="${p.img}" alt="${clean(nm)}"></div>
+        <span class="rv-stock-dot"><i></i>${low ? T('consult') : units(p.qty) + T('unitsInStock')}</span>
       </div>
       <div class="rv-prod-info">
         <div class="rv-prod-info-top">
-          <span class="rv-eyebrow rv-accent">${up(C.meta.eyebrow)} &nbsp;·&nbsp; ${up(g.name)}</span>
+          <span class="rv-eyebrow rv-accent">${up(M.eyebrow)} &nbsp;·&nbsp; ${up(gname)}</span>
           ${p.brand ? `<div class="rv-prod-brand">${up(p.brand)}</div>` : ''}
-          <h2 class="rv-prod-name">${clean(p.name)}</h2>
+          <h2 class="rv-prod-name">${clean(nm)}</h2>
           ${opts.showSku ? `<div class="rv-prod-sku">SKU ${p.sku}</div>` : ''}
         </div>
         <div class="rv-prod-stats">
           <div class="rv-pstat rv-pstat-price">
-            <span class="rv-pstat-lbl">${C.meta.priceLabel} ${C.meta.currency}${hasDisc ? ` <span class="rv-disc-pill">&minus;${discPct}%</span>` : ''}</span>
+            <span class="rv-pstat-lbl">${M.priceLabel} ${M.currency}${hasDisc ? ` <span class="rv-disc-pill">&minus;${discPct}%</span>` : ''}</span>
             <span class="rv-price-line">${priceBlock}</span>
           </div>
           <div class="rv-pstat">
-            <span class="rv-pstat-lbl">Stock disponible</span>
-            ${low ? '<span class="rv-pstat-val" style="font-size:30px">Consultar disponibilidad</span>' : '<span class="rv-pstat-val">' + units(p.qty) + ' <small>u.</small></span>'}
+            <span class="rv-pstat-lbl">${T('stockAvailable')}</span>
+            ${low ? '<span class="rv-pstat-val" style="font-size:30px">' + T('consult') + '</span>' : '<span class="rv-pstat-val">' + units(p.qty) + ' <small>' + T('uShort') + '</small></span>'}
           </div>
           <div class="rv-pstat">
-            <span class="rv-pstat-lbl">Valor del lote</span>
-            <span class="rv-pstat-val">${low ? '—' : (hasPrice ? money(lote) : '—')} <small>${(!low && hasPrice) ? C.meta.currency : ''}</small></span>
+            <span class="rv-pstat-lbl">${T('lotValue')}</span>
+            <span class="rv-pstat-val">${low ? '—' : (hasPrice ? money(lote) : '—')} <small>${(!low && hasPrice) ? M.currency : ''}</small></span>
           </div>
         </div>
         <div class="rv-prod-foot">
-          <span class="rv-chip rv-chip-ok"><i></i>Disponible · ${C.meta.location}</span>
-          <span class="rv-chip">FOB · ${C.meta.currency}</span>
+          <span class="rv-chip rv-chip-ok"><i></i>${T('availableChip')} · ${M.location}</span>
+          <span class="rv-chip">FOB · ${M.currency}</span>
           <img class="rv-prod-logo" src="assets/rivero-logo-lineal.png" alt="Rivero">
         </div>
       </div>
@@ -102,12 +112,12 @@
   }
 
   function closing(add, C) {
-    const ct = C.contact;
+    const ct = ctc(C);
     const flags = (ct.countries || [])
       .map((c) => `<img class="rv-flag" src="assets/flags/${c.code}.svg" alt="${c.name}" title="${c.name}">`)
       .join('');
     const waDigits = (ct.whatsapp || ct.phone || '').replace(/\D/g, '');
-    add('Próximos pasos', 'rv-slide rv-cover rv-closing', `
+    add(ct.eyebrow, 'rv-slide rv-cover rv-closing', `
       <img class="rv-cover-symbol" src="assets/rivero-symbol-white.png" alt="">
       ${topbar(C)}
       <div class="rv-cover-body">
@@ -117,8 +127,8 @@
         ${flags ? `<div class="rv-flags">${flags}</div>` : ''}
       </div>
       <div class="rv-closing-contact">
-        <div class="rv-contact-row"><span class="rv-contact-k">Email</span><a class="rv-contact-v rv-contact-link" href="mailto:${ct.email}">${ct.email}</a></div>
-        <div class="rv-contact-row"><span class="rv-contact-k">WhatsApp</span><a class="rv-contact-v rv-contact-link" href="https://wa.me/${waDigits}" target="_blank" rel="noopener">${ct.phone}</a></div>
+        <div class="rv-contact-row"><span class="rv-contact-k">${T('email')}</span><a class="rv-contact-v rv-contact-link" href="mailto:${ct.email}">${ct.email}</a></div>
+        <div class="rv-contact-row"><span class="rv-contact-k">${T('whatsapp')}</span><a class="rv-contact-v rv-contact-link" href="https://wa.me/${waDigits}" target="_blank" rel="noopener">${ct.phone}</a></div>
       </div>
     `);
   }
@@ -130,18 +140,20 @@
     const brands = [...new Set(g.items.map((p) => p.brand).filter((b) => b && b !== 'Sin marca'))].slice(0, 6);
 
     /* Portada de categoría */
+    const M = mm(C);
+    const gname = catN(g.name);
     add('Portada', 'rv-slide rv-cover rv-divider', `
-      <span class="rv-divider-ghost" style="font-size:420px">${g.name.charAt(0)}</span>
+      <span class="rv-divider-ghost" style="font-size:420px">${gname.charAt(0)}</span>
       ${topbar(C)}
       <div class="rv-cover-body">
-        <span class="rv-eyebrow rv-eyebrow-accent"><i></i>${up(C.meta.eyebrow)} · ${C.meta.title}${C.meta.volume ? ' · ' + C.meta.volume : ''}</span>
-        <h1 class="rv-cover-title rv-divider-title">${g.name}</h1>
+        <span class="rv-eyebrow rv-eyebrow-accent"><i></i>${up(M.eyebrow)} · ${M.title}${M.volume ? ' · ' + M.volume : ''}</span>
+        <h1 class="rv-cover-title rv-divider-title">${gname}</h1>
         ${brands.length ? `<p class="rv-cover-intro rv-divider-brands">${brands.join('&nbsp; · &nbsp;')}</p>` : ''}
       </div>
       <div class="rv-cover-stats">
-        <div class="rv-stat"><span class="rv-stat-num rv-accent">${g.items.length}</span><span class="rv-stat-lbl">SKUs en la categoría</span></div>
-        <div class="rv-stat"><span class="rv-stat-num">${units(gUnits)}</span><span class="rv-stat-lbl">Unidades</span></div>
-        <div class="rv-stat"><span class="rv-stat-num">${compact(gValue)}</span><span class="rv-stat-lbl">Valor de lote ${C.meta.currency}</span></div>
+        <div class="rv-stat"><span class="rv-stat-num rv-accent">${g.items.length}</span><span class="rv-stat-lbl">${T('skusInCat')}</span></div>
+        <div class="rv-stat"><span class="rv-stat-num">${units(gUnits)}</span><span class="rv-stat-lbl">${T('units')}</span></div>
+        <div class="rv-stat"><span class="rv-stat-num">${compact(gValue)}</span><span class="rv-stat-lbl">${T('lotValueShort')} ${M.currency}</span></div>
       </div>
     `, `--cat:${g.color}`);
 
@@ -160,29 +172,30 @@
     const n = C.products.length;
     const totalUnits = C.products.reduce((a, p) => a + p.qty, 0);
     const totalValue = C.products.reduce((a, p) => a + p.price * p.qty, 0);
+    const M = mm(C);
 
     add('Portada', 'rv-slide rv-cover', `
       <img class="rv-cover-symbol" src="assets/rivero-symbol-white.png" alt="">
       ${topbar(C)}
       <div class="rv-cover-body">
-        <span class="rv-eyebrow rv-eyebrow-accent"><i></i>${up(C.meta.eyebrow)}</span>
-        <h1 class="rv-cover-title">${C.meta.title}${C.meta.volume ? `<span class="rv-disc-tag" style="font-size:30px">${C.meta.volume}</span>` : ''}</h1>
-        <p class="rv-cover-headline">${C.meta.headline}</p>
-        <p class="rv-cover-intro">${C.meta.intro}</p>
+        <span class="rv-eyebrow rv-eyebrow-accent"><i></i>${up(M.eyebrow)}</span>
+        <h1 class="rv-cover-title">${M.title}${M.volume ? `<span class="rv-disc-tag" style="font-size:30px">${M.volume}</span>` : ''}</h1>
+        <p class="rv-cover-headline">${M.headline}</p>
+        <p class="rv-cover-intro">${M.intro}</p>
       </div>
       <div class="rv-cover-stats">
-        <div class="rv-stat"><span class="rv-stat-num">${n}</span><span class="rv-stat-lbl">SKUs disponibles</span></div>
-        <div class="rv-stat"><span class="rv-stat-num">${CT}</span><span class="rv-stat-lbl">Categorías</span></div>
-        <div class="rv-stat"><span class="rv-stat-num">${units(totalUnits)}</span><span class="rv-stat-lbl">Unidades totales</span></div>
-        <div class="rv-stat"><span class="rv-stat-num rv-accent">${compact(totalValue)}</span><span class="rv-stat-lbl">Valor de inventario ${C.meta.currency}</span></div>
+        <div class="rv-stat"><span class="rv-stat-num">${n}</span><span class="rv-stat-lbl">${T('skusAvailable')}</span></div>
+        <div class="rv-stat"><span class="rv-stat-num">${CT}</span><span class="rv-stat-lbl">${T('categories')}</span></div>
+        <div class="rv-stat"><span class="rv-stat-num">${units(totalUnits)}</span><span class="rv-stat-lbl">${T('totalUnits')}</span></div>
+        <div class="rv-stat"><span class="rv-stat-num rv-accent">${compact(totalValue)}</span><span class="rv-stat-lbl">${T('inventoryValue')} ${M.currency}</span></div>
       </div>
     `);
 
-    add('Categorías', 'rv-slide rv-toc', `
+    add(T('categories'), 'rv-slide rv-toc', `
       ${topbar(C)}
       <div class="rv-toc-head">
-        <span class="rv-eyebrow rv-eyebrow-accent"><i></i>El lote por categoría</span>
-        <h2 class="rv-toc-title">${CT} categorías · ${n} SKUs</h2>
+        <span class="rv-eyebrow rv-eyebrow-accent"><i></i>${T('lotByCategory')}</span>
+        <h2 class="rv-toc-title">${CT} ${T('categoriesLower')} · ${n} SKUs</h2>
       </div>
       <ul class="rv-toc-list">
         ${sections.map((g, i) => {
@@ -190,8 +203,8 @@
           return `<li class="rv-toc-row" style="--cat:${g.color}">
             <span class="rv-toc-num">${String(i + 1).padStart(2, '0')}</span>
             <span class="rv-toc-dot"></span>
-            <span class="rv-toc-name">${g.name}</span>
-            <span class="rv-toc-meta">${g.items.length} SKUs &nbsp;·&nbsp; ${units(gu)} u.</span>
+            <span class="rv-toc-name">${catN(g.name)}</span>
+            <span class="rv-toc-meta">${g.items.length} SKUs &nbsp;·&nbsp; ${units(gu)} ${T('uShort')}</span>
           </li>`;
         }).join('')}
       </ul>
@@ -203,18 +216,19 @@
       const gUnits = g.items.reduce((a, p) => a + p.qty, 0);
       const gValue = g.items.reduce((a, p) => a + p.price * p.qty, 0);
       const brands = [...new Set(g.items.map((p) => p.brand).filter((b) => b && b !== 'Sin marca'))].slice(0, 6);
-      add(`▸ ${g.name}`, 'rv-slide rv-cover rv-divider', `
+      const gname = catN(g.name);
+      add(`▸ ${gname}`, 'rv-slide rv-cover rv-divider', `
         <span class="rv-divider-ghost">${String(si + 1).padStart(2, '0')}</span>
         ${topbar(C)}
         <div class="rv-cover-body">
-          <span class="rv-eyebrow rv-eyebrow-accent"><i></i>Categoría ${String(si + 1).padStart(2, '0')} / ${String(CT).padStart(2, '0')}</span>
-          <h1 class="rv-cover-title rv-divider-title">${g.name}</h1>
+          <span class="rv-eyebrow rv-eyebrow-accent"><i></i>${T('category')} ${String(si + 1).padStart(2, '0')} / ${String(CT).padStart(2, '0')}</span>
+          <h1 class="rv-cover-title rv-divider-title">${gname}</h1>
           ${brands.length ? `<p class="rv-cover-intro rv-divider-brands">${brands.join('&nbsp; · &nbsp;')}</p>` : ''}
         </div>
         <div class="rv-cover-stats">
-          <div class="rv-stat"><span class="rv-stat-num rv-accent">${g.items.length}</span><span class="rv-stat-lbl">SKUs en la categoría</span></div>
-          <div class="rv-stat"><span class="rv-stat-num">${units(gUnits)}</span><span class="rv-stat-lbl">Unidades</span></div>
-          <div class="rv-stat"><span class="rv-stat-num">${compact(gValue)}</span><span class="rv-stat-lbl">Valor de lote ${C.meta.currency}</span></div>
+          <div class="rv-stat"><span class="rv-stat-num rv-accent">${g.items.length}</span><span class="rv-stat-lbl">${T('skusInCat')}</span></div>
+          <div class="rv-stat"><span class="rv-stat-num">${units(gUnits)}</span><span class="rv-stat-lbl">${T('units')}</span></div>
+          <div class="rv-stat"><span class="rv-stat-num">${compact(gValue)}</span><span class="rv-stat-lbl">${T('lotValueShort')} ${M.currency}</span></div>
         </div>
       `, `--cat:${g.color}`);
       g.items.forEach((p) => {
