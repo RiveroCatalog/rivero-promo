@@ -113,6 +113,7 @@
       <div class="rv-cover-body">
         <span class="rv-eyebrow rv-eyebrow-accent"><i></i>${up(ct.eyebrow)}</span>
         <h1 class="rv-cover-title rv-closing-title">${ct.headline}</h1>
+        ${ct.buyerUrl ? `<a class="rv-closing-link" href="${ct.buyerUrl}" target="_blank" rel="noopener">${ct.buyerLabel || ct.buyerUrl} <span>→</span></a>` : ''}
         ${flags ? `<div class="rv-flags">${flags}</div>` : ''}
       </div>
       <div class="rv-closing-contact">

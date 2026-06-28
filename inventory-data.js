@@ -511,6 +511,8 @@ window.INVENTORY = {
   contact: {
     eyebrow: 'Próximos pasos',
     headline: 'Contacta con tu representante',
+    buyerUrl: 'https://www.riveroco.com/become-a-buyer',
+    buyerLabel: 'riveroco.com/become-a-buyer',
     email: 'hello@riveroco.com',
     phone: '+1 (555) 801-6189',
     whatsapp: '15558016189',
