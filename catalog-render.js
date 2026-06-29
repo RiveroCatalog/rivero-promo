@@ -22,7 +22,7 @@
   const money = (n, d = 0) => '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
   const LANG = () => (window.RV_LANG === 'en' ? 'en' : 'es');
   const units = (n) => Number(n).toLocaleString(LANG() === 'en' ? 'en-US' : 'es-AR');
-  const compact = (n) => (n >= 1000 ? '$' + (n / 1000).toFixed(n >= 10000 ? 0 : 1) + 'K' : money(n));
+  const compact = (n) => (n >= 1e6 ? '$' + (n / 1e6).toFixed(1) + (LANG() === 'en' ? 'M' : 'MILL') : (n >= 1000 ? '$' + (n / 1000).toFixed(n >= 10000 ? 0 : 1) + 'K' : money(n)));
   const up = (s) => (s || '').toUpperCase();
   const clean = (s) => (s || '').replace(/"/g, '\u201D');
   const T = (k) => { const d = (window.RV_I18N && window.RV_I18N.ui) || { es: {}, en: {} }; return ((d[LANG()] || d.es || {})[k]) || ((d.es || {})[k]) || ''; };

@@ -149,7 +149,7 @@ class Component extends DCLogic {
     const esStyle = _lb + (L === 'es' ? 'background:var(--retro-blue);color:#fff;' : 'background:transparent;color:var(--fg2);');
     const enStyle = _lb + (L === 'en' ? 'background:var(--retro-blue);color:#fff;' : 'background:transparent;color:var(--fg2);');
     const units = (n) => Number(n || 0).toLocaleString(L === 'en' ? 'en-US' : 'es-AR');
-    const compact = (n) => (n >= 1000 ? '$' + (n / 1000).toFixed(n >= 10000 ? 0 : 1) + 'K' : '$' + Math.round(n || 0));
+    const compact = (n) => (n >= 1e6 ? '$' + (n / 1e6).toFixed(1) + (L === 'en' ? 'M' : 'MILL') : (n >= 1000 ? '$' + (n / 1000).toFixed(n >= 10000 ? 0 : 1) + 'K' : '$' + Math.round(n || 0)));
     if (!C) {
       return { ready: false, lang: L, t: I, esStyle, enStyle,
         cats: CATS.map((c, i) => ({ name: dn(c.name), color: c.color, href: encodeURI(c.file) + qs, num: catWord + ' ' + String(i + 1).padStart(2, '0'), skus: '—', units: '—', value: '—' })),
