@@ -113,10 +113,17 @@
 
   function closing(add, C) {
     const ct = ctc(C);
-    const flags = (ct.countries || [])
-      .map((c) => `<img class="rv-flag" src="assets/flags/${c.code}.svg" alt="${c.name}" title="${c.name}">`)
-      .join('');
     const waDigits = (ct.whatsapp || ct.phone || '').replace(/\D/g, '');
+    const flagMsg = (cn) => (LANG() === 'en'
+      ? `Hi, I would like to get in touch with the representative for ${cn} to learn more about your company`
+      : `Hola, quiero contactarme con el representante de ${cn} para conocer mejor de su empresa`);
+    const flags = (ct.countries || [])
+      .map((c) => {
+        const cn = (LANG() === 'en' && c.en) ? c.en : c.name;
+        const href = 'https://wa.me/' + waDigits + '?text=' + encodeURIComponent(flagMsg(cn));
+        return `<a class="rv-flag-link" href="${href}" target="_blank" rel="noopener" title="${cn}"><img class="rv-flag" src="assets/flags/${c.code}.svg" alt="${cn}"></a>`;
+      })
+      .join('');
     add(ct.eyebrow, 'rv-slide rv-cover rv-closing', `
       <img class="rv-cover-symbol" src="assets/rivero-symbol-white.png" alt="">
       ${topbar(C)}

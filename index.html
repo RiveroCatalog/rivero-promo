@@ -97,15 +97,11 @@
       <div style="font-size:44px;font-weight:700;letter-spacing:-.01em;line-height:1.05;margin:16px 0 0;max-width:20ch;color:var(--fg1)">{{ t.footerTitle }}</div>
       <a href="https://www.riveroco.com/become-a-buyer" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:14px;margin-top:24px;font-size:24px;font-weight:600;color:var(--fg1);text-decoration:none;border-bottom:3px solid var(--retro-blue);padding-bottom:6px" style-hover="color:var(--retro-blue)">riveroco.com/become-a-buyer <span style="color:var(--retro-blue)">→</span></a>
       <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:32px">
-        <img src="assets/flags/hn.svg" alt="Honduras" title="Honduras" style="width:44px;height:29px;object-fit:cover;border-radius:4px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(8,8,8,.10)">
-        <img src="assets/flags/gt.svg" alt="Guatemala" title="Guatemala" style="width:44px;height:29px;object-fit:cover;border-radius:4px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(8,8,8,.10)">
-        <img src="assets/flags/ni.svg" alt="Nicaragua" title="Nicaragua" style="width:44px;height:29px;object-fit:cover;border-radius:4px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(8,8,8,.10)">
-        <img src="assets/flags/do.svg" alt="República Dominicana" title="República Dominicana" style="width:44px;height:29px;object-fit:cover;border-radius:4px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(8,8,8,.10)">
-        <img src="assets/flags/ec.svg" alt="Ecuador" title="Ecuador" style="width:44px;height:29px;object-fit:cover;border-radius:4px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(8,8,8,.10)">
-        <img src="assets/flags/pe.svg" alt="Perú" title="Perú" style="width:44px;height:29px;object-fit:cover;border-radius:4px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(8,8,8,.10)">
-        <img src="assets/flags/cl.svg" alt="Chile" title="Chile" style="width:44px;height:29px;object-fit:cover;border-radius:4px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(8,8,8,.10)">
-        <img src="assets/flags/ar.svg" alt="Argentina" title="Argentina" style="width:44px;height:29px;object-fit:cover;border-radius:4px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(8,8,8,.10)">
-        <img src="assets/flags/co.svg" alt="Colombia" title="Colombia" style="width:44px;height:29px;object-fit:cover;border-radius:4px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(8,8,8,.10)">
+        <sc-for list="{{ flags }}" as="f" hint-placeholder-count="9">
+          <a href="{{ f.href }}" target="_blank" rel="noopener" title="{{ f.name }}" style="display:inline-flex;border-radius:4px" style-hover="transform:translateY(-2px)">
+            <img src="assets/flags/{{ f.code }}.svg" alt="{{ f.name }}" style="width:44px;height:29px;object-fit:cover;border-radius:4px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(8,8,8,.10);display:block">
+          </a>
+        </sc-for>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:56px;margin-top:38px">
         <div><div style="font-size:13px;text-transform:uppercase;letter-spacing:.16em;color:var(--fg3)">Email</div><a href="mailto:hello@riveroco.com" style="font-size:24px;font-weight:500;color:var(--fg1);text-decoration:none;margin-top:6px;display:inline-block" style-hover="color:var(--retro-blue)">hello@riveroco.com</a></div>
@@ -151,7 +147,7 @@ class Component extends DCLogic {
     const units = (n) => Number(n || 0).toLocaleString(L === 'en' ? 'en-US' : 'es-AR');
     const compact = (n) => (n >= 1e6 ? '$' + (n / 1e6).toFixed(1) + (L === 'en' ? 'M' : 'MILL') : (n >= 1000 ? '$' + (n / 1000).toFixed(n >= 10000 ? 0 : 1) + 'K' : '$' + Math.round(n || 0)));
     if (!C) {
-      return { ready: false, lang: L, t: I, esStyle, enStyle,
+      return { ready: false, lang: L, t: I, esStyle, enStyle, flags: [],
         cats: CATS.map((c, i) => ({ name: dn(c.name), color: c.color, href: encodeURI(c.file) + qs, num: catWord + ' ' + String(i + 1).padStart(2, '0'), skus: '—', units: '—', value: '—' })),
         totalSkus: '—', totalValue: '—', totalUnits: '—', catCount: CATS.length, fullHref: encodeURI('completo.html') + qs };
     }
@@ -162,6 +158,14 @@ class Component extends DCLogic {
       return { name: dn(c.name), color: c.color, href: encodeURI(c.file) + qs, num: catWord + ' ' + String(i + 1).padStart(2, '0'),
         skus: items.length, units: units(u), value: compact(v) };
     });
+    const wa = (C.contact && C.contact.whatsapp) || '15558016189';
+    const flagMsg = (cn) => (L === 'en'
+      ? 'Hi, I would like to get in touch with the representative for ' + cn + ' to learn more about your company'
+      : 'Hola, quiero contactarme con el representante de ' + cn + ' para conocer mejor de su empresa');
+    const flags = ((C.contact && C.contact.countries) || []).map((c) => {
+      const cn = (L === 'en' && c.en) ? c.en : c.name;
+      return { code: c.code, name: cn, href: 'https://wa.me/' + wa + '?text=' + encodeURIComponent(flagMsg(cn)) };
+    });
     return {
       ready: true,
       lang: L,
@@ -169,6 +173,7 @@ class Component extends DCLogic {
       esStyle,
       enStyle,
       cats,
+      flags,
       totalSkus: C.products.length,
       totalUnits: units(C.products.reduce((a, p) => a + p.qty, 0)),
       totalValue: compact(C.products.reduce((a, p) => a + p.price * p.qty, 0)),
