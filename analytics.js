@@ -13,7 +13,7 @@
   if (window.__RV_ANALYTICS__) return; // evita doble init (la página re-hidrata)
   window.__RV_ANALYTICS__ = true;
 
-  var GA_ID = 'G-XXXXXXXXXX'; // <-- REEMPLAZAR con el Measurement ID real
+  var GA_ID = 'G-WHWTHDPS3T'; // Measurement ID de Rivero Catálogo
 
   window.dataLayer = window.dataLayer || [];
   function gtag() { window.dataLayer.push(arguments); }
