@@ -13,6 +13,93 @@
   <script src="inventory-data.js"></script>
   <script src="i18n.js"></script>
   <script src="analytics.js"></script>
+  <style>
+    /* ── Mobile responsive — index page ─────────────────────────── */
+    .rv-cta-short { display: none; }
+
+    @media (max-width: 640px) {
+      /* Header */
+      header { padding: 11px 16px !important; }
+      header img { height: 24px !important; }
+      header > a {
+        padding: 9px 14px !important;
+        font-size: 12px !important;
+        max-width: 44vw;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        gap: 6px !important;
+      }
+      .rv-cta-full { display: none; }
+      .rv-cta-short { display: inline; }
+
+      /* Hero */
+      section:first-of-type { padding: 36px 20px 28px !important; }
+      h1 { font-size: 36px !important; margin-top: 14px !important; }
+      section:first-of-type p { font-size: 16px !important; margin-top: 14px !important; }
+      section:first-of-type > div > a {
+        padding: 13px 20px !important;
+        font-size: 15px !important;
+      }
+
+      /* Stats bar */
+      section:nth-of-type(2) > div {
+        padding: 20px 20px !important;
+        gap: 24px !important;
+      }
+      .rv-idx-stat-num { font-size: 30px !important; }
+
+      /* Categories section */
+      section:nth-of-type(3) { padding: 32px 16px 52px !important; }
+
+      /* "Ver catálogo completo" banner */
+      section:nth-of-type(3) > a {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        padding: 20px 22px !important;
+        gap: 12px !important;
+        margin-bottom: 24px !important;
+      }
+      section:nth-of-type(3) > a > div:first-child > div:last-child {
+        font-size: 20px !important;
+      }
+      section:nth-of-type(3) > a > div:last-child {
+        gap: 20px !important;
+      }
+      section:nth-of-type(3) > a > div:last-child > div > div:first-child {
+        font-size: 22px !important;
+      }
+      section:nth-of-type(3) > a > div:last-child > span {
+        display: none;
+      }
+
+      /* Category grid: 3 → 2 columns */
+      .rv-idx-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+      }
+
+      /* Category card body */
+      .rv-idx-card-body { padding: 12px 12px 12px !important; }
+      .rv-idx-cat-name {
+        font-size: 15px !important;
+        margin-top: 8px !important;
+        line-height: 1.2 !important;
+      }
+      .rv-idx-card-stats {
+        gap: 10px !important;
+        padding-top: 12px !important;
+      }
+      .rv-idx-card-stats b { font-size: 17px !important; }
+      .rv-idx-cat-num { font-size: 11px !important; }
+
+      /* Footer */
+      footer > div { padding: 44px 20px !important; }
+      .rv-idx-footer-title { font-size: 28px !important; }
+      footer > div > div:last-child { gap: 24px !important; }
+      footer a[style*="font-size:24px;font-weight:500"] { font-size: 17px !important; }
+    }
+  </style>
 </helmet>
 <template id="__bundler_thumbnail">
   <svg viewBox="0 0 1200 1200" xmlns="http://www.w3.org/2000/svg">
@@ -35,7 +122,7 @@
       </div>
       <img src="assets/rivero-logo-lineal.png" alt="Rivero" style="height:30px;display:block">
     </div>
-    <a href="https://wa.me/15558016189" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:9px;padding:12px 22px;border-radius:999px;background:var(--retro-blue);color:#fff;font-size:14px;font-weight:600;letter-spacing:.01em;text-decoration:none" style-hover="filter:brightness(1.08)">{{ t.idxCtaBuyer }} <span>→</span></a>
+    <a href="https://wa.me/15558016189" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:9px;padding:12px 22px;border-radius:999px;background:var(--retro-blue);color:#fff;font-size:14px;font-weight:600;letter-spacing:.01em;text-decoration:none" style-hover="filter:brightness(1.08)"><span class="rv-cta-full">{{ t.idxCtaBuyer }}</span><span class="rv-cta-short">WhatsApp</span> <span>→</span></a>
   </header>
 
   <section style="max-width:1180px;margin:0 auto;padding:92px 48px 60px">
@@ -50,10 +137,10 @@
 
   <section style="border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg-subtle)">
     <div style="max-width:1180px;margin:0 auto;padding:42px 48px;display:flex;flex-wrap:wrap;gap:72px">
-      <div><div style="font-size:46px;font-weight:700;line-height:1;color:var(--fg1)">{{ totalSkus }}</div><div style="font-size:13px;text-transform:uppercase;letter-spacing:.14em;color:var(--fg3);margin-top:9px">{{ t.skusAvailable }}</div></div>
-      <div><div style="font-size:46px;font-weight:700;line-height:1;color:var(--fg1)">{{ catCount }}</div><div style="font-size:13px;text-transform:uppercase;letter-spacing:.14em;color:var(--fg3);margin-top:9px">{{ t.categories }}</div></div>
-      <div><div style="font-size:46px;font-weight:700;line-height:1;color:var(--fg1)">{{ totalUnits }}</div><div style="font-size:13px;text-transform:uppercase;letter-spacing:.14em;color:var(--fg3);margin-top:9px">{{ t.units }}</div></div>
-      <div><div style="font-size:46px;font-weight:700;line-height:1;color:var(--retro-blue)">{{ totalValue }}</div><div style="font-size:13px;text-transform:uppercase;letter-spacing:.14em;color:var(--fg3);margin-top:9px">{{ t.valueUsd }}</div></div>
+      <div><div class="rv-idx-stat-num" style="font-size:46px;font-weight:700;line-height:1;color:var(--fg1)">{{ totalSkus }}</div><div style="font-size:13px;text-transform:uppercase;letter-spacing:.14em;color:var(--fg3);margin-top:9px">{{ t.skusAvailable }}</div></div>
+      <div><div class="rv-idx-stat-num" style="font-size:46px;font-weight:700;line-height:1;color:var(--fg1)">{{ catCount }}</div><div style="font-size:13px;text-transform:uppercase;letter-spacing:.14em;color:var(--fg3);margin-top:9px">{{ t.categories }}</div></div>
+      <div><div class="rv-idx-stat-num" style="font-size:46px;font-weight:700;line-height:1;color:var(--fg1)">{{ totalUnits }}</div><div style="font-size:13px;text-transform:uppercase;letter-spacing:.14em;color:var(--fg3);margin-top:9px">{{ t.units }}</div></div>
+      <div><div class="rv-idx-stat-num" style="font-size:46px;font-weight:700;line-height:1;color:var(--retro-blue)">{{ totalValue }}</div><div style="font-size:13px;text-transform:uppercase;letter-spacing:.14em;color:var(--fg3);margin-top:9px">{{ t.valueUsd }}</div></div>
     </div>
   </section>
 
@@ -72,16 +159,16 @@
 
     <span style="display:inline-flex;align-items:center;gap:13px;font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:.16em;color:var(--fg3);margin-bottom:24px">{{ t.idxExplore }}</span>
 
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:22px">
+    <div class="rv-idx-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:22px">
       <sc-for list="{{ cats }}" as="c" hint-placeholder-count="12">
         <a href="{{ c.href }}" style="display:flex;flex-direction:column;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;text-decoration:none;box-shadow:0 6px 18px rgba(8,8,8,.05)" style-hover="transform:translateY(-3px);box-shadow:0 16px 34px rgba(8,8,8,.12);border-color:var(--border-strong)">
           <span style="height:7px;background:{{ c.color }};display:block"></span>
-          <span style="display:flex;flex-direction:column;flex:1;padding:26px 28px 24px">
-            <span style="display:flex;align-items:center;gap:11px;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:var(--fg2)">
+          <span class="rv-idx-card-body" style="display:flex;flex-direction:column;flex:1;padding:26px 28px 24px">
+            <span class="rv-idx-cat-num" style="display:flex;align-items:center;gap:11px;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:var(--fg2)">
               <i style="width:11px;height:11px;border-radius:3px;background:{{ c.color }};display:inline-block"></i>{{ c.num }}
             </span>
-            <span style="font-size:27px;font-weight:700;letter-spacing:-.01em;color:var(--fg1);margin-top:14px;line-height:1.1">{{ c.name }}</span>
-            <span style="display:flex;gap:22px;margin-top:auto;padding-top:26px">
+            <span class="rv-idx-cat-name" style="font-size:27px;font-weight:700;letter-spacing:-.01em;color:var(--fg1);margin-top:14px;line-height:1.1">{{ c.name }}</span>
+            <span class="rv-idx-card-stats" style="display:flex;gap:22px;margin-top:auto;padding-top:26px">
               <span style="display:flex;flex-direction:column"><b style="font-size:24px;font-weight:700;color:var(--fg1)">{{ c.skus }}</b><small style="font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--fg3)">{{ t.skus }}</small></span>
               <span style="display:flex;flex-direction:column"><b style="font-size:24px;font-weight:700;color:var(--fg1)">{{ c.units }}</b><small style="font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--fg3)">{{ t.units }}</small></span>
               <span style="display:flex;flex-direction:column"><b style="font-size:24px;font-weight:700;color:{{ c.color }}">{{ c.value }}</b><small style="font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--fg3)">{{ t.valueUsd }}</small></span>
@@ -95,7 +182,7 @@
   <footer style="background:var(--bg-subtle);border-top:1px solid var(--border)">
     <div style="max-width:1180px;margin:0 auto;padding:72px 48px">
       <span style="display:inline-flex;align-items:center;gap:14px;font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:.18em;color:var(--retro-blue)"><i style="display:inline-block;width:40px;height:3px;background:currentColor;border-radius:2px"></i>{{ t.footerEyebrow }}</span>
-      <div style="font-size:44px;font-weight:700;letter-spacing:-.01em;line-height:1.05;margin:16px 0 0;max-width:20ch;color:var(--fg1)">{{ t.footerTitle }}</div>
+      <div class="rv-idx-footer-title" style="font-size:44px;font-weight:700;letter-spacing:-.01em;line-height:1.05;margin:16px 0 0;max-width:20ch;color:var(--fg1)">{{ t.footerTitle }}</div>
       <a href="https://wa.me/15558016189" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:14px;margin-top:24px;font-size:24px;font-weight:600;color:var(--fg1);text-decoration:none;border-bottom:3px solid var(--retro-blue);padding-bottom:6px" style-hover="color:var(--retro-blue)">WhatsApp <span style="color:var(--retro-blue)">→</span></a>
       <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:32px">
         <sc-for list="{{ flags }}" as="f" hint-placeholder-count="9">
