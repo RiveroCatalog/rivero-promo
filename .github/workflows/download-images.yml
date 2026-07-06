@@ -1,0 +1,28 @@
+name: Download Product Images
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Download images from Home Depot
+        run: node project/download-images.js
+
+      - name: Commit images and updated inventory
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add project/assets/products/ project/inventory-data.js project/data/_img_results.json
+          git diff --cached --quiet || git commit -m "Add product images downloaded from Home Depot"
+          git push
