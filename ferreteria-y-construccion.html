@@ -162,18 +162,24 @@ img  { display: block; max-width: 100%; }
 }
 .card-stock-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--retro-blue); flex-shrink: 0; }
 
-/* PDF BTN */
-.pdf-btn {
-  display: flex; align-items: center; gap: 8px;
+/* FLOATING BUTTONS */
+.fab-group {
   position: fixed; bottom: 24px; right: 24px;
-  background: var(--reversed-grey); color: #fff;
+  display: flex; flex-direction: column; gap: 10px; align-items: flex-end;
+  z-index: 100;
+}
+@media print { .fab-group { display: none; } }
+
+.pdf-btn, .wa-btn {
+  display: flex; align-items: center; gap: 8px;
   border: none; border-radius: 99px; cursor: pointer;
   padding: 12px 20px; font-size: 14px; font-weight: 600;
   font-family: inherit; box-shadow: 0 4px 16px rgba(0,0,0,.25);
-  z-index: 100; transition: transform .15s, box-shadow .15s;
+  transition: transform .15s, box-shadow .15s; text-decoration: none;
 }
-.pdf-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
-@media print { .pdf-btn { display: none; } }
+.pdf-btn { background: var(--reversed-grey); color: #fff; }
+.wa-btn  { background: #25D366; color: #fff; }
+.pdf-btn:hover, .wa-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
 
 .back {
   font-size: 13px; font-weight: 500; color: var(--fg2);
@@ -193,7 +199,7 @@ img  { display: block; max-width: 100%; }
     <img class="cv-logo" src="assets/rivero-logo-white.png"
          onerror="this.style.display='none';this.nextElementSibling.style.display='block'" alt="Rivero Commerce">
     <span style="display:none;font-size:18px;font-weight:700;color:#fff;letter-spacing:-.01em">Rivero Commerce</span>
-    <span class="cv-terms">USD · FOB San Diego</span>
+    <span class="cv-terms">USD · FOB Miami</span>
   </div>
   <div class="cv-body">
     <div class="cv-eyebrow">Catálogo mayorista</div>
@@ -201,7 +207,12 @@ img  { display: block; max-width: 100%; }
     <p class="cv-sub">Productos seleccionados de marcas líderes norteamericanas — disponible desde depósito Miami.</p>
   </div>
   <div class="cv-footer">
-    <div class="cv-meta"><strong>Julio 2026</strong><br>Depósito Miami · Precios en USD por unidad</div>
+    <div class="cv-meta">
+      <strong>Julio 2026</strong><br>
+      Rivero Exporting d/b/a Rivero Solutions<br>
+      4071 W 108th Street, Suite 14, Hialeah, FL 33018<br>
+      Precios en USD · FOB Miami
+    </div>
     <div class="cv-contact">
       riverocommerce.com<br>
       <a href="mailto:sales@riveroco.com">sales@riveroco.com</a>
@@ -219,15 +230,26 @@ img  { display: block; max-width: 100%; }
   <div class="grid" id="grid"></div>
 </main>
 
-<button class="pdf-btn" onclick="if(window.RV_track)window.RV_track('download_pdf',{page:window.location.pathname,category:'Ferretería & construcción',lang:window.RV_LANG||'es'});window.print()">
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <path d="M4 11H2a1 1 0 01-1-1V6a1 1 0 011-1h12a1 1 0 011 1v4a1 1 0 01-1 1h-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-    <rect x="4" y="8" width="8" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
-    <path d="M4 5V2h8v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-    <circle cx="12.5" cy="7.5" r=".75" fill="currentColor"/>
-  </svg>
-  Descargar PDF
-</button>
+<div class="fab-group">
+  <a class="wa-btn rv-flag-link" href="https://wa.me/15558016189?text=Hola!%20Me%20interesa%20hacer%20un%20pedido%20del%20cat%C3%A1logo%20de%20Ferreter%C3%ADa%20%26%20construcci%C3%B3n.%20%C2%BFMe%20pueden%20dar%20m%C3%A1s%20informaci%C3%B3n%3F"
+     target="_blank" rel="noopener"
+     onclick="if(window.RV_track)window.RV_track('whatsapp_catalog_click',{category:'Ferretería & construcción',page:window.location.pathname,lang:window.RV_LANG||'es'})">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.128.558 4.122 1.532 5.856L.054 23.198a.5.5 0 00.636.637l5.342-1.478A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.795 9.795 0 01-5.003-1.373l-.36-.214-3.724 1.03 1.03-3.726-.234-.374A9.795 9.795 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182 17.43 2.182 21.818 6.57 21.818 12c0 5.43-4.388 9.818-9.818 9.818z"/>
+    </svg>
+    Comprar ahora
+  </a>
+  <button class="pdf-btn" onclick="if(window.RV_track)window.RV_track('download_pdf',{page:window.location.pathname,category:'Ferretería & construcción',lang:window.RV_LANG||'es'});window.print()">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M4 11H2a1 1 0 01-1-1V6a1 1 0 011-1h12a1 1 0 011 1v4a1 1 0 01-1 1h-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <rect x="4" y="8" width="8" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M4 5V2h8v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="12.5" cy="7.5" r=".75" fill="currentColor"/>
+    </svg>
+    Descargar PDF
+  </button>
+</div>
 
 <script>
 (function () {
