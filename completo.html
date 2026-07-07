@@ -1,45 +1,383 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js"></script>
+<title>Catálogo Completo · Rivero Commerce</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<script src="i18n.js"></script>
+<script src="inventory-data.js"></script>
+<script src="analytics.js" defer></script>
+<style>
+@page            { size: A4 portrait; margin: 12mm 14mm; }
+@page :first     { margin: 0; }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-family: var(--font-sans, 'Jost', sans-serif); font-size: 16px; -webkit-text-size-adjust: 100%; }
+body { background: var(--ink-100); color: var(--fg1); }
+img  { display: block; max-width: 100%; }
+
+@media print {
+  body { background: #fff; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+/* COVER */
+.cv {
+  background: var(--reversed-grey); color: #fff;
+  min-height: 100svh; display: flex; flex-direction: column;
+  padding: clamp(28px, 6vw, 72px);
+  position: relative; overflow: hidden; break-after: page;
+}
+@media print { .cv { min-height: 100vh; padding: 20mm; } }
+
+.cv-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 80% at 90% 50%, #235CF222 0%, transparent 70%);
+  pointer-events: none;
+}
+.cv-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  position: relative; z-index: 1;
+}
+.cv-logo { height: 30px; width: auto; filter: brightness(0) invert(1); }
+.cv-terms {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .2em; color: rgba(255,255,255,.4);
+}
+.cv-body {
+  position: relative; z-index: 1; flex: 1;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 48px 0 32px;
+}
+.cv-eyebrow {
+  display: inline-flex; align-items: center; gap: 12px;
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .2em; color: var(--retro-blue); margin-bottom: 20px;
+}
+.cv-eyebrow::before {
+  content: ''; width: 32px; height: 2px;
+  background: currentColor; border-radius: 2px; flex-shrink: 0;
+}
+.cv-title {
+  font-size: clamp(40px, 9vw, 108px);
+  font-weight: 700; line-height: .92; letter-spacing: -.02em;
+  color: #fff;
+}
+.cv-title span { color: var(--orange-juice); }
+.cv-sub {
+  margin-top: 28px; font-size: clamp(14px, 2vw, 18px);
+  color: rgba(255,255,255,.5); max-width: 520px; line-height: 1.5;
+}
+.cv-stats {
+  display: flex; gap: 32px; margin-top: 36px; flex-wrap: wrap;
+}
+.cv-stat-val {
+  font-size: clamp(28px, 4vw, 44px); font-weight: 700;
+  color: var(--orange-juice); line-height: 1;
+}
+.cv-stat-lbl {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .15em;
+  color: rgba(255,255,255,.4); margin-top: 4px;
+}
+.cv-footer {
+  position: relative; z-index: 1;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px;
+}
+.cv-meta { font-size: 12px; color: rgba(255,255,255,.35); line-height: 1.8; }
+.cv-meta strong { color: rgba(255,255,255,.7); }
+.cv-contact { font-size: 12px; color: rgba(255,255,255,.35); text-align: right; line-height: 1.8; }
+.cv-contact a { color: var(--orange-juice); text-decoration: none; }
+
+/* CATALOG BODY */
+.catalog {
+  max-width: 960px; margin: 0 auto;
+  padding: clamp(24px, 4vw, 48px) clamp(16px, 4vw, 32px);
+}
+@media print { .catalog { max-width: none; padding: 0; } }
+
+/* CATEGORY SECTION */
+.cat-section { break-before: page; page-break-before: always; }
+.cat-section:first-child { break-before: avoid; page-break-before: avoid; }
+
+.cat-header {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 24px; padding-bottom: 14px;
+  border-bottom: 2px solid var(--orange-juice);
+  position: sticky; top: 0; background: var(--ink-100);
+  z-index: 10; padding-top: 24px;
+}
+@media print {
+  .cat-header { position: static; background: #fff; padding-top: 0; margin-bottom: 16px; }
+}
+.cat-header h2 {
+  font-size: clamp(20px, 3.5vw, 28px); font-weight: 700; letter-spacing: -.01em;
+}
+.cat-count {
+  font-size: 13px; font-weight: 500; color: var(--fg2);
+  background: var(--ink-200); padding: 4px 12px; border-radius: 99px;
+}
+
+/* GRID */
+.grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: clamp(12px, 2vw, 20px);
+  margin-bottom: clamp(40px, 6vw, 64px);
+}
+@media (max-width: 520px) { .grid { grid-template-columns: 1fr; } }
+@media print { .grid { grid-template-columns: repeat(2, 1fr); gap: 8mm; margin-bottom: 0; } }
+
+/* CARD */
+.card {
+  background: #fff; border-radius: 12px; overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,.08), 0 0 0 1px rgba(0,0,0,.05);
+  display: flex; flex-direction: column;
+  break-inside: avoid; page-break-inside: avoid;
+}
+@media print { .card { border-radius: 4px; box-shadow: none; border: 1px solid #e0e0e0; } }
+
+.card-img {
+  aspect-ratio: 4/3; background: var(--ink-50);
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.card-img img.product-img { width: 100%; height: 100%; object-fit: contain; padding: 12px; }
+.card-img img.ph { width: 40%; opacity: .08; }
+
+.card-body { padding: 14px 16px 0; flex: 1; display: flex; flex-direction: column; }
+.card-brand {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .15em; color: var(--fg2); margin-bottom: 4px;
+}
+.card-name {
+  font-size: 13px; font-weight: 500; line-height: 1.4; color: var(--fg1);
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden; flex: 1;
+}
+.card-sku {
+  font-size: 10px; color: var(--fg2); margin-top: 8px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.card-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px 14px;
+  border-top: 1px solid var(--ink-100); margin-top: 12px; gap: 8px;
+}
+.card-prices { display: flex; flex-direction: column; }
+.card-retail { font-size: 11px; color: var(--fg2); text-decoration: line-through; }
+.card-price {
+  font-size: clamp(18px, 3vw, 22px); font-weight: 700;
+  color: var(--orange-juice); line-height: 1;
+}
+.card-price-lbl {
+  font-size: 9px; text-transform: uppercase; letter-spacing: .1em;
+  color: var(--fg2); margin-top: 3px;
+}
+.card-stock {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600; white-space: nowrap;
+}
+.card-stock-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--orange-juice); flex-shrink: 0; }
+.card-stock--low { font-size: 11px; font-weight: 500; color: var(--fg2); font-style: italic; }
+
+/* FLOATING BUTTONS */
+.fab-group {
+  position: fixed; bottom: 24px; right: 24px;
+  display: flex; flex-direction: column; gap: 10px; align-items: flex-end;
+  z-index: 100;
+}
+@media print { .fab-group { display: none; } }
+
+.pdf-btn, .wa-btn {
+  display: flex; align-items: center; gap: 8px;
+  border: none; border-radius: 99px; cursor: pointer;
+  padding: 12px 20px; font-size: 14px; font-weight: 600;
+  font-family: inherit; box-shadow: 0 4px 16px rgba(0,0,0,.25);
+  transition: transform .15s, box-shadow .15s; text-decoration: none;
+}
+.pdf-btn { background: var(--reversed-grey); color: #fff; }
+.wa-btn  { background: #25D366; color: #fff; }
+.pdf-btn:hover, .wa-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+
+.back {
+  font-size: 13px; font-weight: 500; color: var(--fg2);
+  padding: clamp(16px, 3vw, 24px) clamp(16px, 4vw, 32px) 0;
+  text-decoration: none; max-width: 960px; margin: 0 auto; display: flex;
+  align-items: center; gap: 8px;
+}
+.back:hover { color: var(--fg1); }
+@media print { .back { display: none; } }
+</style>
 </head>
 <body>
-<x-dc>
-<helmet>
-  <link rel="stylesheet" href="colors_and_type.css">
-  <link rel="stylesheet" href="catalog.css">
-  <style>
-    html,body{margin:0;background:#0a0a0a}
-    deck-stage:not(:defined){visibility:hidden}
-    .rv-slide img{display:block}
-  </style>
-  <script src="inventory-data.js"></script>
-  <script src="i18n.js"></script>
-  <script src="analytics.js"></script>
-  <script src="deck-stage.js"></script>
-  <script src="catalog-render.js"></script>
-</helmet>
-<deck-stage id="rivero-deck" width="1920" height="1080"></deck-stage>
-</x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;},&quot;showRetail&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;showSku&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
-class Component extends DCLogic {
-  componentDidMount() { this._tries = 0; this._boot(); }
-  componentDidUpdate() { this._build(); }
-  _boot() {
-    const r = window.INVENTORY && window.RiveroCatalog && customElements.get('deck-stage') && document.getElementById('rivero-deck');
-    if (r) { this._build(); return; }
-    if (this._tries++ > 120) return;
-    setTimeout(() => this._boot(), 50);
-  }
-  _build() {
-    const s = document.getElementById('rivero-deck');
-    if (!s) return;
-    window.RiveroCatalog.build(s, { showRetail: this.props.showRetail !== false, showSku: this.props.showSku !== false });
-  }
-  renderVals() { return {}; }
-}
+
+<!-- COVER -->
+<section class="cv">
+  <div class="cv-bg"></div>
+  <div class="cv-topbar">
+    <img class="cv-logo" src="assets/rivero-logo-white.png"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='block'" alt="Rivero Commerce">
+    <span style="display:none;font-size:18px;font-weight:700;color:#fff;letter-spacing:-.01em">Rivero Commerce</span>
+    <span class="cv-terms">USD · FOB Miami</span>
+  </div>
+  <div class="cv-body">
+    <div class="cv-eyebrow" id="cv-eyebrow">Catálogo mayorista</div>
+    <h1 class="cv-title" id="cv-title">Catálogo<br><span>Completo</span></h1>
+    <p class="cv-sub" id="cv-sub">Surtido consolidado de retail norteamericano — mobiliario, iluminación, cocina, baño, climatización, herramientas y jardín desde el depósito de Miami.</p>
+    <div class="cv-stats">
+      <div>
+        <div class="cv-stat-val" id="stat-skus">—</div>
+        <div class="cv-stat-lbl" id="stat-skus-lbl">SKUs</div>
+      </div>
+      <div>
+        <div class="cv-stat-val" id="stat-cats">—</div>
+        <div class="cv-stat-lbl" id="stat-cats-lbl">Categorías</div>
+      </div>
+    </div>
+  </div>
+  <div class="cv-footer">
+    <div class="cv-meta">
+      <strong id="cv-date">Julio 2026</strong><br>
+      Rivero Exporting d/b/a Rivero Solutions<br>
+      4071 W 108th Street, Suite 14, Hialeah, FL 33018<br>
+      <span id="cv-fob">Precios en USD · FOB Miami</span>
+    </div>
+    <div class="cv-contact">
+      riverocommerce.com<br>
+      <a href="mailto:sales@riveroco.com">sales@riveroco.com</a>
+    </div>
+  </div>
+</section>
+
+<a class="back" href="index.html" id="back-link">← Volver al catálogo</a>
+
+<main class="catalog" id="catalog"></main>
+
+<!-- FLOATING BUTTONS -->
+<div class="fab-group">
+  <a class="wa-btn" id="wa-btn" href="#" target="_blank" rel="noopener"
+     onclick="if(window.RV_track)window.RV_track('whatsapp_catalog_click',{category:'completo',page:window.location.pathname,lang:window.RV_LANG||'es'})">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.128.558 4.122 1.532 5.856L.054 23.198a.5.5 0 00.636.637l5.342-1.478A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.795 9.795 0 01-5.003-1.373l-.36-.214-3.724 1.03 1.03-3.726-.234-.374A9.795 9.795 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182 17.43 2.182 21.818 6.57 21.818 12c0 5.43-4.388 9.818-9.818 9.818z"/>
+    </svg>
+    <span id="wa-label">Comprar ahora</span>
+  </a>
+  <button class="pdf-btn" id="pdf-btn"
+    onclick="if(window.RV_track)window.RV_track('download_pdf',{page:window.location.pathname,category:'completo',lang:window.RV_LANG||'es'});window.print()">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M4 11H2a1 1 0 01-1-1V6a1 1 0 011-1h12a1 1 0 011 1v4a1 1 0 01-1 1h-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <rect x="4" y="8" width="8" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M4 5V2h8v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="12.5" cy="7.5" r=".75" fill="currentColor"/>
+    </svg>
+    <span id="pdf-label">Descargar PDF</span>
+  </button>
+</div>
+
+<script>
+(function () {
+  var lang = window.RV_LANG || 'es';
+  var isEN = lang === 'en';
+  var i18n = window.RV_I18N || {};
+  var catEN = i18n.catEN || {};
+
+  /* — Translate static text — */
+  var el = function(id){ return document.getElementById(id); };
+  if (el('cv-eyebrow'))   el('cv-eyebrow').textContent   = isEN ? 'Wholesale catalog' : 'Catálogo mayorista';
+  if (el('cv-title'))     el('cv-title').innerHTML        = isEN ? 'Full<br><span style="color:var(--orange-juice)">Catalog</span>' : 'Catálogo<br><span style="color:var(--orange-juice)">Completo</span>';
+  if (el('cv-sub'))       el('cv-sub').textContent        = isEN
+    ? 'Consolidated North American retail assortment — furniture, lighting, kitchen, bath, climate control, tools and garden from our Miami warehouse.'
+    : 'Surtido consolidado de retail norteamericano — mobiliario, iluminación, cocina, baño, climatización, herramientas y jardín desde el depósito de Miami.';
+  if (el('cv-date'))      el('cv-date').textContent       = isEN ? 'July 2026' : 'Julio 2026';
+  if (el('cv-fob'))       el('cv-fob').textContent        = isEN ? 'Prices in USD · FOB Miami' : 'Precios en USD · FOB Miami';
+  if (el('back-link'))    el('back-link').textContent     = isEN ? '← Back to catalog' : '← Volver al catálogo';
+  if (el('wa-label'))     el('wa-label').textContent      = isEN ? 'Buy now' : 'Comprar ahora';
+  if (el('pdf-label'))    el('pdf-label').textContent     = isEN ? 'Download PDF' : 'Descargar PDF';
+  if (el('stat-skus-lbl'))el('stat-skus-lbl').textContent = isEN ? 'SKUs' : 'SKUs';
+  if (el('stat-cats-lbl'))el('stat-cats-lbl').textContent = isEN ? 'Categories' : 'Categorías';
+
+  var waMsg = isEN
+    ? 'Hi! I\'m interested in placing an order from your full catalog. Can you give me more information?'
+    : 'Hola! Me interesa hacer un pedido del catálogo completo. ¿Me pueden dar más información?';
+  if (el('wa-btn')) el('wa-btn').href = 'https://wa.me/15558016189?text=' + encodeURIComponent(waMsg);
+
+  /* — Language toggle — */
+  var box = document.createElement('div');
+  box.style.cssText = 'position:fixed;top:12px;left:12px;z-index:2147483600;display:flex;gap:2px;padding:3px;border-radius:999px;background:rgba(255,255,255,.92);box-shadow:0 2px 12px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.08);font-family:Jost,system-ui,sans-serif';
+  ['es','en'].forEach(function(l){
+    var b = document.createElement('button');
+    b.textContent = l.toUpperCase();
+    var on = (l === lang);
+    b.style.cssText = 'cursor:pointer;border:0;border-radius:999px;padding:5px 12px;font:inherit;font-size:12px;font-weight:700;letter-spacing:.08em;' + (on ? 'background:#235CF2;color:#fff;' : 'background:transparent;color:#565a62;');
+    b.onclick = function(){ if(window.RV_setLang) window.RV_setLang(l); };
+    box.appendChild(b);
+  });
+  document.body.appendChild(box);
+
+  /* — Build catalog — */
+  var inv = window.INVENTORY;
+  if (!inv || !inv.products) return;
+
+  function fmt(n) { return '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  var priceLabel = isEN ? 'USD · wholesale price · FOB' : 'USD · precio mayorista · FOB';
+
+  /* Group by category preserving inventory order */
+  var catOrder = [];
+  var groups = {};
+  inv.products.forEach(function(p) {
+    if (!groups[p.cat]) { groups[p.cat] = []; catOrder.push(p.cat); }
+    groups[p.cat].push(p);
+  });
+
+  /* Stats */
+  if (el('stat-skus')) el('stat-skus').textContent = inv.products.length;
+  if (el('stat-cats')) el('stat-cats').textContent = catOrder.length;
+
+  /* Render */
+  var html = '';
+  catOrder.forEach(function(cat) {
+    var items = groups[cat];
+    var catDisplay = isEN ? (catEN[cat] || cat) : cat;
+    html += '<section class="cat-section">';
+    html += '<div class="cat-header"><h2>' + esc(catDisplay) + '</h2>';
+    html += '<span class="cat-count">' + items.length + (isEN ? ' products' : ' productos') + '</span></div>';
+    html += '<div class="grid">';
+    items.forEach(function(p) {
+      var name = (isEN && p.name_en) ? p.name_en : p.name;
+      var imgSrc = p.img ? esc(p.img) : '';
+      var imgHtml = imgSrc
+        ? '<img class="product-img" src="' + imgSrc + '" alt="" loading="lazy">'
+        : '<img class="ph" src="assets/rivero-symbol-white.png" alt="">';
+      var retailHtml = p.retail && p.retail > p.price ? '<div class="card-retail">' + fmt(p.retail) + '</div>' : '';
+      var stockHtml = p.qty < 10
+        ? '<div class="card-stock card-stock--low">' + (isEN ? 'Check availability' : 'Consultar disponibilidad') + '</div>'
+        : '<div class="card-stock"><span class="card-stock-dot"></span>' + esc(p.qty) + ' u.</div>';
+      html +=
+        '<div class="card">' +
+          '<div class="card-img">' + imgHtml + '</div>' +
+          '<div class="card-body">' +
+            (p.brand ? '<div class="card-brand">' + esc(p.brand) + '</div>' : '') +
+            '<div class="card-name">' + esc(name) + '</div>' +
+            '<div class="card-sku">SKU ' + esc(p.sku) + '</div>' +
+          '</div>' +
+          '<div class="card-foot">' +
+            '<div class="card-prices">' + retailHtml +
+              '<div class="card-price">' + fmt(p.price) + '</div>' +
+              '<div class="card-price-lbl">' + priceLabel + '</div>' +
+            '</div>' +
+            stockHtml +
+          '</div>' +
+        '</div>';
+    });
+    html += '</div></section>';
+  });
+
+  document.getElementById('catalog').innerHTML = html;
+})();
 </script>
 </body>
 </html>
