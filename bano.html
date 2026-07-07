@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Baño · Rivero Commerce</title>
 <link rel="stylesheet" href="colors_and_type.css">
+<script src="i18n.js"></script>
 <script src="inventory-data.js"></script>
 <script src="analytics.js" defer></script>
 <style>
@@ -202,16 +203,16 @@ img  { display: block; max-width: 100%; }
     <span class="cv-terms">USD · FOB Miami</span>
   </div>
   <div class="cv-body">
-    <div class="cv-eyebrow">Catálogo mayorista</div>
-    <h1 class="cv-title">Baño</h1>
-    <p class="cv-sub">Productos seleccionados de marcas líderes norteamericanas — disponible desde depósito Miami.</p>
+    <div class="cv-eyebrow" id="cv-eyebrow">Catálogo mayorista</div>
+    <h1 class="cv-title" id="cv-title">Baño</h1>
+    <p class="cv-sub" id="cv-sub">Productos seleccionados de marcas líderes norteamericanas — disponible desde depósito Miami.</p>
   </div>
   <div class="cv-footer">
     <div class="cv-meta">
-      <strong>Julio 2026</strong><br>
+      <strong id="cv-date">Julio 2026</strong><br>
       Rivero Exporting d/b/a Rivero Solutions<br>
       4071 W 108th Street, Suite 14, Hialeah, FL 33018<br>
-      Precios en USD · FOB Miami
+      <span id="cv-fob">Precios en USD · FOB Miami</span>
     </div>
     <div class="cv-contact">
       riverocommerce.com<br>
@@ -220,25 +221,25 @@ img  { display: block; max-width: 100%; }
   </div>
 </section>
 
-<a class="back" href="index.html">← Volver al catálogo</a>
+<a class="back" href="index.html" id="back-link">← Volver al catálogo</a>
 
 <main class="catalog">
   <div class="cat-header">
-    <h2>Baño</h2>
+    <h2 id="cat-title">Baño</h2>
     <span class="cat-count" id="count"></span>
   </div>
   <div class="grid" id="grid"></div>
 </main>
 
 <div class="fab-group">
-  <a class="wa-btn rv-flag-link" href="https://wa.me/15558016189?text=Hola!%20Me%20interesa%20hacer%20un%20pedido%20del%20cat%C3%A1logo%20de%20Ba%C3%B1o.%20%C2%BFMe%20pueden%20dar%20m%C3%A1s%20informaci%C3%B3n%3F"
+  <a class="wa-btn rv-flag-link" id="wa-btn" href="#"
      target="_blank" rel="noopener"
      onclick="if(window.RV_track)window.RV_track('whatsapp_catalog_click',{category:'Baño',page:window.location.pathname,lang:window.RV_LANG||'es'})">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
       <path d="M12 0C5.373 0 0 5.373 0 12c0 2.128.558 4.122 1.532 5.856L.054 23.198a.5.5 0 00.636.637l5.342-1.478A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.795 9.795 0 01-5.003-1.373l-.36-.214-3.724 1.03 1.03-3.726-.234-.374A9.795 9.795 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182 17.43 2.182 21.818 6.57 21.818 12c0 5.43-4.388 9.818-9.818 9.818z"/>
     </svg>
-    Comprar ahora
+    <span id="wa-label">Comprar ahora</span>
   </a>
   <button class="pdf-btn" onclick="if(window.RV_track)window.RV_track('download_pdf',{page:window.location.pathname,category:'Baño',lang:window.RV_LANG||'es'});window.print()">
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -253,15 +254,58 @@ img  { display: block; max-width: 100%; }
 
 <script>
 (function () {
+  var lang = window.RV_LANG || 'es';
+  var isEN = lang === 'en';
+  var i18n = window.RV_I18N || {};
+  var ui = (i18n.ui && i18n.ui[lang]) || {};
+  var catEN = i18n.catEN || {};
+  var catNameEN = catEN['Baño'] || 'Baño';
+  var catName = isEN ? catNameEN : 'Baño';
+
+  /* — Translate static text — */
+  var el = function(id){ return document.getElementById(id); };
+  if (el('cv-eyebrow')) el('cv-eyebrow').textContent = isEN ? 'Wholesale catalog' : 'Catálogo mayorista';
+  if (el('cv-title'))   el('cv-title').textContent   = catName;
+  if (el('cv-sub'))     el('cv-sub').textContent     = isEN
+    ? 'Selected products from leading North American brands — available from our Miami warehouse.'
+    : 'Productos seleccionados de marcas líderes norteamericanas — disponible desde depósito Miami.';
+  if (el('cv-date'))    el('cv-date').textContent    = isEN ? 'July 2026' : 'Julio 2026';
+  if (el('cv-fob'))     el('cv-fob').textContent     = isEN ? 'Prices in USD · FOB Miami' : 'Precios en USD · FOB Miami';
+  if (el('back-link'))  el('back-link').textContent  = isEN ? '← Back to catalog' : '← Volver al catálogo';
+  if (el('cat-title'))  el('cat-title').textContent  = catName;
+  if (el('wa-label'))   el('wa-label').textContent   = isEN ? 'Buy now' : 'Comprar ahora';
+
+  /* — WhatsApp link with language-aware message — */
+  var waMsg = isEN
+    ? 'Hi! I\'m interested in placing an order from the ' + catNameEN + ' catalog. Can you give me more information?'
+    : 'Hola! Me interesa hacer un pedido del catálogo de Baño. ¿Me pueden dar más información?';
+  if (el('wa-btn')) el('wa-btn').href = 'https://wa.me/15558016189?text=' + encodeURIComponent(waMsg);
+
+  /* — Language toggle — */
+  var box = document.createElement('div');
+  box.style.cssText = 'position:fixed;top:12px;left:12px;z-index:2147483600;display:flex;gap:2px;padding:3px;border-radius:999px;background:rgba(255,255,255,.92);box-shadow:0 2px 12px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.08);font-family:Jost,system-ui,sans-serif';
+  ['es','en'].forEach(function(l){
+    var b = document.createElement('button');
+    b.textContent = l.toUpperCase();
+    var on = (l === lang);
+    b.style.cssText = 'cursor:pointer;border:0;border-radius:999px;padding:5px 12px;font:inherit;font-size:12px;font-weight:700;letter-spacing:.08em;' + (on ? 'background:#235CF2;color:#fff;' : 'background:transparent;color:#565a62;');
+    b.onclick = function(){ if(window.RV_setLang) window.RV_setLang(l); };
+    box.appendChild(b);
+  });
+  document.body.appendChild(box);
+
+  /* — Render products — */
   var inv = window.INVENTORY;
   if (!inv || !inv.products) { document.getElementById('grid').innerHTML = '<p>Error cargando inventario.</p>'; return; }
   function fmt(n) { return '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
   function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  var priceLabel = isEN ? 'USD · wholesale price · FOB' : 'USD · precio mayorista · FOB';
   var items = inv.products.filter(function(p){ return p.cat === 'Baño'; });
-  document.getElementById('count').textContent = items.length + ' productos';
+  document.getElementById('count').textContent = items.length + (isEN ? ' products' : ' productos');
   var html = '';
   for (var i = 0; i < items.length; i++) {
     var p = items[i];
+    var name = (isEN && p.name_en) ? p.name_en : p.name;
     var imgSrc = p.img ? esc(p.img) : '';
     var imgHtml = imgSrc
       ? '<img class="product-img" src="' + imgSrc + '" alt="" loading="lazy">'
@@ -274,14 +318,14 @@ img  { display: block; max-width: 100%; }
         '<div class="card-img">' + imgHtml + '</div>' +
         '<div class="card-body">' +
           (p.brand ? '<div class="card-brand">' + esc(p.brand) + '</div>' : '') +
-          '<div class="card-name">' + esc(p.name) + '</div>' +
+          '<div class="card-name">' + esc(name) + '</div>' +
           '<div class="card-sku">SKU ' + esc(p.sku) + '</div>' +
         '</div>' +
         '<div class="card-foot">' +
           '<div class="card-prices">' +
             retailHtml +
             '<div class="card-price">' + fmt(p.price) + '</div>' +
-            '<div class="card-price-lbl">USD · precio mayorista · FOB</div>' +
+            '<div class="card-price-lbl">' + priceLabel + '</div>' +
           '</div>' +
           '<div class="card-stock"><span class="card-stock-dot"></span>' + esc(p.qty) + ' u.</div>' +
         '</div>' +
