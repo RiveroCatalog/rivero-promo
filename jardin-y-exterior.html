@@ -162,6 +162,7 @@ img  { display: block; max-width: 100%; }
   font-size: 12px; font-weight: 600; white-space: nowrap;
 }
 .card-stock-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--bubble-green); flex-shrink: 0; }
+.card-stock--low { font-size: 11px; font-weight: 500; color: var(--fg2); font-style: italic; }
 
 /* FLOATING BUTTONS */
 .fab-group {
@@ -327,7 +328,9 @@ img  { display: block; max-width: 100%; }
             '<div class="card-price">' + fmt(p.price) + '</div>' +
             '<div class="card-price-lbl">' + priceLabel + '</div>' +
           '</div>' +
-          '<div class="card-stock"><span class="card-stock-dot"></span>' + esc(p.qty) + ' u.</div>' +
+          (p.qty < 10
+            ? '<div class="card-stock card-stock--low">' + (isEN ? 'Check availability' : 'Consultar disponibilidad') + '</div>'
+            : '<div class="card-stock"><span class="card-stock-dot"></span>' + esc(p.qty) + ' u.</div>') +
         '</div>' +
       '</div>';
   }
