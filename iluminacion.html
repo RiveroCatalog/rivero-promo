@@ -103,37 +103,33 @@ img  { display: block; max-width: 100%; }
 }
 @media print { .cat-header { margin-bottom: 10px; } }
 
-/* CONTACT BLOCK */
-.cat-contact {
-  background: var(--ink-50, #f5f5f5);
-  border-radius: 10px;
-  padding: 12px 18px;
-  margin-bottom: 24px;
-  display: flex; flex-wrap: wrap;
-  align-items: center; gap: 10px 20px;
+/* CONTACT BLOCK (inside dark cover) */
+.cv-contact-block {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px;
+  margin-top: 32px; padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,.12);
+  position: relative; z-index: 1;
 }
-.cat-contact-item {
+.cv-contact-item {
   display: flex; align-items: center; gap: 7px;
-  font-size: 13px; color: var(--fg1);
+  font-size: 13px; color: rgba(255,255,255,.65);
 }
-.cat-contact-item a {
-  color: var(--fg1); text-decoration: none; font-weight: 500;
+.cv-contact-item svg { flex-shrink: 0; opacity: .8; }
+.cv-contact-item a {
+  color: rgba(255,255,255,.65); text-decoration: none; font-weight: 500;
 }
-.cat-contact-item a:hover { color: var(--orange-juice); }
-.cat-contact-fob {
-  font-size: 15px; font-weight: 900; color: var(--orange-juice);
-  text-transform: uppercase; letter-spacing: .1em;
-  margin-left: auto;
+.cv-contact-item a:hover { color: var(--orange-juice); }
+.cv-contact-fob {
+  font-size: 16px; font-weight: 900; color: var(--orange-juice);
+  text-transform: uppercase; letter-spacing: .1em; margin-left: auto;
 }
-.cat-contact-flags {
-  width: 100%; font-size: 18px; letter-spacing: 1px; margin-top: 2px;
+.cv-contact-flags {
+  width: 100%; font-size: 20px; letter-spacing: 2px; margin-top: 4px;
 }
-@media (max-width: 520px) { .cat-contact-fob { margin-left: 0; } }
+@media (max-width: 520px) { .cv-contact-fob { margin-left: 0; } }
 @media print {
-  .cat-contact {
-    background: #f9f9f9; border: 1px solid #e8e8e8;
-    padding: 6px 12px; margin-bottom: 10px; border-radius: 4px;
-  }
+  .cv-contact-block { margin-top: 16px; padding-top: 12px; }
+  .cv-contact-flags { font-size: 16px; }
 }
 
 /* GRID */
@@ -269,6 +265,22 @@ img  { display: block; max-width: 100%; }
     <div class="cv-eyebrow" id="cv-eyebrow">Catálogo mayorista</div>
     <h1 class="cv-title" id="cv-title">Iluminación</h1>
     <p class="cv-sub" id="cv-sub">Productos seleccionados de marcas líderes norteamericanas — disponible desde depósito Miami.</p>
+    <div class="cv-contact-block">
+      <div class="cv-contact-item">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+        </svg>
+        <a href="mailto:sales@riveroco.com">sales@riveroco.com</a>
+      </div>
+      <div class="cv-contact-item">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.128.558 4.122 1.532 5.856L.054 23.198a.5.5 0 00.636.637l5.342-1.478A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.795 9.795 0 01-5.003-1.373l-.36-.214-3.724 1.03 1.03-3.726-.234-.374A9.795 9.795 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182 17.43 2.182 21.818 6.57 21.818 12c0 5.43-4.388 9.818-9.818 9.818z"/>
+        </svg>
+        <a href="https://wa.me/15558016189">+1 (555) 801-6189</a>
+      </div>
+      <div class="cv-contact-fob">FOB MIAMI</div>
+      <div class="cv-contact-flags">🇲🇽 🇬🇹 🇭🇳 🇸🇻 🇳🇮 🇨🇷 🇵🇦 🇨🇴 🇻🇪 🇪🇨 🇵🇪 🇨🇱 🇦🇷 🇺🇾 🇩🇴 🇵🇷</div>
+    </div>
   </div>
   <div class="cv-footer">
     <div class="cv-meta">
@@ -289,24 +301,6 @@ img  { display: block; max-width: 100%; }
     <h2 id="cat-title">Iluminación</h2>
     <span class="cat-count" id="count"></span>
   </div>
-
-  <div class="cat-contact">
-    <div class="cat-contact-item">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-      </svg>
-      <a href="mailto:sales@riveroco.com">sales@riveroco.com</a>
-    </div>
-    <div class="cat-contact-item">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.128.558 4.122 1.532 5.856L.054 23.198a.5.5 0 00.636.637l5.342-1.478A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.795 9.795 0 01-5.003-1.373l-.36-.214-3.724 1.03 1.03-3.726-.234-.374A9.795 9.795 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182 17.43 2.182 21.818 6.57 21.818 12c0 5.43-4.388 9.818-9.818 9.818z"/>
-      </svg>
-      <a href="https://wa.me/15558016189">+1 (555) 801-6189</a>
-    </div>
-    <div class="cat-contact-fob">FOB MIAMI</div>
-    <div class="cat-contact-flags">🇲🇽 🇬🇹 🇭🇳 🇸🇻 🇳🇮 🇨🇷 🇵🇦 🇨🇴 🇻🇪 🇪🇨 🇵🇪 🇨🇱 🇦🇷 🇺🇾 🇩🇴 🇵🇷</div>
-  </div>
-
   <div class="grid" id="grid"></div>
 
   <footer class="page-footer">
