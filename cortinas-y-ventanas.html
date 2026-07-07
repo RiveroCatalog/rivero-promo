@@ -219,7 +219,7 @@ img  { display: block; max-width: 100%; }
   <div class="grid" id="grid"></div>
 </main>
 
-<button class="pdf-btn" onclick="window.print()">
+<button class="pdf-btn" onclick="if(window.RV_track)window.RV_track('download_pdf',{page:window.location.pathname,category:'Cortinas & ventanas',lang:window.RV_LANG||'es'});window.print()">
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
     <path d="M4 11H2a1 1 0 01-1-1V6a1 1 0 011-1h12a1 1 0 011 1v4a1 1 0 01-1 1h-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
     <rect x="4" y="8" width="8" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
