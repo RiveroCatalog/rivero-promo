@@ -1,45 +1,272 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js"></script>
+<title>Equipos de jardín · Rivero Commerce</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<script src="inventory-data.js"></script>
+<script src="analytics.js" defer></script>
+<style>
+@page            { size: A4 portrait; margin: 12mm 14mm; }
+@page :first     { margin: 0; }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-family: var(--font-sans, 'Jost', sans-serif); font-size: 16px; -webkit-text-size-adjust: 100%; }
+body { background: var(--ink-100); color: var(--fg1); }
+img  { display: block; max-width: 100%; }
+
+@media print {
+  body { background: #fff; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+/* COVER */
+.cv {
+  background: var(--reversed-grey);
+  color: #fff;
+  min-height: 100svh;
+  display: flex; flex-direction: column;
+  padding: clamp(28px, 6vw, 72px);
+  position: relative; overflow: hidden;
+  break-after: page;
+}
+@media print { .cv { min-height: 100vh; padding: 20mm; } }
+
+.cv-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 80% at 90% 50%, #04B70422 0%, transparent 70%);
+  pointer-events: none;
+}
+.cv-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  position: relative; z-index: 1;
+}
+.cv-logo { height: 30px; width: auto; filter: brightness(0) invert(1); }
+.cv-terms {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .2em; color: rgba(255,255,255,.4);
+}
+.cv-body {
+  position: relative; z-index: 1;
+  flex: 1; display: flex; flex-direction: column; justify-content: center;
+  padding: 48px 0 32px;
+}
+.cv-eyebrow {
+  display: inline-flex; align-items: center; gap: 12px;
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .2em; color: var(--bubble-green);
+  margin-bottom: 20px;
+}
+.cv-eyebrow::before {
+  content: ''; width: 32px; height: 2px;
+  background: currentColor; border-radius: 2px; flex-shrink: 0;
+}
+.cv-title {
+  font-size: clamp(36px, 8vw, 96px);
+  font-weight: 700; line-height: .95; letter-spacing: -.02em;
+  color: var(--bubble-green);
+}
+.cv-sub {
+  margin-top: 28px; font-size: clamp(14px, 2vw, 18px);
+  color: rgba(255,255,255,.5); max-width: 480px; line-height: 1.5;
+}
+.cv-footer {
+  position: relative; z-index: 1;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px;
+}
+.cv-meta { font-size: 12px; color: rgba(255,255,255,.35); line-height: 1.8; }
+.cv-meta strong { color: rgba(255,255,255,.7); }
+.cv-contact { font-size: 12px; color: rgba(255,255,255,.35); text-align: right; line-height: 1.8; }
+.cv-contact a { color: var(--bubble-green); text-decoration: none; }
+
+/* CATALOG */
+.catalog {
+  max-width: 960px; margin: 0 auto;
+  padding: clamp(24px, 4vw, 48px) clamp(16px, 4vw, 32px);
+}
+@media print { .catalog { max-width: none; padding: 0; } }
+
+.cat-header {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 28px; padding-bottom: 14px;
+  border-bottom: 2px solid var(--bubble-green);
+}
+.cat-header h2 {
+  font-size: clamp(22px, 4vw, 30px); font-weight: 700; letter-spacing: -.01em;
+}
+.cat-count {
+  font-size: 13px; font-weight: 500; color: var(--fg2);
+  background: var(--ink-100); padding: 4px 12px; border-radius: 99px;
+}
+@media print { .cat-header { margin-bottom: 16px; } }
+
+/* GRID */
+.grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: clamp(12px, 2vw, 20px);
+}
+@media (max-width: 520px) { .grid { grid-template-columns: 1fr; } }
+@media print { .grid { grid-template-columns: repeat(2, 1fr); gap: 8mm; } }
+
+/* CARD */
+.card {
+  background: #fff; border-radius: 12px; overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,.08), 0 0 0 1px rgba(0,0,0,.05);
+  display: flex; flex-direction: column;
+  break-inside: avoid; page-break-inside: avoid;
+}
+@media print { .card { border-radius: 4px; box-shadow: none; border: 1px solid #e0e0e0; } }
+
+.card-img {
+  aspect-ratio: 4/3; background: var(--ink-50);
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.card-img img.product-img { width: 100%; height: 100%; object-fit: contain; padding: 12px; }
+.card-img img.ph { width: 40%; opacity: .08; }
+
+.card-body { padding: 14px 16px 0; flex: 1; display: flex; flex-direction: column; }
+.card-brand {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .15em; color: var(--fg2); margin-bottom: 4px;
+}
+.card-name {
+  font-size: 13px; font-weight: 500; line-height: 1.4; color: var(--fg1);
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden; flex: 1;
+}
+.card-sku {
+  font-size: 10px; color: var(--fg2); margin-top: 8px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.card-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px 14px;
+  border-top: 1px solid var(--ink-100); margin-top: 12px; gap: 8px;
+}
+.card-prices { display: flex; flex-direction: column; }
+.card-retail { font-size: 11px; color: var(--fg2); text-decoration: line-through; }
+.card-price {
+  font-size: clamp(18px, 3vw, 22px); font-weight: 700;
+  color: var(--bubble-green); line-height: 1;
+}
+.card-price-lbl {
+  font-size: 9px; text-transform: uppercase; letter-spacing: .1em;
+  color: var(--fg2); margin-top: 3px;
+}
+.card-stock {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600; white-space: nowrap;
+}
+.card-stock-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--bubble-green); flex-shrink: 0; }
+
+/* PDF BTN */
+.pdf-btn {
+  display: flex; align-items: center; gap: 8px;
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--reversed-grey); color: #fff;
+  border: none; border-radius: 99px; cursor: pointer;
+  padding: 12px 20px; font-size: 14px; font-weight: 600;
+  font-family: inherit; box-shadow: 0 4px 16px rgba(0,0,0,.25);
+  z-index: 100; transition: transform .15s, box-shadow .15s;
+}
+.pdf-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+@media print { .pdf-btn { display: none; } }
+
+.back {
+  font-size: 13px; font-weight: 500; color: var(--fg2);
+  padding: clamp(16px, 3vw, 24px) clamp(16px, 4vw, 32px) 0;
+  text-decoration: none; max-width: 960px; margin: 0 auto; display: flex;
+  align-items: center; gap: 8px;
+}
+.back:hover { color: var(--fg1); }
+@media print { .back { display: none; } }
+</style>
 </head>
 <body>
-<x-dc>
-<helmet>
-  <link rel="stylesheet" href="colors_and_type.css">
-  <link rel="stylesheet" href="catalog.css">
-  <style>
-    html,body{margin:0;background:#0a0a0a}
-    deck-stage:not(:defined){visibility:hidden}
-    .rv-slide img{display:block}
-  </style>
-  <script src="inventory-data.js"></script>
-  <script src="i18n.js"></script>
-  <script src="analytics.js"></script>
-  <script src="deck-stage.js"></script>
-  <script src="catalog-render.js"></script>
-</helmet>
-<deck-stage id="rivero-deck" width="1920" height="1080"></deck-stage>
-</x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;},&quot;showRetail&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;showSku&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
-class Component extends DCLogic {
-  componentDidMount() { this._tries = 0; this._boot(); }
-  componentDidUpdate() { this._build(); }
-  _boot() {
-    const r = window.INVENTORY && window.RiveroCatalog && customElements.get('deck-stage') && document.getElementById('rivero-deck');
-    if (r) { this._build(); return; }
-    if (this._tries++ > 120) return;
-    setTimeout(() => this._boot(), 50);
+
+<section class="cv">
+  <div class="cv-bg"></div>
+  <div class="cv-topbar">
+    <img class="cv-logo" src="assets/rivero-logo-white.png"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='block'" alt="Rivero Commerce">
+    <span style="display:none;font-size:18px;font-weight:700;color:#fff;letter-spacing:-.01em">Rivero Commerce</span>
+    <span class="cv-terms">USD · FOB San Diego</span>
+  </div>
+  <div class="cv-body">
+    <div class="cv-eyebrow">Catálogo mayorista</div>
+    <h1 class="cv-title">Equipos de jardín</h1>
+    <p class="cv-sub">Productos seleccionados de marcas líderes norteamericanas — disponible desde depósito Miami.</p>
+  </div>
+  <div class="cv-footer">
+    <div class="cv-meta"><strong>Julio 2026</strong><br>Depósito Miami · Precios en USD por unidad</div>
+    <div class="cv-contact">
+      riverocommerce.com<br>
+      <a href="mailto:sales@riveroco.com">sales@riveroco.com</a>
+    </div>
+  </div>
+</section>
+
+<a class="back" href="index.html">← Volver al catálogo</a>
+
+<main class="catalog">
+  <div class="cat-header">
+    <h2>Equipos de jardín</h2>
+    <span class="cat-count" id="count"></span>
+  </div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<button class="pdf-btn" onclick="window.print()">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <path d="M4 11H2a1 1 0 01-1-1V6a1 1 0 011-1h12a1 1 0 011 1v4a1 1 0 01-1 1h-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    <rect x="4" y="8" width="8" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M4 5V2h8v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="12.5" cy="7.5" r=".75" fill="currentColor"/>
+  </svg>
+  Descargar PDF
+</button>
+
+<script>
+(function () {
+  var inv = window.INVENTORY;
+  if (!inv || !inv.products) { document.getElementById('grid').innerHTML = '<p>Error cargando inventario.</p>'; return; }
+  function fmt(n) { return '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  var items = inv.products.filter(function(p){ return p.cat === 'Equipos de jardín'; });
+  document.getElementById('count').textContent = items.length + ' productos';
+  var html = '';
+  for (var i = 0; i < items.length; i++) {
+    var p = items[i];
+    var imgSrc = p.img ? esc(p.img) : '';
+    var imgHtml = imgSrc
+      ? '<img class="product-img" src="' + imgSrc + '" alt="" loading="lazy">'
+      : '<img class="ph" src="assets/rivero-symbol-white.png" alt="">';
+    var retailHtml = p.retail && p.retail > p.price
+      ? '<div class="card-retail">' + fmt(p.retail) + '</div>'
+      : '';
+    html +=
+      '<div class="card">' +
+        '<div class="card-img">' + imgHtml + '</div>' +
+        '<div class="card-body">' +
+          (p.brand ? '<div class="card-brand">' + esc(p.brand) + '</div>' : '') +
+          '<div class="card-name">' + esc(p.name) + '</div>' +
+          '<div class="card-sku">SKU ' + esc(p.sku) + '</div>' +
+        '</div>' +
+        '<div class="card-foot">' +
+          '<div class="card-prices">' +
+            retailHtml +
+            '<div class="card-price">' + fmt(p.price) + '</div>' +
+            '<div class="card-price-lbl">USD · precio mayorista · FOB</div>' +
+          '</div>' +
+          '<div class="card-stock"><span class="card-stock-dot"></span>' + esc(p.qty) + ' u.</div>' +
+        '</div>' +
+      '</div>';
   }
-  _build() {
-    const s = document.getElementById('rivero-deck');
-    if (!s) return;
-    window.RiveroCatalog.build(s, { category: 'Equipos de jardín', showRetail: this.props.showRetail !== false, showSku: this.props.showSku !== false });
-  }
-  renderVals() { return {}; }
-}
+  document.getElementById('grid').innerHTML = html;
+})();
 </script>
 </body>
 </html>
