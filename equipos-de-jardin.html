@@ -43,11 +43,7 @@ img  { display: block; max-width: 100%; }
   display: flex; align-items: center; justify-content: space-between;
   position: relative; z-index: 1;
 }
-.cv-logo { height: 30px; width: auto; filter: brightness(0) invert(1); }
-.cv-terms {
-  font-size: 14px; font-weight: 800; text-transform: uppercase;
-  letter-spacing: .15em; color: var(--bubble-green);
-}
+.cv-logo { height: 52px; width: auto; filter: brightness(0) invert(1); }
 .cv-body {
   position: relative; z-index: 1;
   flex: 1; display: flex; flex-direction: column; justify-content: center;
@@ -120,16 +116,16 @@ img  { display: block; max-width: 100%; }
 }
 .cv-contact-item a:hover { color: var(--bubble-green); }
 .cv-contact-fob {
-  font-size: 16px; font-weight: 900; color: var(--bubble-green);
-  text-transform: uppercase; letter-spacing: .1em; margin-left: auto;
+  font-size: 22px; font-weight: 900; color: var(--bubble-green);
+  text-transform: uppercase; letter-spacing: .12em; margin-left: auto;
 }
 .cv-contact-flags {
-  width: 100%; font-size: 20px; letter-spacing: 2px; margin-top: 4px;
+  width: 100%; font-size: 28px; letter-spacing: 4px; margin-top: 8px;
 }
 @media (max-width: 520px) { .cv-contact-fob { margin-left: 0; } }
 @media print {
   .cv-contact-block { margin-top: 16px; padding-top: 12px; }
-  .cv-contact-flags { font-size: 16px; }
+  .cv-contact-flags { font-size: 22px; }
 }
 
 /* GRID */
@@ -258,8 +254,7 @@ img  { display: block; max-width: 100%; }
   <div class="cv-topbar">
     <img class="cv-logo" src="assets/rivero-logo-white.png"
          onerror="this.style.display='none';this.nextElementSibling.style.display='block'" alt="Rivero Commerce">
-    <span style="display:none;font-size:18px;font-weight:700;color:#fff;letter-spacing:-.01em">Rivero Commerce</span>
-    <span class="cv-terms">FOB MIAMI</span>
+    <span style="display:none;font-size:26px;font-weight:800;color:#fff;letter-spacing:-.02em">Rivero Commerce</span>
   </div>
   <div class="cv-body">
     <div class="cv-eyebrow" id="cv-eyebrow">Catálogo mayorista</div>
