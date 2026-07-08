@@ -80,7 +80,9 @@
     var a = e.target && e.target.closest ? e.target.closest('a') : null;
     if (!a) return;
     var href = a.getAttribute('href') || '';
-    if (a.classList.contains('rv-flag-link') || /wa\.me/i.test(href)) {
+    if (a.classList.contains('rv-availability-link')) {
+      window.RV_track('availability_check_click', { sku: a.getAttribute('data-sku') || '', category: a.getAttribute('data-cat') || '', lang: lang() });
+    } else if (a.classList.contains('rv-flag-link') || /wa\.me/i.test(href)) {
       var img = a.querySelector && a.querySelector('img');
       var country = a.getAttribute('title') || (img && img.getAttribute('alt')) || '';
       window.RV_track('whatsapp_flag_click', { country: country, lang: lang(), link_url: href });
