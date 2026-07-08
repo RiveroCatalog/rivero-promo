@@ -439,7 +439,7 @@ img  { display: block; max-width: 100%; }
         skuMsg = isEN
           ? 'Hi! I\'d like to check availability for SKU ' + p.sku + ' - ' + name
           : 'Hola! Me interesa consultar disponibilidad del SKU ' + p.sku + ' - ' + name;
-        stockHtml = '<a class="card-stock card-stock--low" href="https://wa.me/15558016189?text=' + encodeURIComponent(skuMsg) + '" target="_blank" rel="noopener">' + (isEN ? 'Check availability →' : 'Consultar disponibilidad →') + '</a>';
+        stockHtml = '<a class="card-stock card-stock--low rv-availability-link" data-sku="' + esc(p.sku) + '" data-cat="' + esc(p.cat) + '" href="https://wa.me/15558016189?text=' + encodeURIComponent(skuMsg) + '" target="_blank" rel="noopener">' + (isEN ? 'Check availability →' : 'Consultar disponibilidad →') + '</a>';
       } else {
         stockHtml = '<div class="card-stock"><span class="card-stock-dot"></span>' + esc(p.qty) + ' u.</div>';
       }
