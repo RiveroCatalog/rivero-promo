@@ -24,7 +24,7 @@
     s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(GA_ID);
     document.head.appendChild(s);
     gtag('js', new Date());
-    gtag('config', GA_ID);
+    gtag('config', GA_ID, { debug_mode: true });
   }
 
   /* ---------- Consentimiento de cookies ---------- */
