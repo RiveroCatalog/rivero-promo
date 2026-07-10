@@ -1,236 +1,230 @@
 /**
- * Download product images.
- * Priority: 1) Google Sheet image URLs, 2) Home Depot CDN, 3) HD product page scrape
- * Uses only Node.js built-in modules.
+ * Scrape product images from rivero.website B2B catalog
+ * and commit them to the GitHub repo products/ folder.
  */
+const { chromium } = require('playwright');
 const https = require('https');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const SHEET_ID = '1bGwr8R0q-91uqpfPEbEU40SDmhIbSeHD';
-const SHEET_EXPORT_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv`;
+const RIVERO_URL = 'https://rivero.website/b2b/279ef060-a90a-4139-b0ab-a470f191256d';
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-function get(url, opts = {}, redirects = 0) {
+function download(url, redirects = 0) {
   if (redirects > 8) return Promise.reject(new Error('Too many redirects'));
   return new Promise((resolve, reject) => {
     const mod = url.startsWith('https') ? https : http;
-    const headers = {
-      'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-      'Accept': opts.accept || '*/*',
-      ...(opts.headers || {})
-    };
-    const req = mod.get(url, { timeout: 25000, headers }, res => {
-      if ([301, 302, 303, 307, 308].includes(res.statusCode) && res.headers.location) {
-        return get(res.headers.location, opts, redirects + 1).then(resolve).catch(reject);
+    mod.get(url, {
+      timeout: 20000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36',
+        'Accept': 'image/*,*/*'
       }
+    }, res => {
+      if ([301,302,303,307,308].includes(res.statusCode) && res.headers.location) {
+        return download(res.headers.location, redirects + 1).then(resolve).catch(reject);
+      }
+      if (res.statusCode !== 200) return reject(new Error(`HTTP ${res.statusCode}`));
       const chunks = [];
       res.on('data', d => chunks.push(d));
-      res.on('end', () => resolve({ status: res.statusCode, data: Buffer.concat(chunks), headers: res.headers }));
+      res.on('end', () => resolve(Buffer.concat(chunks)));
       res.on('error', reject);
-    });
-    req.on('error', reject);
-    req.on('timeout', () => { req.destroy(); reject(new Error('Timeout')); });
+    }).on('error', reject)
+      .on('timeout', function() { this.destroy(); reject(new Error('Timeout')); });
   });
 }
 
-// Parse CSV with semicolon delimiter
-function parseCSV(text) {
-  const lines = text.split('\n');
-  const rows = [];
-  for (const line of lines) {
-    if (!line.trim()) continue;
-    // Simple split on semicolons (handles quoted fields)
-    const fields = [];
-    let cur = '', inQ = false;
-    for (let i = 0; i < line.length; i++) {
-      const c = line[i];
-      if (c === '"') { inQ = !inQ; }
-      else if (c === ';' && !inQ) { fields.push(cur.trim()); cur = ''; }
-      else { cur += c; }
-    }
-    fields.push(cur.trim());
-    rows.push(fields);
-  }
-  return rows;
-}
+// Parse inventory to know which SKUs we need
+const inv = fs.readFileSync('inventory-data.js', 'utf8');
+const allSKUs = new Set([...inv.matchAll(/sku:'([^']+)'/g)].map(m => m[1]));
+const existingImgs = new Set(
+  fs.existsSync('products') ? fs.readdirSync('products').map(f => path.parse(f).name) : []
+);
+const needed = [...allSKUs].filter(s => !existingImgs.has(s));
 
-async function loadSheetImageUrls() {
-  console.log('Fetching Google Sheet for image URLs...');
-  try {
-    const res = await get(SHEET_EXPORT_URL, {
-      accept: 'text/csv,text/plain,*/*',
-      headers: { 'Cache-Control': 'no-cache' }
-    });
-    if (res.status !== 200) {
-      console.log(`Sheet fetch failed: HTTP ${res.status} (sheet may not be public)`);
-      return {};
-    }
-    const text = res.data.toString('utf8');
-    const rows = parseCSV(text);
-    if (rows.length < 2) { console.log('Sheet empty'); return {}; }
+console.log(`Need images for: ${needed.length} SKUs`);
 
-    // Find header row
-    const header = rows[0].map(h => h.toLowerCase().replace(/[^a-z]/g, ''));
-    const skuIdx = header.findIndex(h => h.includes('sku'));
-    const imgIdx = header.findIndex(h => h.includes('image') || h.includes('img'));
-
-    if (skuIdx === -1 || imgIdx === -1) {
-      // Try row 1 as second possible header
-      const h2 = rows[1].map(h => h.toLowerCase().replace(/[^a-z]/g, ''));
-      const si2 = h2.findIndex(h => h.includes('sku'));
-      const ii2 = h2.findIndex(h => h.includes('image') || h.includes('img'));
-      if (si2 === -1 || ii2 === -1) {
-        console.log(`Column not found. Headers: ${rows[0].join(' | ')}`);
-        return {};
-      }
-      console.log(`Using row 1 as header. SKU col: ${si2}, Image col: ${ii2}`);
-      const map = {};
-      for (const row of rows.slice(2)) {
-        const sku = (row[si2] || '').trim();
-        const img = (row[ii2] || '').trim();
-        if (sku && img && img.startsWith('http')) map[sku] = img;
-      }
-      console.log(`Sheet image URLs found: ${Object.keys(map).length}`);
-      return map;
-    }
-
-    const map = {};
-    for (const row of rows.slice(1)) {
-      const sku = (row[skuIdx] || '').trim();
-      const img = (row[imgIdx] || '').trim();
-      if (sku && img && img.startsWith('http')) map[sku] = img;
-    }
-    console.log(`Sheet image URLs found: ${Object.keys(map).length}`);
-    return map;
-  } catch(e) {
-    console.log(`Sheet fetch error: ${e.message} (will use HD CDN instead)`);
-    return {};
-  }
-}
-
-async function tryHdCdn(sku) {
-  const patterns = [
-    `https://images.thdstatic.com/productImages/${sku}/svn/${sku}_600.jpg`,
-    `https://images.thdstatic.com/productImages/${sku}/svn/${sku}_1000.jpg`,
-    `https://images.thdstatic.com/productImages/${sku}/svn/${sku}_300.jpg`,
-  ];
-  for (const url of patterns) {
-    try {
-      const res = await get(url, { headers: { 'Referer': 'https://www.homedepot.com/' } });
-      if (res.status === 200 && res.data.length > 2000) {
-        const ct = res.headers['content-type'] || '';
-        if (ct.includes('image') || res.data[0] === 0xFF || res.data[0] === 0x89 || res.data[0] === 0x47) {
-          return { url, buf: res.data };
-        }
-      }
-    } catch(e) {}
-    await sleep(150);
-  }
-  return null;
-}
-
-async function tryHdPage(sku) {
-  try {
-    const res = await get(`https://www.homedepot.com/p/${sku}`, {
-      accept: 'text/html,application/xhtml+xml'
-    });
-    if (res.status !== 200) return null;
-    const html = res.data.toString('utf8');
-    const og = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)/i)
-      || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
-    if (og) return og[1];
-    const thd = html.match(/(https:\/\/images\.thdstatic\.com\/productImages\/[^"'\s,)]+\.(?:jpg|jpeg|png|webp))/i);
-    if (thd) return thd[1];
-  } catch(e) {}
-  return null;
-}
-
-// Main
 (async () => {
-  // Parse inventory to find which SKUs need images
-  const inv = fs.readFileSync('inventory-data.js', 'utf8');
-  const allSKUs = [...inv.matchAll(/sku:'([^']+)'[^}]+?img:'products\//g)].map(m => m[1]);
-  const existingImgs = new Set(
-    fs.existsSync('products') ? fs.readdirSync('products').map(f => path.parse(f).name) : []
-  );
-  const missingSKUs = allSKUs.filter(sku => !existingImgs.has(sku));
+  const browser = await chromium.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+  });
 
-  console.log(`Inventory: ${allSKUs.length} | Existing: ${existingImgs.size} | Missing: ${missingSKUs.length}`);
-  if (!missingSKUs.length) { console.log('All images present!'); process.exit(0); }
+  const context = await browser.newContext({
+    userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    ignoreHTTPSErrors: true,
+    viewport: { width: 1280, height: 900 }
+  });
 
-  // Load image URLs from Google Sheet (if public)
-  const sheetUrls = await loadSheetImageUrls();
+  const page = await context.newPage();
 
+  // ── Step 1: Load the rivero.website catalog ──
+  console.log(`\nLoading: ${RIVERO_URL}`);
+  try {
+    await page.goto(RIVERO_URL, { waitUntil: 'networkidle', timeout: 60000 });
+  } catch(e) {
+    console.log(`Warning: ${e.message} — continuing anyway`);
+  }
+
+  const title = await page.title();
+  console.log(`Page title: ${title}`);
+
+  // Screenshot for debug
+  await page.screenshot({ path: '/tmp/rivero_page.png' });
+
+  // ── Step 2: Scroll to load all products (infinite scroll / lazy load) ──
+  console.log('Scrolling to load all products...');
+  let lastHeight = 0;
+  for (let i = 0; i < 30; i++) {
+    const h = await page.evaluate(() => {
+      window.scrollTo(0, document.body.scrollHeight);
+      return document.body.scrollHeight;
+    });
+    if (h === lastHeight) break;
+    lastHeight = h;
+    await sleep(1500);
+  }
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await sleep(1000);
+
+  // ── Step 3: Extract SKU → image URL mappings ──
+  console.log('Extracting product images...');
+
+  // Try to find SKUs and images via common patterns
+  const products = await page.evaluate(() => {
+    const results = [];
+
+    // Pattern 1: elements with data-sku or data-item-id attributes
+    document.querySelectorAll('[data-sku],[data-item-id],[data-product-id],[data-id]').forEach(el => {
+      const sku = el.dataset.sku || el.dataset.itemId || el.dataset.productId || el.dataset.id;
+      const img = el.querySelector('img');
+      if (sku && img) results.push({ sku: sku.trim(), img: img.src || img.dataset.src });
+    });
+
+    // Pattern 2: look for SKU in text near an image
+    if (results.length === 0) {
+      document.querySelectorAll('img').forEach(img => {
+        const src = img.src || img.dataset.src || '';
+        if (!src || src.includes('logo') || src.includes('icon') || src.length < 20) return;
+        
+        // Check parent elements for SKU-like text
+        let el = img.parentElement;
+        for (let depth = 0; depth < 6; depth++) {
+          if (!el) break;
+          const text = el.textContent || '';
+          // Look for numeric SKU patterns (6-13 digits)
+          const skuMatch = text.match(/\b(\d{6,13})\b/);
+          if (skuMatch) {
+            results.push({ sku: skuMatch[1], img: src });
+            break;
+          }
+          el = el.parentElement;
+        }
+      });
+    }
+
+    // Pattern 3: Extract from script/JSON data embedded in page
+    const scripts = [...document.querySelectorAll('script:not([src])')];
+    for (const sc of scripts) {
+      const t = sc.textContent;
+      // Look for JSON with sku/image pairs
+      const matches = [...t.matchAll(/"(?:sku|itemId|productId|internet_number)"\s*:\s*"?(\d{5,13})"?[^}]{0,500}"(?:image|img|imageUrl|picture)"\s*:\s*"(https?[^"]+)"/g)];
+      for (const m of matches) results.push({ sku: m[1], img: m[2] });
+      
+      const matches2 = [...t.matchAll(/"(?:image|img|imageUrl)"\s*:\s*"(https?[^"]+)"[^}]{0,500}"(?:sku|itemId|productId)"\s*:\s*"?(\d{5,13})"?/g)];
+      for (const m of matches2) results.push({ sku: m[2], img: m[1] });
+    }
+
+    return results;
+  });
+
+  console.log(`Found ${products.length} product/image pairs on page`);
+
+  // Deduplicate
+  const skuToImg = {};
+  for (const { sku, img } of products) {
+    if (sku && img && img.startsWith('http') && !img.includes('placeholder')) {
+      skuToImg[sku] = img;
+    }
+  }
+
+  console.log(`Unique SKU→image mappings: ${Object.keys(skuToImg).length}`);
+
+  // ── Step 4: If we found SKU→image mappings, download them ──
   let found = 0;
   const stillMissing = [];
 
-  for (let i = 0; i < missingSKUs.length; i++) {
-    const sku = missingSKUs[i];
-    process.stdout.write(`[${i+1}/${missingSKUs.length}] ${sku}: `);
+  if (Object.keys(skuToImg).length > 0) {
+    // Save the mapping for reference
+    fs.writeFileSync('/tmp/sku_img_map.json', JSON.stringify(skuToImg, null, 2));
 
-    let buf = null;
-    let src = '';
+    for (const sku of needed) {
+      const imgUrl = skuToImg[sku];
+      if (!imgUrl) { stillMissing.push(sku); continue; }
 
-    // 1. Try Google Sheet URL
-    if (sheetUrls[sku]) {
+      process.stdout.write(`${sku}: `);
       try {
-        const res = await get(sheetUrls[sku]);
-        if (res.status === 200 && res.data.length > 500) {
-          buf = res.data;
-          src = 'sheet';
-        }
-      } catch(e) {}
-    }
-
-    // 2. Try HD CDN
-    if (!buf) {
-      const cdn = await tryHdCdn(sku);
-      if (cdn) { buf = cdn.buf; src = 'cdn'; }
-    }
-
-    // 3. Try HD product page
-    if (!buf) {
-      const pageUrl = await tryHdPage(sku);
-      if (pageUrl) {
-        try {
-          const res = await get(pageUrl, { headers: { 'Referer': 'https://www.homedepot.com/' } });
-          if (res.status === 200 && res.data.length > 500) { buf = res.data; src = 'page'; }
-        } catch(e) {}
+        const buf = await download(imgUrl);
+        if (buf.length < 500) throw new Error('Image too small');
+        fs.writeFileSync(path.join('products', `${sku}.png`), buf);
+        console.log(`✓ ${buf.length} bytes`);
+        found++;
+      } catch(e) {
+        console.log(`error: ${e.message}`);
+        stillMissing.push(sku);
       }
+      await sleep(300);
     }
-
-    if (buf) {
-      fs.writeFileSync(path.join('products', `${sku}.png`), buf);
-      console.log(`✓ ${src} (${buf.length} bytes)`);
-      found++;
-    } else {
-      console.log('not found');
-      stillMissing.push(sku);
+  } else {
+    // ── Step 5: Try loading individual product pages ──
+    console.log('\nNo mappings found on main page. Trying to find product detail links...');
+    
+    const links = await page.evaluate(() => {
+      return [...document.querySelectorAll('a[href]')]
+        .map(a => a.href)
+        .filter(h => h.includes('product') || h.includes('item') || h.includes('p/'))
+        .slice(0, 20);
+    });
+    
+    console.log(`Product links found: ${links.length}`);
+    for (const link of links.slice(0, 3)) {
+      console.log(`  ${link}`);
     }
-
-    await sleep(400);
+    
+    // Save page HTML for debugging
+    const html = await page.content();
+    fs.writeFileSync('/tmp/rivero_page.html', html.substring(0, 50000));
+    console.log('Saved first 50KB of page HTML to /tmp/rivero_page.html');
+    
+    stillMissing.push(...needed);
   }
 
-  console.log(`\nResults: ${found} downloaded, ${stillMissing.length} not found`);
-  if (stillMissing.length) fs.writeFileSync('still_missing_skus.txt', stillMissing.join('\n'));
+  await browser.close();
 
-  // Commit
-  try {
-    execSync('git config user.name "github-actions[bot]"');
-    execSync('git config user.email "github-actions[bot]@users.noreply.github.com"');
-    execSync('git add products/');
-    if (stillMissing.length) execSync('git add still_missing_skus.txt');
-    const status = execSync('git status --porcelain').toString().trim();
-    if (status) {
-      execSync(`git commit -m "Add ${found} product images (sheet+HD CDN)"`);
-      execSync('git push');
-      console.log(`✓ Pushed ${found} images!`);
-    } else {
-      console.log('Nothing new to commit.');
+  // ── Step 6: Commit results ──
+  if (stillMissing.length) {
+    fs.writeFileSync('still_missing_skus.txt', stillMissing.join('\n'));
+  }
+
+  console.log(`\nResults: ${found} images downloaded, ${stillMissing.length} still missing`);
+
+  if (found > 0) {
+    try {
+      execSync('git config user.name "github-actions[bot]"');
+      execSync('git config user.email "github-actions[bot]@users.noreply.github.com"');
+      execSync('git add products/ still_missing_skus.txt 2>/dev/null || git add products/', { shell: true });
+      const status = execSync('git status --porcelain').toString().trim();
+      if (status) {
+        execSync(`git commit -m "Add ${found} product images from rivero.website"`);
+        execSync('git push');
+        console.log(`✓ Pushed ${found} images to repo!`);
+      }
+    } catch(e) {
+      console.error(`Git error: ${e.message}`);
+      process.exit(1);
     }
-  } catch(e) { console.error(`Git error: ${e.message}`); process.exit(1); }
+  }
 })();
