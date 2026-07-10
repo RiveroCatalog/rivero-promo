@@ -1,35 +1,52 @@
-const { execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+/**
+ * Fetch product images from rivero.website by:
+ * 1. Fetching the page HTML and parsing __NEXT_DATA__ or initial data
+ * 2. Making direct API calls to the backend
+ * No Playwright needed - uses only Node.js built-ins.
+ */
 const https = require('https');
 const http = require('http');
-
-try { require.resolve('playwright'); } catch(e) {
-  execSync('npm install playwright', { stdio: 'inherit' });
-  execSync('npx playwright install chromium --with-deps', { stdio: 'inherit' });
-}
-const { chromium } = require('playwright');
+const fs = require('fs');
+const path = require('path');
+const { execSync } = require('child_process');
 
 const RIVERO_URL = 'https://rivero.website/b2b/279ef060-a90a-4139-b0ab-a470f191256d';
+const RIVERO_HOST = 'rivero.website';
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-function dlImg(url, redirects = 0) {
+function request(url, opts = {}, redirects = 0) {
   if (redirects > 8) return Promise.reject(new Error('Too many redirects'));
   return new Promise((resolve, reject) => {
     const mod = url.startsWith('https') ? https : http;
-    mod.get(url, { timeout: 15000, headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'image/*' } }, res => {
-      if ([301,302,303,307,308].includes(res.statusCode) && res.headers.location)
-        return dlImg(res.headers.location, redirects+1).then(resolve).catch(reject);
+    const req = mod.request(url, {
+      timeout: 30000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': opts.accept || 'text/html,application/xhtml+xml,application/json,*/*;q=0.9',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Cache-Control': 'no-cache',
+        ...(opts.headers || {})
+      },
+      method: opts.method || 'GET'
+    }, res => {
+      if ([301,302,303,307,308].includes(res.statusCode) && res.headers.location) {
+        const loc = res.headers.location.startsWith('http') ? res.headers.location : `https://${RIVERO_HOST}${res.headers.location}`;
+        return request(loc, opts, redirects+1).then(resolve).catch(reject);
+      }
       const chunks = [];
       res.on('data', d => chunks.push(d));
-      res.on('end', () => resolve({ status: res.statusCode, buf: Buffer.concat(chunks) }));
+      res.on('end', () => resolve({ status: res.statusCode, headers: res.headers, body: Buffer.concat(chunks) }));
       res.on('error', reject);
-    }).on('error', reject).on('timeout', function(){ this.destroy(); reject(new Error('timeout')); });
+    });
+    req.on('error', reject);
+    req.on('timeout', () => { req.destroy(); reject(new Error('Timeout')); });
+    if (opts.body) req.write(opts.body);
+    req.end();
   });
 }
 
-// Read which SKUs we need
+// Parse which SKUs need images
 const inv = fs.readFileSync('inventory-data.js', 'utf8');
 const allSKUs = new Set([...inv.matchAll(/sku:'([^']+)'/g)].map(m => m[1]));
 const existingImgs = new Set(fs.existsSync('products') ? fs.readdirSync('products').map(f => path.parse(f).name) : []);
@@ -37,161 +54,86 @@ const needed = [...allSKUs].filter(s => !existingImgs.has(s));
 console.log(`Need: ${needed.length} images`);
 
 (async () => {
-  const browser = await chromium.launch({ headless: true, args: ['--no-sandbox','--disable-setuid-sandbox','--disable-dev-shm-usage'] });
-  const context = await browser.newContext({
-    userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    ignoreHTTPSErrors: true, viewport: { width: 1440, height: 900 }
-  });
-  const page = await context.newPage();
+  // ── Step 1: Fetch the main page HTML ──
+  console.log('\nFetching:', RIVERO_URL);
+  const pageRes = await request(RIVERO_URL);
+  const html = pageRes.body.toString('utf8');
+  console.log(`Status: ${pageRes.status}, Size: ${html.length} chars`);
 
-  // Capture all API responses
-  const apiResponses = [];
-  const capturedImgBufs = new Map(); // imgUrl → buffer
+  // Save full HTML for debug
+  fs.writeFileSync('debug_full_html.txt', html.substring(0, 200000));
 
-  page.on('response', async resp => {
-    const url = resp.url();
-    const ct = resp.headers()['content-type'] || '';
+  // ── Step 2: Look for __NEXT_DATA__ (Next.js initial state) ──
+  const nextDataMatch = html.match(/<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/);
+  if (nextDataMatch) {
+    console.log('\nFound __NEXT_DATA__! Parsing...');
     try {
-      if (ct.includes('json') && resp.status() === 200) {
-        const body = await resp.text();
-        if (body.length > 100) {
-          apiResponses.push({ url, body: body.substring(0, 50000) });
-          console.log(`API: ${url.substring(0,80)} (${body.length} chars)`);
+      const nextData = JSON.parse(nextDataMatch[1]);
+      fs.writeFileSync('debug_next_data.json', JSON.stringify(nextData, null, 2).substring(0, 500000));
+      console.log(`Saved debug_next_data.json`);
+
+      // Extract product data from Next.js page props
+      const str = JSON.stringify(nextData);
+      const imageUrls = [...str.matchAll(/"(?:imageUrl|image|img|thumbnail|photo)"\s*:\s*"(https?[^"\\]+)"/g)].map(m => m[1]);
+      const skus = [...str.matchAll(/"(?:sku|itemId|internetNumber|internet_number)"\s*:\s*"?(\d{5,15})"?/g)].map(m => m[1]);
+      console.log(`Found ${imageUrls.length} image URLs and ${skus.length} SKUs in __NEXT_DATA__`);
+    } catch(e) {
+      console.log('Parse error:', e.message);
+    }
+  } else {
+    console.log('No __NEXT_DATA__ found');
+  }
+
+  // ── Step 3: Look for JS bundle URLs to find API endpoints ──
+  const scriptUrls = [...html.matchAll(/src="([^"]+\.js[^"]*)"/g)].map(m => m[1]);
+  console.log(`\nJS files: ${scriptUrls.length}`);
+  scriptUrls.slice(0,10).forEach(u => console.log(`  ${u.substring(0,80)}`));
+
+  // ── Step 4: Look for embedded JSON data or API configs ──
+  const jsonBlocks = [...html.matchAll(/<script[^>]*>([\s\S]{50,}?)<\/script>/g)];
+  for (const [, sc] of jsonBlocks) {
+    if (sc.includes('api') || sc.includes('endpoint') || sc.includes('baseUrl') || sc.includes('fetch')) {
+      console.log('\nInteresting script block:');
+      console.log(sc.substring(0, 500));
+    }
+  }
+
+  // ── Step 5: Try common API endpoints for rivero.website ──
+  const guessedApis = [
+    `https://${RIVERO_HOST}/api/b2b/279ef060-a90a-4139-b0ab-a470f191256d`,
+    `https://${RIVERO_HOST}/api/b2b/products?id=279ef060-a90a-4139-b0ab-a470f191256d`,
+    `https://${RIVERO_HOST}/api/catalog/279ef060-a90a-4139-b0ab-a470f191256d`,
+    `https://${RIVERO_HOST}/api/products`,
+    `https://${RIVERO_HOST}/b2b/api/279ef060-a90a-4139-b0ab-a470f191256d`,
+  ];
+
+  for (const apiUrl of guessedApis) {
+    try {
+      const r = await request(apiUrl, { accept: 'application/json', headers: { 'Accept': 'application/json' } });
+      console.log(`${apiUrl.split('/').slice(-2).join('/')}: HTTP ${r.status} (${r.body.length} bytes)`);
+      if (r.status === 200 && r.body.length > 100) {
+        const text = r.body.toString('utf8');
+        if (text.startsWith('[') || text.startsWith('{')) {
+          console.log(`  JSON response preview: ${text.substring(0,200)}`);
+          fs.writeFileSync('debug_api_found.json', text.substring(0, 500000));
         }
       }
-      if (ct.startsWith('image/') && resp.status() === 200) {
-        const buf = await resp.body();
-        if (buf.length > 500) capturedImgBufs.set(url, buf);
-      }
-    } catch(e) {}
-  });
-
-  console.log('Loading:', RIVERO_URL);
-  try { await page.goto(RIVERO_URL, { waitUntil: 'networkidle', timeout: 60000 }); }
-  catch(e) { console.log('Load warning:', e.message); }
-
-  // Scroll to trigger lazy loading
-  for (let i = 0; i < 15; i++) {
-    await page.evaluate(() => window.scrollBy(0, window.innerHeight * 2));
-    await sleep(1500);
-  }
-  await sleep(3000);
-
-  console.log(`\nAPI calls captured: ${apiResponses.length}`);
-  console.log(`Images captured: ${capturedImgBufs.size}`);
-
-  // Save API responses for debug
-  fs.writeFileSync('debug_api_responses.json', JSON.stringify(apiResponses.map(r => ({
-    url: r.url,
-    preview: r.body.substring(0, 500)
-  })), null, 2));
-
-  // Try to extract SKU→image from API responses
-  const skuToImg = {};
-  for (const { url, body } of apiResponses) {
-    try {
-      // Try JSON parse
-      let data;
-      try { data = JSON.parse(body); } catch(e) { continue; }
-      const str = JSON.stringify(data);
-      
-      // Look for image URLs associated with SKUs
-      const patterns = [
-        /["'](?:sku|itemId|internetNumber|internet_number)["']\s*:\s*["']?(\d{5,15})["']?/g,
-        /["'](?:imageUrl|image|img|thumbnail|picture|photo)["']\s*:\s*["'](https?[^"'\\]+)/g
-      ];
-      
-      const skus = [...str.matchAll(patterns[0])].map(m => m[1]);
-      const imgs = [...str.matchAll(patterns[1])].map(m => m[1]);
-      console.log(`  ${url.substring(0,60)}: ${skus.length} SKUs, ${imgs.length} images`);
-      
-      // Try to pair them up from array items
-      if (Array.isArray(data)) {
-        data.forEach(item => {
-          if (!item || typeof item !== 'object') return;
-          const sku = item.sku || item.itemId || item.internetNumber || item.internet_number || item.SKU;
-          const img = item.imageUrl || item.image || item.img || item.thumbnail || item.picture || item.photo || item.Image;
-          if (sku && img && typeof img === 'string' && img.startsWith('http')) {
-            skuToImg[String(sku)] = img;
-          }
-        });
-      }
-      // Also try nested structures
-      const findSkuImg = (obj, depth = 0) => {
-        if (depth > 5 || !obj || typeof obj !== 'object') return;
-        const sku = obj.sku || obj.itemId || obj.internetNumber;
-        const img = obj.imageUrl || obj.image || obj.img || obj.thumbnail;
-        if (sku && img && typeof img === 'string' && img.startsWith('http')) {
-          skuToImg[String(sku)] = img;
-        }
-        Object.values(obj).forEach(v => { if (Array.isArray(v)) v.forEach(i => findSkuImg(i, depth+1)); });
-      };
-      findSkuImg(data);
-    } catch(e) {}
+    } catch(e) {
+      console.log(`  ${apiUrl}: ${e.message}`);
+    }
+    await sleep(300);
   }
 
-  // Match captured images to SKUs by URL content
-  for (const [imgUrl] of capturedImgBufs) {
-    for (const sku of needed) {
-      if (imgUrl.includes(sku) && !skuToImg[sku]) skuToImg[sku] = imgUrl;
-    }
-  }
-
-  console.log(`\nSKU→image mappings found: ${Object.keys(skuToImg).length}`);
-
-  // Full page text for debug
-  const bodyText = await page.evaluate(() => document.body?.innerText?.substring(0,5000) || '');
-  console.log(`\nPage text preview:\n${bodyText.substring(0,1000)}`);
-  
-  // Screenshot
-  await page.screenshot({ path: 'debug_rivero.png', fullPage: false });
-
-  await browser.close();
-
-  // Save debug info
-  fs.writeFileSync('debug_sku_map.json', JSON.stringify(skuToImg, null, 2));
-  console.log(`\nSaved debug_sku_map.json with ${Object.keys(skuToImg).length} entries`);
-
-  // Download and save images we found
-  let found = 0;
-  const stillMissing = [];
-
-  for (const sku of needed) {
-    const imgUrl = skuToImg[sku];
-    let buf = imgUrl ? capturedImgBufs.get(imgUrl) : null;
-
-    if (!buf && imgUrl) {
-      try {
-        const r = await dlImg(imgUrl);
-        if (r.status === 200 && r.buf.length > 500) buf = r.buf;
-      } catch(e) {}
-    }
-    if (!buf) {
-      for (const [u, b] of capturedImgBufs) {
-        if (u.includes(sku)) { buf = b; break; }
-      }
-    }
-
-    if (buf && buf.length > 500) {
-      fs.writeFileSync(path.join('products', `${sku}.png`), buf);
-      found++;
-      if (found <= 10) process.stdout.write(`✓${sku} `);
-    } else {
-      stillMissing.push(sku);
-    }
-  }
-
-  console.log(`\n\nImages: ${found} downloaded, ${stillMissing.length} still missing`);
-  if (stillMissing.length) fs.writeFileSync('still_missing_skus.txt', stillMissing.join('\n'));
-
-  // Commit everything
+  // ── Commit debug files ──
   execSync('git config user.name "github-actions[bot]"');
   execSync('git config user.email "github-actions[bot]@users.noreply.github.com"');
-  execSync('git add debug_rivero.png debug_api_responses.json debug_sku_map.json still_missing_skus.txt products/ 2>/dev/null || true', { shell: true });
+  execSync('git add debug_full_html.txt debug_next_data.json debug_api_found.json 2>/dev/null || git add debug_full_html.txt', { shell: true });
   const st = execSync('git status --porcelain').toString().trim();
   if (st) {
-    execSync(`git commit -m "DEBUG rivero: ${found} images + API data"`);
+    execSync('git commit -m "DEBUG: rivero.website API discovery"');
     execSync('git push');
-    console.log('✓ Committed!');
+    console.log('\n✓ Debug files committed!');
+  } else {
+    console.log('\nNo new files to commit.');
   }
 })();
