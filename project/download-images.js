@@ -1,13 +1,25 @@
 /**
- * Scrape product images from rivero.website B2B catalog
- * and commit them to the GitHub repo products/ folder.
+ * Scrape product images from rivero.website B2B catalog.
+ * Self-installs Playwright if not present.
  */
-const { chromium } = require('playwright');
+const { execSync, spawnSync } = require('child_process');
 const https = require('https');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+
+// Self-install playwright if needed
+try {
+  require.resolve('playwright');
+  console.log('Playwright already installed');
+} catch(e) {
+  console.log('Installing Playwright + Chromium...');
+  execSync('npm install playwright', { stdio: 'inherit' });
+  execSync('npx playwright install chromium --with-deps', { stdio: 'inherit' });
+  console.log('Playwright installed!');
+}
+
+const { chromium } = require('playwright');
 
 const RIVERO_URL = 'https://rivero.website/b2b/279ef060-a90a-4139-b0ab-a470f191256d';
 
@@ -37,14 +49,13 @@ function download(url, redirects = 0) {
   });
 }
 
-// Parse inventory to know which SKUs we need
+// Parse which SKUs need images
 const inv = fs.readFileSync('inventory-data.js', 'utf8');
 const allSKUs = new Set([...inv.matchAll(/sku:'([^']+)'/g)].map(m => m[1]));
 const existingImgs = new Set(
   fs.existsSync('products') ? fs.readdirSync('products').map(f => path.parse(f).name) : []
 );
 const needed = [...allSKUs].filter(s => !existingImgs.has(s));
-
 console.log(`Need images for: ${needed.length} SKUs`);
 
 (async () => {
@@ -52,179 +63,173 @@ console.log(`Need images for: ${needed.length} SKUs`);
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
   });
-
   const context = await browser.newContext({
     userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
     ignoreHTTPSErrors: true,
-    viewport: { width: 1280, height: 900 }
+    viewport: { width: 1440, height: 900 }
   });
-
   const page = await context.newPage();
 
-  // ── Step 1: Load the rivero.website catalog ──
+  // Intercept image requests to capture URLs
+  const capturedImages = new Map(); // url → buffer
+  page.on('response', async resp => {
+    const url = resp.url();
+    const ct = resp.headers()['content-type'] || '';
+    if (ct.startsWith('image/') && resp.status() === 200) {
+      try {
+        const buf = await resp.body();
+        if (buf.length > 1000) capturedImages.set(url, buf);
+      } catch(e) {}
+    }
+  });
+
   console.log(`\nLoading: ${RIVERO_URL}`);
   try {
     await page.goto(RIVERO_URL, { waitUntil: 'networkidle', timeout: 60000 });
   } catch(e) {
-    console.log(`Warning: ${e.message} — continuing anyway`);
+    console.log(`Page load warning: ${e.message}`);
   }
 
   const title = await page.title();
-  console.log(`Page title: ${title}`);
+  const html = await page.content();
+  console.log(`Title: "${title}" | Page size: ${html.length} chars | Images captured: ${capturedImages.size}`);
 
-  // Screenshot for debug
-  await page.screenshot({ path: '/tmp/rivero_page.png' });
+  // Save HTML snippet for debug
+  fs.writeFileSync('/tmp/rivero_debug.html', html.substring(0, 80000));
 
-  // ── Step 2: Scroll to load all products (infinite scroll / lazy load) ──
-  console.log('Scrolling to load all products...');
-  let lastHeight = 0;
-  for (let i = 0; i < 30; i++) {
-    const h = await page.evaluate(() => {
-      window.scrollTo(0, document.body.scrollHeight);
-      return document.body.scrollHeight;
-    });
-    if (h === lastHeight) break;
-    lastHeight = h;
-    await sleep(1500);
+  // Scroll to trigger lazy loading
+  console.log('Scrolling for lazy-loaded images...');
+  for (let i = 0; i < 20; i++) {
+    const scrolled = await page.evaluate((step) => {
+      window.scrollBy(0, window.innerHeight);
+      return window.scrollY;
+    }, i);
+    await sleep(1200);
+    if (i % 5 === 0) console.log(`  Scroll ${i}: ${capturedImages.size} images captured`);
   }
-  await page.evaluate(() => window.scrollTo(0, 0));
-  await sleep(1000);
+  await sleep(2000);
 
-  // ── Step 3: Extract SKU → image URL mappings ──
-  console.log('Extracting product images...');
+  console.log(`\nTotal images captured via network: ${capturedImages.size}`);
 
-  // Try to find SKUs and images via common patterns
-  const products = await page.evaluate(() => {
+  // Also extract SKU→image from DOM
+  const domProducts = await page.evaluate(() => {
     const results = [];
-
-    // Pattern 1: elements with data-sku or data-item-id attributes
-    document.querySelectorAll('[data-sku],[data-item-id],[data-product-id],[data-id]').forEach(el => {
-      const sku = el.dataset.sku || el.dataset.itemId || el.dataset.productId || el.dataset.id;
-      const img = el.querySelector('img');
-      if (sku && img) results.push({ sku: sku.trim(), img: img.src || img.dataset.src });
+    // Look for elements with SKU data attributes
+    '[data-sku],[data-item-id],[data-product-id],[data-internet-number]'.split(',').forEach(sel => {
+      document.querySelectorAll(sel).forEach(el => {
+        const sku = el.dataset.sku || el.dataset.itemId || el.dataset.productId || el.dataset.internetNumber;
+        const img = el.querySelector('img');
+        if (sku && img) results.push({ sku: sku.trim(), img: img.src || img.dataset.src || '' });
+      });
     });
 
-    // Pattern 2: look for SKU in text near an image
-    if (results.length === 0) {
-      document.querySelectorAll('img').forEach(img => {
-        const src = img.src || img.dataset.src || '';
-        if (!src || src.includes('logo') || src.includes('icon') || src.length < 20) return;
-        
-        // Check parent elements for SKU-like text
-        let el = img.parentElement;
-        for (let depth = 0; depth < 6; depth++) {
-          if (!el) break;
-          const text = el.textContent || '';
-          // Look for numeric SKU patterns (6-13 digits)
-          const skuMatch = text.match(/\b(\d{6,13})\b/);
-          if (skuMatch) {
-            results.push({ sku: skuMatch[1], img: src });
-            break;
-          }
-          el = el.parentElement;
-        }
-      });
-    }
-
-    // Pattern 3: Extract from script/JSON data embedded in page
-    const scripts = [...document.querySelectorAll('script:not([src])')];
-    for (const sc of scripts) {
-      const t = sc.textContent;
-      // Look for JSON with sku/image pairs
-      const matches = [...t.matchAll(/"(?:sku|itemId|productId|internet_number)"\s*:\s*"?(\d{5,13})"?[^}]{0,500}"(?:image|img|imageUrl|picture)"\s*:\s*"(https?[^"]+)"/g)];
-      for (const m of matches) results.push({ sku: m[1], img: m[2] });
-      
-      const matches2 = [...t.matchAll(/"(?:image|img|imageUrl)"\s*:\s*"(https?[^"]+)"[^}]{0,500}"(?:sku|itemId|productId)"\s*:\s*"?(\d{5,13})"?/g)];
-      for (const m of matches2) results.push({ sku: m[2], img: m[1] });
-    }
+    // Look in JSON-LD and embedded data
+    document.querySelectorAll('script').forEach(sc => {
+      const t = sc.textContent || '';
+      // Various SKU+image patterns
+      const pats = [
+        /["'](?:sku|itemId|internet_number)["']\s*:\s*["']?(\d{5,15})["']?[^}]{1,400}?["'](?:image|img|imageUrl|thumbnail)["']\s*:\s*["'](https?[^"']+)/g,
+        /["'](?:image|imageUrl)["']\s*:\s*["'](https?[^"']+)["'][^}]{1,400}?["'](?:sku|itemId)["']\s*:\s*["']?(\d{5,15})/g,
+      ];
+      for (const pat of pats) {
+        [...t.matchAll(pat)].forEach(m => {
+          results.push({ sku: m[1].length > 5 ? m[1] : m[2], img: m[1].startsWith('http') ? m[1] : m[2] });
+        });
+      }
+    });
 
     return results;
   });
 
-  console.log(`Found ${products.length} product/image pairs on page`);
+  console.log(`DOM extracted: ${domProducts.length} SKU/image pairs`);
 
-  // Deduplicate
-  const skuToImg = {};
-  for (const { sku, img } of products) {
-    if (sku && img && img.startsWith('http') && !img.includes('placeholder')) {
-      skuToImg[sku] = img;
+  // Build SKU → image URL map from DOM
+  const skuToUrl = {};
+  for (const { sku, img } of domProducts) {
+    if (sku && img && img.startsWith('http')) skuToUrl[sku] = img;
+  }
+
+  // Also try matching captured network images to SKUs by URL content
+  for (const [url] of capturedImages) {
+    for (const sku of needed) {
+      if (url.includes(sku) && !skuToUrl[sku]) {
+        skuToUrl[sku] = url;
+      }
     }
   }
 
-  console.log(`Unique SKU→image mappings: ${Object.keys(skuToImg).length}`);
+  console.log(`Total SKU→URL mappings: ${Object.keys(skuToUrl).length}`);
 
-  // ── Step 4: If we found SKU→image mappings, download them ──
+  if (Object.keys(skuToUrl).length === 0 && capturedImages.size === 0) {
+    // Save more debug info
+    const bodyText = await page.evaluate(() => document.body?.innerText?.substring(0, 2000) || '');
+    console.log(`\nPage text preview:\n${bodyText}`);
+    
+    const allImgSrcs = await page.$$eval('img', els => els.map(el => el.src).filter(Boolean).slice(0, 20));
+    console.log(`\nAll img srcs on page:`);
+    allImgSrcs.forEach(src => console.log(`  ${src}`));
+    
+    console.log('\nPage is likely behind auth or empty. Cannot scrape images.');
+    await browser.close();
+    process.exit(0);
+  }
+
+  // Download and save images
   let found = 0;
   const stillMissing = [];
 
-  if (Object.keys(skuToImg).length > 0) {
-    // Save the mapping for reference
-    fs.writeFileSync('/tmp/sku_img_map.json', JSON.stringify(skuToImg, null, 2));
+  for (const sku of needed) {
+    process.stdout.write(`${sku}: `);
 
-    for (const sku of needed) {
-      const imgUrl = skuToImg[sku];
-      if (!imgUrl) { stillMissing.push(sku); continue; }
+    // Try SKU→URL mapping first
+    const imgUrl = skuToUrl[sku];
+    let buf = imgUrl ? capturedImages.get(imgUrl) : null;
 
-      process.stdout.write(`${sku}: `);
+    // If we have the buffer from network intercept, use it directly
+    if (!buf && imgUrl) {
       try {
-        const buf = await download(imgUrl);
-        if (buf.length < 500) throw new Error('Image too small');
-        fs.writeFileSync(path.join('products', `${sku}.png`), buf);
-        console.log(`✓ ${buf.length} bytes`);
-        found++;
-      } catch(e) {
-        console.log(`error: ${e.message}`);
-        stillMissing.push(sku);
+        buf = await download(imgUrl);
+      } catch(e) {}
+    }
+
+    // Try to find in captured images by SKU in URL
+    if (!buf) {
+      for (const [url, imgBuf] of capturedImages) {
+        if (url.includes(sku)) { buf = imgBuf; break; }
       }
-      await sleep(300);
     }
-  } else {
-    // ── Step 5: Try loading individual product pages ──
-    console.log('\nNo mappings found on main page. Trying to find product detail links...');
-    
-    const links = await page.evaluate(() => {
-      return [...document.querySelectorAll('a[href]')]
-        .map(a => a.href)
-        .filter(h => h.includes('product') || h.includes('item') || h.includes('p/'))
-        .slice(0, 20);
-    });
-    
-    console.log(`Product links found: ${links.length}`);
-    for (const link of links.slice(0, 3)) {
-      console.log(`  ${link}`);
+
+    if (buf && buf.length > 500) {
+      fs.writeFileSync(path.join('products', `${sku}.png`), buf);
+      console.log(`✓ ${buf.length} bytes`);
+      found++;
+    } else {
+      console.log('not found');
+      stillMissing.push(sku);
     }
-    
-    // Save page HTML for debugging
-    const html = await page.content();
-    fs.writeFileSync('/tmp/rivero_page.html', html.substring(0, 50000));
-    console.log('Saved first 50KB of page HTML to /tmp/rivero_page.html');
-    
-    stillMissing.push(...needed);
   }
 
   await browser.close();
 
-  // ── Step 6: Commit results ──
-  if (stillMissing.length) {
-    fs.writeFileSync('still_missing_skus.txt', stillMissing.join('\n'));
-  }
+  // Save still missing list
+  if (stillMissing.length) fs.writeFileSync('still_missing_skus.txt', stillMissing.join('\n'));
 
-  console.log(`\nResults: ${found} images downloaded, ${stillMissing.length} still missing`);
+  console.log(`\n=== Results: ${found} downloaded, ${stillMissing.length} not found ===`);
 
+  // Commit
   if (found > 0) {
     try {
       execSync('git config user.name "github-actions[bot]"');
       execSync('git config user.email "github-actions[bot]@users.noreply.github.com"');
       execSync('git add products/ still_missing_skus.txt 2>/dev/null || git add products/', { shell: true });
-      const status = execSync('git status --porcelain').toString().trim();
-      if (status) {
+      const st = execSync('git status --porcelain').toString().trim();
+      if (st) {
         execSync(`git commit -m "Add ${found} product images from rivero.website"`);
         execSync('git push');
-        console.log(`✓ Pushed ${found} images to repo!`);
+        console.log(`✓ Pushed ${found} images!`);
+      } else {
+        console.log('Nothing to commit.');
       }
-    } catch(e) {
-      console.error(`Git error: ${e.message}`);
-      process.exit(1);
-    }
+    } catch(e) { console.error(`Git: ${e.message}`); process.exit(1); }
   }
 })();
