@@ -31,7 +31,6 @@ window.INVENTORY = {
     priceLabel: 'Wholesale price',
   },
   products: [
-    { sku:'1003053759', cat:'Ventiladores portátiles', brand:'Treva', name:'Ventilador portátil de 20 cm a pila Treva, con adaptador incluido', name_en:'Treva 8" Battery Powered Portable Fin Fan with Adapter', price:5, retail:34.99, qty:6480, img:'products/1003053759.png' },
     { sku:'1008588562', cat:'Iluminación', brand:'', name:'Lámpara de pie Gaines 160 cm, negro mate, pantalla acrílica blanca, LED integrado', name_en:'Gaines 63 in. Floor Lamp, Matte Black, White Acrylic Shade, Integrated LED', price:10, retail:61.97, qty:35, img:'products/1008588562.png' },
     { sku:'1008574962', cat:'Iluminación', brand:'', name:'Lámpara de pie Fallsdale 158 cm, 2 luces, negro mate, pantalla de vidrio Tiffany', name_en:'Fallsdale 62 in. Floor Lamp, 2-Light, Matte Black, Tiffany Glass Shade', price:70, retail:349, qty:87, img:'products/1008574962.png' },
     { sku:'1008583513', cat:'Iluminación', brand:'', name:'Lámpara de mesa Scoresby 57 cm, 2 luces, negro mate, pantalla de vidrio Tiffany', name_en:'Scoresby 22.4 in. Table Lamp, 2-Light, Matte Black, Tiffany Glass Shade', price:50, retail:249.99, qty:52, img:'products/1008583513.png' },

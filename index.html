@@ -112,54 +112,6 @@
     </div>
   </footer>
 </div>
-
-<!-- POP-UP OFERTA ESPECIAL VENTILADORES -->
-<div id="rv-fan-popup" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.55);backdrop-filter:blur(4px)">
-  <div style="position:relative;background:#fff;border-radius:20px;box-shadow:0 24px 60px rgba(0,0,0,.32);max-width:460px;width:100%;overflow:hidden;animation:rv-popup-up .38s cubic-bezier(.22,1,.36,1) both">
-    <div style="height:5px;background:linear-gradient(90deg,#235CF2,#60a5fa)"></div>
-    <button id="rv-fan-close" style="position:absolute;top:12px;right:12px;width:32px;height:32px;border:0;border-radius:50%;background:rgba(0,0,0,.07);cursor:pointer;font-size:17px;color:#444;line-height:1;display:flex;align-items:center;justify-content:center;font-family:inherit">✕</button>
-    <div style="padding:26px 30px 30px">
-      <span style="display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.18em;color:#235CF2;margin-bottom:14px">
-        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#235CF2;animation:rv-pulse 1.5s infinite"></span>Oferta especial · Stock disponible
-      </span>
-      <div style="font-size:28px;font-weight:800;color:#111;line-height:1.1;margin-bottom:6px">Ventiladores portátiles 8"</div>
-      <div style="font-size:14px;color:#6b7280;margin-bottom:18px">Treva · A pila + adaptador · <strong style="color:#111">6.480 unidades</strong> disponibles en Miami</div>
-      <div style="display:flex;align-items:center;gap:16px;padding:16px 20px;background:#eff6ff;border-radius:14px;border-left:4px solid #235CF2;margin-bottom:20px">
-        <div>
-          <div style="font-size:40px;font-weight:800;color:#235CF2;line-height:1">$5<span style="font-size:20px">.00</span></div>
-          <div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#6b7280;margin-top:2px">por unidad · FOB Miami</div>
-        </div>
-        <div style="margin-left:auto;text-align:right">
-          <div style="font-size:15px;text-decoration:line-through;color:#9ca3af;margin-bottom:4px">$34.99 retail</div>
-          <div style="font-size:13px;font-weight:700;color:#16a34a;background:#dcfce7;padding:4px 12px;border-radius:99px;display:inline-block">−85% bajo retail</div>
-        </div>
-      </div>
-      <a href="https://wa.me/15558016189?text=Hola!+Me+interesa+el+stock+de+ventiladores+port%C3%A1tiles+Treva+8%22+(SKU+1003053759).+%C2%BFPodr%C3%ADan+darme+m%C3%A1s+informaci%C3%B3n%3F" target="_blank" rel="noopener" id="rv-fan-wa"
-         style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:15px 24px;border-radius:99px;background:#25D366;color:#fff;font-size:16px;font-weight:700;text-decoration:none;margin-bottom:10px;box-sizing:border-box">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.128.558 4.122 1.532 5.856L.054 23.198a.5.5 0 00.636.637l5.342-1.478A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.795 9.795 0 01-5.003-1.373l-.36-.214-3.724 1.03 1.03-3.726-.234-.374A9.795 9.795 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182 17.43 2.182 21.818 6.57 21.818 12c0 5.43-4.388 9.818-9.818 9.818z"/></svg>
-        Consultar por WhatsApp
-      </a>
-      <a href="ventiladores-portatiles.html" style="display:block;text-align:center;font-size:14px;color:#6b7280;text-decoration:none;padding:4px">Ver todos los detalles →</a>
-    </div>
-  </div>
-</div>
-<style>
-@keyframes rv-popup-up { from { opacity:0; transform:translateY(28px) scale(.97); } to { opacity:1; transform:none; } }
-@keyframes rv-pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.6;transform:scale(1.3)} }
-</style>
-<script>
-(function(){
-  var key = 'rv_fan_popup_v1';
-  var popup = document.getElementById('rv-fan-popup');
-  var close = document.getElementById('rv-fan-close');
-  var waBtn = document.getElementById('rv-fan-wa');
-  function dismiss(){ popup.style.transition='opacity .2s'; popup.style.opacity='0'; setTimeout(function(){ popup.style.display='none'; }, 200); sessionStorage.setItem(key,'seen'); }
-  if (sessionStorage.getItem(key) === 'seen') { popup.style.display='none'; return; }
-  if (close) close.addEventListener('click', dismiss);
-  if (waBtn) waBtn.addEventListener('click', dismiss);
-  popup.addEventListener('click', function(e){ if(e.target===popup) dismiss(); });
-})();
-</script>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900}}">
 class Component extends DCLogic {
@@ -184,7 +136,6 @@ class Component extends DCLogic {
       { name: 'Herramientas & taller',     color: '#565A62', file: 'herramientas-y-taller.html' },
       { name: 'Ferretería & construcción', color: '#C2000B', file: 'ferreteria-y-construccion.html' },
       { name: 'Plomería & electricidad',   color: '#6B7785', file: 'plomeria-y-electricidad.html' },
-      { name: 'Ventiladores portátiles',   color: '#235CF2', file: 'ventiladores-portatiles.html' },
     ];
     const L = (window.RV_LANG === 'en') ? 'en' : 'es';
     const I = (window.RV_I18N && window.RV_I18N.ui[L]) || {};
