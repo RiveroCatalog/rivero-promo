@@ -192,81 +192,90 @@ class Component extends DCLogic {
   if (sessionStorage.getItem('rv_popup_closed')) return;
   var style = document.createElement('style');
   style.textContent = [
-    '#rv-popup-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.62);backdrop-filter:blur(4px);padding:16px;animation:rv-fade-in .35s ease}',
+    "@import url('https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700;800;900&display=swap');",
+    '#rv-popup-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(8,8,8,.72);backdrop-filter:blur(6px);padding:16px;animation:rv-fade-in .3s ease}',
     '@keyframes rv-fade-in{from{opacity:0}to{opacity:1}}',
-    '#rv-popup-box{position:relative;background:#fff;border-radius:20px;max-width:520px;width:100%;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.35);animation:rv-slide-up .4s cubic-bezier(.22,.68,0,1.2)}',
-    '@keyframes rv-slide-up{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}',
-    '#rv-popup-header{background:linear-gradient(135deg,#e53e00 0%,#ff6b1a 100%);padding:28px 32px 22px;color:#fff}',
-    '#rv-popup-badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.4);border-radius:999px;padding:5px 14px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px}',
-    '#rv-popup-title{font-size:26px;font-weight:800;line-height:1.1;margin:0}',
-    '#rv-popup-sub{font-size:14px;opacity:.88;margin-top:7px;font-weight:500}',
-    '#rv-popup-body{padding:26px 32px 30px}',
-    '#rv-popup-product{font-size:16px;font-weight:700;color:#111;margin-bottom:18px}',
-    '#rv-popup-prices{display:flex;align-items:baseline;gap:14px;margin-bottom:18px}',
-    '#rv-popup-price-main{font-size:52px;font-weight:900;color:#e53e00;line-height:1}',
-    '#rv-popup-price-unit{font-size:15px;font-weight:600;color:#666;margin-top:4px}',
-    '#rv-popup-price-retail{font-size:16px;color:#999;text-decoration:line-through}',
-    '#rv-popup-savings{display:inline-block;background:#e53e00;color:#fff;border-radius:8px;padding:4px 12px;font-size:13px;font-weight:800;letter-spacing:.04em;margin-bottom:20px}',
-    '#rv-popup-stats{display:flex;gap:0;border:1.5px solid #eee;border-radius:12px;overflow:hidden;margin-bottom:22px}',
-    '.rv-stat{flex:1;padding:14px 16px;text-align:center}',
-    '.rv-stat:not(:last-child){border-right:1.5px solid #eee}',
-    '.rv-stat-num{font-size:20px;font-weight:800;color:#111;line-height:1}',
-    '.rv-stat-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#888;margin-top:4px;font-weight:600}',
-    '#rv-popup-cta{display:block;width:100%;box-sizing:border-box;padding:17px;border-radius:12px;background:linear-gradient(135deg,#e53e00,#ff6b1a);color:#fff;font-size:17px;font-weight:800;text-align:center;text-decoration:none;letter-spacing:.01em;box-shadow:0 8px 24px rgba(229,62,0,.38);transition:filter .15s}',
-    '#rv-popup-cta:hover{filter:brightness(1.08)}',
-    '#rv-popup-close{position:absolute;top:14px;right:16px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.25);border:none;cursor:pointer;font-size:18px;font-weight:700;color:#fff;line-height:32px;text-align:center;display:flex;align-items:center;justify-content:center;transition:background .15s}',
-    '#rv-popup-close:hover{background:rgba(255,255,255,.4)}',
-    '#rv-popup-dismiss{display:block;text-align:center;font-size:12px;color:#bbb;cursor:pointer;margin-top:14px;background:none;border:none;width:100%;padding:0}'
+    '#rv-popup-box{position:relative;display:flex;flex-direction:row;background:#fff;border-radius:20px;max-width:640px;width:100%;overflow:hidden;box-shadow:0 40px 100px rgba(8,8,8,.45);animation:rv-slide-up .45s cubic-bezier(.22,.68,0,1.15);font-family:"Jost",sans-serif}',
+    '@keyframes rv-slide-up{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}',
+    /* Left panel - orange brand panel */
+    '#rv-popup-left{background:#FF8001;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:28px 22px 24px;min-width:210px;max-width:210px}',
+    '#rv-popup-logo{width:110px;object-fit:contain;filter:brightness(0) invert(1)}',
+    '#rv-popup-fan-img{width:160px;height:160px;object-fit:contain;border-radius:12px;background:rgba(255,255,255,.12);padding:8px;margin:16px 0}',
+    '#rv-popup-left-tag{background:#080808;color:#FF8001;font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;border-radius:999px;padding:6px 16px;text-align:center;line-height:1.2}',
+    /* Right panel - white content */
+    '#rv-popup-right{flex:1;padding:30px 30px 26px;display:flex;flex-direction:column;justify-content:space-between;min-width:0}',
+    '#rv-popup-eyebrow{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#FF8001;margin-bottom:8px}',
+    '#rv-popup-headline{font-size:22px;font-weight:800;line-height:1.15;color:#080808;margin:0 0 4px}',
+    '#rv-popup-product-name{font-size:13px;font-weight:400;color:#757a84;margin-bottom:20px;line-height:1.4}',
+    '#rv-popup-price-row{display:flex;align-items:flex-end;gap:14px;margin-bottom:6px}',
+    '#rv-popup-price-big{font-size:58px;font-weight:900;color:#FF8001;line-height:1;letter-spacing:-.02em}',
+    '#rv-popup-price-right{display:flex;flex-direction:column;gap:4px;padding-bottom:6px}',
+    '#rv-popup-retail{font-size:14px;color:#9aa0a9;text-decoration:line-through;font-weight:500}',
+    '#rv-popup-badge{background:#080808;color:#FF8001;font-size:12px;font-weight:800;letter-spacing:.06em;padding:4px 10px;border-radius:6px}',
+    '#rv-popup-unit{font-size:12px;color:#9aa0a9;font-weight:500;margin-bottom:18px}',
+    '#rv-popup-stats{display:flex;gap:0;border:1.5px solid #eef0f3;border-radius:10px;overflow:hidden;margin-bottom:20px}',
+    '.rv-stat{flex:1;padding:11px 10px;text-align:center}',
+    '.rv-stat:not(:last-child){border-right:1.5px solid #eef0f3}',
+    '.rv-stat-num{font-size:18px;font-weight:800;color:#080808;line-height:1;font-family:"Jost",sans-serif}',
+    '.rv-stat-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#9aa0a9;margin-top:3px;font-weight:600}',
+    '#rv-popup-cta{display:block;padding:15px 20px;border-radius:10px;background:#235CF2;color:#fff;font-size:15px;font-weight:700;text-align:center;text-decoration:none;letter-spacing:.01em;font-family:"Jost",sans-serif;transition:filter .15s;box-shadow:0 6px 20px rgba(35,92,242,.3)}',
+    '#rv-popup-cta:hover{filter:brightness(1.1)}',
+    '#rv-popup-close{position:absolute;top:14px;right:16px;width:30px;height:30px;border-radius:50%;background:rgba(8,8,8,.12);border:none;cursor:pointer;font-size:16px;font-weight:700;color:#080808;display:flex;align-items:center;justify-content:center;transition:background .15s;z-index:10}',
+    '#rv-popup-close:hover{background:rgba(8,8,8,.22)}',
+    '#rv-popup-dismiss{display:block;text-align:center;font-size:11px;color:#c2c6cd;cursor:pointer;margin-top:12px;background:none;border:none;width:100%;padding:0;font-family:"Jost",sans-serif}',
+    '@media(max-width:520px){#rv-popup-box{flex-direction:column}#rv-popup-left{min-width:unset;max-width:unset;flex-direction:row;padding:20px;gap:16px}#rv-popup-fan-img{width:90px;height:90px;margin:0}#rv-popup-logo{width:80px}#rv-popup-left-tag{font-size:10px;padding:5px 12px}}'
   ].join('');
   document.head.appendChild(style);
 
+  var waText = encodeURIComponent('Hola! Vi la oferta del Ventilador Treva 8” en el catálogo de Rivero — $5/ud (SKU 755247164601). Quisiera saber disponibilidad y condiciones de pedido.');
+
   var overlay = document.createElement('div');
   overlay.id = 'rv-popup-overlay';
-  overlay.innerHTML = [
-    '<div id="rv-popup-box">',
-    '  <button id="rv-popup-close" aria-label="Cerrar">&#10005;</button>',
-    '  <div id="rv-popup-header">',
-    '    <div id="rv-popup-badge">&#x26A1; Oferta por tiempo limitado</div>',
-    '    <div id="rv-popup-title">Stock de Liquidación<br>Precio de Remate</div>',
-    '    <div id="rv-popup-sub">Ventilador Treva 8" 2 velocidades — Batería o adaptador</div>',
-    '  </div>',
-    '  <div id="rv-popup-body">',
-    '    <div id="rv-popup-prices">',
-    '      <div>',
-    '        <div id="rv-popup-price-main">$5<span style="font-size:28px">.00</span></div>',
-    '        <div id="rv-popup-price-unit">por unidad (mín. 6 ud/caja)</div>',
-    '      </div>',
-    '      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding-top:6px">',
-    '        <div id="rv-popup-price-retail">PVP $34.98</div>',
-    '        <div id="rv-popup-savings">85% de ahorro</div>',
-    '      </div>',
-    '    </div>',
-    '    <div id="rv-popup-stats">',
-    '      <div class="rv-stat"><div class="rv-stat-num">6,624</div><div class="rv-stat-lbl">Unidades disp.</div></div>',
-    '      <div class="rv-stat"><div class="rv-stat-num">46</div><div class="rv-stat-lbl">Pallets</div></div>',
-    '      <div class="rv-stat"><div class="rv-stat-num">6</div><div class="rv-stat-lbl">Ud. por caja</div></div>',
-    '    </div>',
-    '    <a id="rv-popup-cta" href="https://wa.me/15558016189?text=' + encodeURIComponent('Hola, quiero consultar por la oferta del Ventilador Treva 8" a $5/ud (SKU 755247164601). ¿Cuántas unidades puedo pedir?') + '" target="_blank" rel="noopener">',
-    '      Consultar disponibilidad →',
-    '    </a>',
-    '    <button id="rv-popup-dismiss">No me interesa por ahora</button>',
-    '  </div>',
-    '</div>'
-  ].join('');
+  overlay.innerHTML = '<div id="rv-popup-box">'
+    + '<button id="rv-popup-close" aria-label="Cerrar">&#10005;</button>'
+    + '<div id="rv-popup-left">'
+    +   '<img id="rv-popup-logo" src="./assets/rivero-logo-lineal-white.png" alt="Rivero">'
+    +   '<img id="rv-popup-fan-img" src="./products/755247164601.jpeg" alt="Ventilador Treva 8”">'
+    +   '<div id="rv-popup-left-tag">Stock<br>Liquidación</div>'
+    + '</div>'
+    + '<div id="rv-popup-right">'
+    +   '<div>'
+    +     '<div id="rv-popup-eyebrow">&#x26A1; Oferta especial — hoy</div>'
+    +     '<div id="rv-popup-headline">Ventilador<br>Treva 8”</div>'
+    +     '<div id="rv-popup-product-name">2 velocidades • Batería o adaptador</div>'
+    +     '<div id="rv-popup-price-row">'
+    +       '<div id="rv-popup-price-big">$5</div>'
+    +       '<div id="rv-popup-price-right">'
+    +         '<div id="rv-popup-retail">PVP $34.98</div>'
+    +         '<div id="rv-popup-badge">85% OFF</div>'
+    +       '</div>'
+    +     '</div>'
+    +     '<div id="rv-popup-unit">por unidad &nbsp;·&nbsp; mín. 6 unidades por caja</div>'
+    +     '<div id="rv-popup-stats">'
+    +       '<div class="rv-stat"><div class="rv-stat-num">6,624</div><div class="rv-stat-lbl">Unidades</div></div>'
+    +       '<div class="rv-stat"><div class="rv-stat-num">46</div><div class="rv-stat-lbl">Pallets</div></div>'
+    +       '<div class="rv-stat"><div class="rv-stat-num">1,104</div><div class="rv-stat-lbl">Cajas</div></div>'
+    +     '</div>'
+    +   '</div>'
+    +   '<div>'
+    +     '<a id="rv-popup-cta" href="https://wa.me/15558016189?text=' + waText + '" target="_blank" rel="noopener">Consultar por WhatsApp →</a>'
+    +     '<button id="rv-popup-dismiss">No me interesa por ahora</button>'
+    +   '</div>'
+    + '</div>'
+    + '</div>';
 
-  function close() {
+  function closePopup() {
     sessionStorage.setItem('rv_popup_closed', '1');
-    overlay.style.animation = 'rv-fade-in .25s ease reverse';
-    setTimeout(function() { overlay.remove(); }, 250);
+    overlay.style.opacity = '0';
+    overlay.style.transition = 'opacity .25s';
+    setTimeout(function() { overlay.remove(); }, 260);
   }
 
-  overlay.querySelector('#rv-popup-close').addEventListener('click', close);
-  overlay.querySelector('#rv-popup-dismiss').addEventListener('click', close);
-  overlay.addEventListener('click', function(e) { if (e.target === overlay) close(); });
+  overlay.querySelector('#rv-popup-close').addEventListener('click', closePopup);
+  overlay.querySelector('#rv-popup-dismiss').addEventListener('click', closePopup);
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) closePopup(); });
 
-  setTimeout(function() {
-    document.body.appendChild(overlay);
-  }, 1500);
+  setTimeout(function() { document.body.appendChild(overlay); }, 1500);
 })();
 </script>
 </body>
