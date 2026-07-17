@@ -185,5 +185,89 @@ class Component extends DCLogic {
   }
 }
 </script>
+
+<!-- OFERTA ESPECIAL POPUP -->
+<script>
+(function() {
+  if (sessionStorage.getItem('rv_popup_closed')) return;
+  var style = document.createElement('style');
+  style.textContent = [
+    '#rv-popup-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.62);backdrop-filter:blur(4px);padding:16px;animation:rv-fade-in .35s ease}',
+    '@keyframes rv-fade-in{from{opacity:0}to{opacity:1}}',
+    '#rv-popup-box{position:relative;background:#fff;border-radius:20px;max-width:520px;width:100%;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.35);animation:rv-slide-up .4s cubic-bezier(.22,.68,0,1.2)}',
+    '@keyframes rv-slide-up{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}',
+    '#rv-popup-header{background:linear-gradient(135deg,#e53e00 0%,#ff6b1a 100%);padding:28px 32px 22px;color:#fff}',
+    '#rv-popup-badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.4);border-radius:999px;padding:5px 14px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px}',
+    '#rv-popup-title{font-size:26px;font-weight:800;line-height:1.1;margin:0}',
+    '#rv-popup-sub{font-size:14px;opacity:.88;margin-top:7px;font-weight:500}',
+    '#rv-popup-body{padding:26px 32px 30px}',
+    '#rv-popup-product{font-size:16px;font-weight:700;color:#111;margin-bottom:18px}',
+    '#rv-popup-prices{display:flex;align-items:baseline;gap:14px;margin-bottom:18px}',
+    '#rv-popup-price-main{font-size:52px;font-weight:900;color:#e53e00;line-height:1}',
+    '#rv-popup-price-unit{font-size:15px;font-weight:600;color:#666;margin-top:4px}',
+    '#rv-popup-price-retail{font-size:16px;color:#999;text-decoration:line-through}',
+    '#rv-popup-savings{display:inline-block;background:#e53e00;color:#fff;border-radius:8px;padding:4px 12px;font-size:13px;font-weight:800;letter-spacing:.04em;margin-bottom:20px}',
+    '#rv-popup-stats{display:flex;gap:0;border:1.5px solid #eee;border-radius:12px;overflow:hidden;margin-bottom:22px}',
+    '.rv-stat{flex:1;padding:14px 16px;text-align:center}',
+    '.rv-stat:not(:last-child){border-right:1.5px solid #eee}',
+    '.rv-stat-num{font-size:20px;font-weight:800;color:#111;line-height:1}',
+    '.rv-stat-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#888;margin-top:4px;font-weight:600}',
+    '#rv-popup-cta{display:block;width:100%;box-sizing:border-box;padding:17px;border-radius:12px;background:linear-gradient(135deg,#e53e00,#ff6b1a);color:#fff;font-size:17px;font-weight:800;text-align:center;text-decoration:none;letter-spacing:.01em;box-shadow:0 8px 24px rgba(229,62,0,.38);transition:filter .15s}',
+    '#rv-popup-cta:hover{filter:brightness(1.08)}',
+    '#rv-popup-close{position:absolute;top:14px;right:16px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.25);border:none;cursor:pointer;font-size:18px;font-weight:700;color:#fff;line-height:32px;text-align:center;display:flex;align-items:center;justify-content:center;transition:background .15s}',
+    '#rv-popup-close:hover{background:rgba(255,255,255,.4)}',
+    '#rv-popup-dismiss{display:block;text-align:center;font-size:12px;color:#bbb;cursor:pointer;margin-top:14px;background:none;border:none;width:100%;padding:0}'
+  ].join('');
+  document.head.appendChild(style);
+
+  var overlay = document.createElement('div');
+  overlay.id = 'rv-popup-overlay';
+  overlay.innerHTML = [
+    '<div id="rv-popup-box">',
+    '  <button id="rv-popup-close" aria-label="Cerrar">&#10005;</button>',
+    '  <div id="rv-popup-header">',
+    '    <div id="rv-popup-badge">&#x26A1; Oferta por tiempo limitado</div>',
+    '    <div id="rv-popup-title">Stock de Liquidación<br>Precio de Remate</div>',
+    '    <div id="rv-popup-sub">Ventilador Treva 8" 2 velocidades — Batería o adaptador</div>',
+    '  </div>',
+    '  <div id="rv-popup-body">',
+    '    <div id="rv-popup-prices">',
+    '      <div>',
+    '        <div id="rv-popup-price-main">$5<span style="font-size:28px">.00</span></div>',
+    '        <div id="rv-popup-price-unit">por unidad (mín. 6 ud/caja)</div>',
+    '      </div>',
+    '      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding-top:6px">',
+    '        <div id="rv-popup-price-retail">PVP $34.98</div>',
+    '        <div id="rv-popup-savings">85% de ahorro</div>',
+    '      </div>',
+    '    </div>',
+    '    <div id="rv-popup-stats">',
+    '      <div class="rv-stat"><div class="rv-stat-num">6,624</div><div class="rv-stat-lbl">Unidades disp.</div></div>',
+    '      <div class="rv-stat"><div class="rv-stat-num">46</div><div class="rv-stat-lbl">Pallets</div></div>',
+    '      <div class="rv-stat"><div class="rv-stat-num">6</div><div class="rv-stat-lbl">Ud. por caja</div></div>',
+    '    </div>',
+    '    <a id="rv-popup-cta" href="https://wa.me/15558016189?text=' + encodeURIComponent('Hola, quiero consultar por la oferta del Ventilador Treva 8" a $5/ud (SKU 755247164601). ¿Cuántas unidades puedo pedir?') + '" target="_blank" rel="noopener">',
+    '      Consultar disponibilidad →',
+    '    </a>',
+    '    <button id="rv-popup-dismiss">No me interesa por ahora</button>',
+    '  </div>',
+    '</div>'
+  ].join('');
+
+  function close() {
+    sessionStorage.setItem('rv_popup_closed', '1');
+    overlay.style.animation = 'rv-fade-in .25s ease reverse';
+    setTimeout(function() { overlay.remove(); }, 250);
+  }
+
+  overlay.querySelector('#rv-popup-close').addEventListener('click', close);
+  overlay.querySelector('#rv-popup-dismiss').addEventListener('click', close);
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) close(); });
+
+  setTimeout(function() {
+    document.body.appendChild(overlay);
+  }, 1500);
+})();
+</script>
 </body>
 </html>
