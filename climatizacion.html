@@ -219,7 +219,7 @@ img  { display: block; max-width: 100%; }
   align-items: center; gap: 8px;
 }
 .back:hover { color: var(--fg1); }
-@media print { .back { display: none; } }
+@media print { .back { display: none; } #rv-promo-banner { display: none; } }
 
 /* PAGE FOOTER */
 .page-footer {
@@ -290,6 +290,28 @@ img  { display: block; max-width: 100%; }
 </section>
 
 <a class="back" href="index.html" id="back-link">← Volver al catálogo</a>
+
+<div id="rv-promo-banner" style="max-width:960px;margin:16px auto 0;padding:0 clamp(16px,4vw,32px)">
+  <div style="position:relative;display:flex;align-items:stretch;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(8,8,8,.14);background:#fff">
+    <!-- Orange left strip -->
+    <div style="background:#FF8001;display:flex;align-items:center;justify-content:center;padding:18px 20px;flex-shrink:0">
+      <img src="products/755247164601.jpeg" alt="Ventilador Treva 8&quot;" style="width:80px;height:80px;object-fit:contain;border-radius:8px;background:rgba(255,255,255,.15);padding:4px">
+    </div>
+    <!-- Content -->
+    <div style="display:flex;flex:1;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;padding:18px 22px">
+      <div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#FF8001;margin-bottom:4px">&#x26A1; Oferta especial — Stock limitado</div>
+        <div style="font-size:18px;font-weight:800;color:#080808;line-height:1.15">Ventilador Treva 8" — <span style="color:#FF8001">$5.00/ud</span> <span style="font-size:13px;font-weight:500;color:#9aa0a9;text-decoration:line-through">PVP $34.98</span></div>
+        <div style="font-size:12px;color:#757a84;margin-top:3px">6,624 unidades · 46 pallets · mín. 6 ud/caja · <strong style="color:#080808;font-weight:700">85% de ahorro</strong></div>
+      </div>
+      <a href="https://wa.me/15558016189?text=Hola%2C%20vi%20la%20oferta%20del%20Ventilador%20Treva%208%22%20en%20el%20cat%C3%A1logo%20de%20Climatizaci%C3%B3n%20%E2%80%94%20%245%2Fud%20(SKU%20755247164601).%20%C2%BFPuedo%20consultar%20disponibilidad%3F" target="_blank" rel="noopener" style="flex-shrink:0;display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:10px;background:#235CF2;color:#fff;font-size:14px;font-weight:700;text-decoration:none;white-space:nowrap;transition:filter .15s" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter=''">
+        Consultar por WhatsApp →
+      </a>
+    </div>
+    <!-- Close button -->
+    <button onclick="document.getElementById('rv-promo-banner').style.display='none'" style="position:absolute;top:10px;right:12px;width:26px;height:26px;border-radius:50%;background:rgba(8,8,8,.08);border:none;cursor:pointer;font-size:14px;color:#757a84;display:flex;align-items:center;justify-content:center;line-height:1" aria-label="Cerrar">&#10005;</button>
+  </div>
+</div>
 
 <main class="catalog">
   <div class="cat-header">
