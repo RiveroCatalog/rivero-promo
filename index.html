@@ -195,12 +195,12 @@ class Component extends DCLogic {
     "@import url('https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700;800;900&display=swap');",
     '#rv-popup-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(8,8,8,.72);backdrop-filter:blur(6px);padding:16px;animation:rv-fade-in .3s ease}',
     '@keyframes rv-fade-in{from{opacity:0}to{opacity:1}}',
-    '#rv-popup-box{position:relative;display:flex;flex-direction:row;background:#fff;border-radius:20px;max-width:640px;width:100%;overflow:hidden;box-shadow:0 40px 100px rgba(8,8,8,.45);animation:rv-slide-up .45s cubic-bezier(.22,.68,0,1.15);font-family:"Jost",sans-serif}',
+    '#rv-popup-box{position:relative;display:flex;flex-direction:row;background:#fff;border-radius:20px;max-width:700px;width:100%;overflow:hidden;box-shadow:0 40px 100px rgba(8,8,8,.45);animation:rv-slide-up .45s cubic-bezier(.22,.68,0,1.15);font-family:"Jost",sans-serif}',
     '@keyframes rv-slide-up{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}',
     /* Left panel - orange brand panel */
-    '#rv-popup-left{background:#FF8001;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:28px 22px 24px;min-width:210px;max-width:210px}',
-    '#rv-popup-logo{width:110px;object-fit:contain;filter:brightness(0) invert(1)}',
-    '#rv-popup-fan-img{width:160px;height:160px;object-fit:contain;border-radius:12px;background:rgba(255,255,255,.12);padding:8px;margin:16px 0}',
+    '#rv-popup-left{background:#FF8001;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:32px 26px 28px;min-width:260px;max-width:260px}',
+    '#rv-popup-logo{width:120px;object-fit:contain;filter:brightness(0) invert(1)}',
+    '#rv-popup-fan-img{width:210px;height:210px;object-fit:contain;border-radius:14px;background:rgba(255,255,255,.15);padding:10px;margin:18px 0}',
     '#rv-popup-left-tag{background:#080808;color:#FF8001;font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;border-radius:999px;padding:6px 16px;text-align:center;line-height:1.2}',
     /* Right panel - white content */
     '#rv-popup-right{flex:1;padding:30px 30px 26px;display:flex;flex-direction:column;justify-content:space-between;min-width:0}',
@@ -223,7 +223,7 @@ class Component extends DCLogic {
     '#rv-popup-close{position:absolute;top:14px;right:16px;width:30px;height:30px;border-radius:50%;background:rgba(8,8,8,.12);border:none;cursor:pointer;font-size:16px;font-weight:700;color:#080808;display:flex;align-items:center;justify-content:center;transition:background .15s;z-index:10}',
     '#rv-popup-close:hover{background:rgba(8,8,8,.22)}',
     '#rv-popup-dismiss{display:block;text-align:center;font-size:11px;color:#c2c6cd;cursor:pointer;margin-top:12px;background:none;border:none;width:100%;padding:0;font-family:"Jost",sans-serif}',
-    '@media(max-width:520px){#rv-popup-box{flex-direction:column}#rv-popup-left{min-width:unset;max-width:unset;flex-direction:row;padding:20px;gap:16px}#rv-popup-fan-img{width:90px;height:90px;margin:0}#rv-popup-logo{width:80px}#rv-popup-left-tag{font-size:10px;padding:5px 12px}}'
+    '@media(max-width:560px){#rv-popup-box{flex-direction:column}#rv-popup-left{min-width:unset;max-width:unset;flex-direction:row;padding:20px;gap:16px}#rv-popup-fan-img{width:110px;height:110px;margin:0}#rv-popup-logo{width:90px}#rv-popup-left-tag{font-size:10px;padding:5px 12px}}'
   ].join('');
   document.head.appendChild(style);
 
