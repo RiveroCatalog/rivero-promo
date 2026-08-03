@@ -185,100 +185,97 @@ class Component extends DCLogic {
 }
 </script>
 
-<!-- OFERTA GRILL POPUP -->
+<!-- VENDIDO POPUP — PRUEBA SOCIAL -->
 <script>
 (function() {
-  if (sessionStorage.getItem('rv_grill_closed')) return;
+  if (sessionStorage.getItem('rv_sold_closed')) return;
 
   var style = document.createElement('style');
   style.textContent = [
     "@import url('https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700;800;900&display=swap');",
     '@keyframes rv-fade{from{opacity:0}to{opacity:1}}',
-    '@keyframes rv-rise{from{transform:translateY(40px) scale(.97);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}',
-    '@keyframes rv-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,128,1,.45)}50%{box-shadow:0 0 0 10px rgba(255,128,1,0)}}',
-    '#rv-g-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(4,4,4,.82);backdrop-filter:blur(8px);padding:16px;animation:rv-fade .3s ease;font-family:"Jost",sans-serif}',
-    '#rv-g-box{position:relative;display:flex;flex-direction:row;max-width:720px;width:100%;border-radius:22px;overflow:hidden;box-shadow:0 50px 120px rgba(0,0,0,.7),0 0 0 1px rgba(255,128,1,.18);animation:rv-rise .5s cubic-bezier(.22,.68,0,1.1)}',
+    '@keyframes rv-rise{from{transform:translateY(36px) scale(.96);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}',
+    '@keyframes rv-stamp{0%{transform:rotate(-32deg) scale(2.4);opacity:0}60%{transform:rotate(-32deg) scale(.92);opacity:1}80%{transform:rotate(-32deg) scale(1.04)}100%{transform:rotate(-32deg) scale(1);opacity:1}}',
+    '@keyframes rv-shake{0%,100%{transform:rotate(-32deg)}20%{transform:rotate(-30deg)}40%{transform:rotate(-34deg)}60%{transform:rotate(-31deg)}80%{transform:rotate(-33deg)}}',
+    '#rv-s-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(4,4,4,.85);backdrop-filter:blur(10px);padding:16px;animation:rv-fade .35s ease;font-family:"Jost",sans-serif}',
+    '#rv-s-box{position:relative;display:flex;flex-direction:row;max-width:700px;width:100%;border-radius:22px;overflow:hidden;box-shadow:0 60px 130px rgba(0,0,0,.75);animation:rv-rise .55s cubic-bezier(.22,.68,0,1.1)}',
     /* Left dark panel */
-    '#rv-g-left{background:#111;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:28px 24px 24px;min-width:270px;max-width:270px;position:relative;overflow:hidden}',
-    '#rv-g-left::before{content:"";position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:280px;height:280px;background:radial-gradient(circle,rgba(255,128,1,.22) 0%,transparent 70%);pointer-events:none}',
-    '#rv-g-logo{width:110px;object-fit:contain;filter:brightness(0) invert(1);position:relative;z-index:1}',
-    '#rv-g-img{width:200px;height:200px;object-fit:contain;border-radius:16px;background:rgba(255,255,255,.06);padding:12px;margin:14px 0;position:relative;z-index:1;border:1px solid rgba(255,128,1,.2)}',
-    '#rv-g-price-block{text-align:center;position:relative;z-index:1}',
-    '#rv-g-price{font-size:62px;font-weight:900;line-height:1;color:#FF8001;letter-spacing:-2px;text-shadow:0 0 40px rgba(255,128,1,.5)}',
-    '#rv-g-per{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:2px}',
+    '#rv-s-left{background:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;min-width:255px;max-width:255px;position:relative;overflow:hidden;gap:20px}',
+    '#rv-s-logo{width:100px;object-fit:contain;filter:brightness(0) invert(1);opacity:.7}',
+    '#rv-s-img-wrap{position:relative;display:flex;align-items:center;justify-content:center}',
+    '#rv-s-img{width:190px;height:190px;object-fit:contain;border-radius:14px;background:rgba(255,255,255,.05);padding:10px;filter:grayscale(1) brightness(.55);display:block}',
+    '#rv-s-stamp{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}',
+    '#rv-s-stamp-inner{border:4px solid #C2000B;color:#C2000B;font-size:28px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;padding:8px 18px;border-radius:5px;white-space:nowrap;text-shadow:0 0 20px rgba(194,0,11,.6);box-shadow:0 0 24px rgba(194,0,11,.35),inset 0 0 12px rgba(194,0,11,.1);animation:rv-stamp .6s cubic-bezier(.22,.68,0,1.15) .4s both}',
+    '#rv-s-days{background:#C2000B;color:#fff;font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;border-radius:999px;padding:5px 16px;text-align:center}',
     /* Right white panel */
-    '#rv-g-right{flex:1;padding:28px 28px 24px;display:flex;flex-direction:column;justify-content:space-between;background:#fff;min-width:0}',
-    '#rv-g-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#FF8001;margin-bottom:10px}',
-    '#rv-g-headline{font-size:21px;font-weight:800;line-height:1.18;color:#080808;margin:0 0 5px}',
-    '#rv-g-sub{font-size:13px;color:#888;margin-bottom:16px;line-height:1.4}',
-    '#rv-g-pricing{display:flex;align-items:center;gap:12px;margin-bottom:4px}',
-    '#rv-g-pvp{font-size:14px;color:#aaa;text-decoration:line-through}',
-    '#rv-g-badge{background:#080808;color:#FF8001;font-size:12px;font-weight:800;letter-spacing:.1em;border-radius:6px;padding:5px 11px;text-transform:uppercase}',
-    '#rv-g-stats{display:flex;gap:0;border:1.5px solid #eef0f3;border-radius:12px;overflow:hidden;margin:14px 0}',
-    '.rv-g-stat{flex:1;padding:11px 8px;text-align:center}',
-    '.rv-g-stat:not(:last-child){border-right:1.5px solid #eef0f3}',
-    '.rv-g-stat-n{font-size:17px;font-weight:800;color:#080808;line-height:1}',
-    '.rv-g-stat-l{font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:#aaa;margin-top:3px;font-weight:600}',
-    '#rv-g-cta{display:block;padding:15px 20px;border-radius:11px;background:#235CF2;color:#fff;font-size:15px;font-weight:700;text-align:center;text-decoration:none;letter-spacing:.01em;font-family:"Jost",sans-serif;transition:filter .15s,transform .1s;box-shadow:0 8px 24px rgba(35,92,242,.35);animation:rv-pulse 2.5s ease-in-out 2s infinite}',
-    '#rv-g-cta:hover{filter:brightness(1.1);transform:translateY(-1px)}',
-    '#rv-g-dismiss{display:block;text-align:center;margin-top:10px;font-size:12px;color:#bbb;cursor:pointer;font-family:"Jost",sans-serif;background:none;border:none;width:100%;padding:4px;transition:color .15s}',
-    '#rv-g-dismiss:hover{color:#666}',
-    '#rv-g-close{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.06);border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:#999;transition:background .15s,color .15s;z-index:10}',
-    '#rv-g-close:hover{background:rgba(0,0,0,.12);color:#444}',
-    '@media(max-width:580px){#rv-g-box{flex-direction:column}#rv-g-left{min-width:0;max-width:100%;flex-direction:row;flex-wrap:wrap;padding:20px;gap:12px}#rv-g-img{width:120px;height:120px}#rv-g-price{font-size:44px}}'
+    '#rv-s-right{flex:1;padding:32px 30px 28px;display:flex;flex-direction:column;justify-content:space-between;background:#fff;min-width:0}',
+    '#rv-s-eyebrow{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#C2000B;margin-bottom:8px}',
+    '#rv-s-headline{font-size:36px;font-weight:900;line-height:1.05;color:#080808;margin:0 0 6px;letter-spacing:-.5px}',
+    '#rv-s-hl2{font-size:17px;font-weight:700;color:#FF8001;margin:0 0 16px;letter-spacing:.01em}',
+    '#rv-s-divider{height:1px;background:#eef0f3;margin:0 0 18px}',
+    '#rv-s-proof{font-size:13px;font-weight:500;color:#555;line-height:1.6;margin-bottom:20px}',
+    '#rv-s-proof strong{color:#080808;font-weight:800}',
+    '#rv-s-stats{display:flex;gap:0;border:1.5px solid #eef0f3;border-radius:12px;overflow:hidden;margin-bottom:20px}',
+    '.rv-s-stat{flex:1;padding:11px 8px;text-align:center}',
+    '.rv-s-stat:not(:last-child){border-right:1.5px solid #eef0f3}',
+    '.rv-s-stat-n{font-size:18px;font-weight:900;color:#080808;line-height:1}',
+    '.rv-s-stat-l{font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:#bbb;margin-top:3px;font-weight:600}',
+    '#rv-s-cta{display:block;padding:14px 20px;border-radius:11px;background:#235CF2;color:#fff;font-size:14px;font-weight:700;text-align:center;text-decoration:none;letter-spacing:.01em;font-family:"Jost",sans-serif;transition:filter .15s,transform .1s;box-shadow:0 8px 22px rgba(35,92,242,.32)}',
+    '#rv-s-cta:hover{filter:brightness(1.1);transform:translateY(-1px)}',
+    '#rv-s-dismiss{display:block;text-align:center;margin-top:9px;font-size:12px;color:#ccc;cursor:pointer;font-family:"Jost",sans-serif;background:none;border:none;width:100%;padding:3px;transition:color .15s}',
+    '#rv-s-dismiss:hover{color:#777}',
+    '#rv-s-close{position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.08);border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);transition:background .15s,color .15s;z-index:10}',
+    '#rv-s-close:hover{background:rgba(255,255,255,.15);color:#fff}',
+    '@media(max-width:580px){#rv-s-box{flex-direction:column}#rv-s-left{min-width:0;max-width:100%;padding:24px 20px;flex-direction:row;flex-wrap:wrap;justify-content:space-around}#rv-s-img{width:130px;height:130px}#rv-s-headline{font-size:28px}}'
   ].join('');
   document.head.appendChild(style);
 
-  var waMsg = encodeURIComponent('Hola! Vi la oferta de la Parrilla Dyna-Glo 4 Quemadores a $88/unidad. ¿Pueden darme más información sobre disponibilidad y pedido mínimo?');
+  var waMsg = encodeURIComponent('Hola! Me interesa conocer las próximas ofertas de liquidación al por mayor. ¿Pueden avisarme cuando tengan nuevo stock disponible?');
   var waHref = 'https://wa.me/15558016189?text=' + waMsg;
 
   var overlay = document.createElement('div');
-  overlay.id = 'rv-g-overlay';
+  overlay.id = 'rv-s-overlay';
   overlay.innerHTML =
-    '<div id="rv-g-box">' +
-      '<button id="rv-g-close" aria-label="Cerrar">&#10005;</button>' +
-      '<div id="rv-g-left">' +
-        '<img id="rv-g-logo" src="./img/logo-rivero-white.svg" onerror="this.src=\'./img/logo-rivero.svg\';this.style.filter=\'brightness(0) invert(1)\'" alt="Rivero">' +
-        '<img id="rv-g-img" src="./products/872076028260.jpeg" alt="Parrilla Dyna-Glo">' +
-        '<div id="rv-g-price-block">' +
-          '<div id="rv-g-price">$88</div>' +
-          '<div id="rv-g-per">por unidad</div>' +
+    '<div id="rv-s-box">' +
+      '<button id="rv-s-close" aria-label="Cerrar">&#10005;</button>' +
+      '<div id="rv-s-left">' +
+        '<img id="rv-s-logo" src="./assets/rivero-logo-lineal.png" alt="Rivero">' +
+        '<div id="rv-s-img-wrap">' +
+          '<img id="rv-s-img" src="./products/872076028260.jpeg" alt="Parrilla Dyna-Glo">' +
+          '<div id="rv-s-stamp"><div id="rv-s-stamp-inner">AGOTADO</div></div>' +
         '</div>' +
+        '<div id="rv-s-days">&#9201; Solo en 2 d&iacute;as</div>' +
       '</div>' +
-      '<div id="rv-g-right">' +
+      '<div id="rv-s-right">' +
         '<div>' +
-          '<div id="rv-g-tag">&#128293; Oferta mayorista &mdash; Hoy</div>' +
-          '<h2 id="rv-g-headline">Parrilla Dyna-Glo<br>4 Quemadores</h2>' +
-          '<p id="rv-g-sub">Gas propano &middot; Sistema TriVantage &middot; Negro mate</p>' +
-          '<div id="rv-g-pricing">' +
-            '<span id="rv-g-pvp">PVP $249.00</span>' +
-            '<span id="rv-g-badge">65% OFF</span>' +
-          '</div>' +
-          '<div id="rv-g-stats">' +
-            '<div class="rv-g-stat"><div class="rv-g-stat-n">208</div><div class="rv-g-stat-l">Unidades</div></div>' +
-            '<div class="rv-g-stat"><div class="rv-g-stat-n">26</div><div class="rv-g-stat-l">Pallets</div></div>' +
-            '<div class="rv-g-stat"><div class="rv-g-stat-n">$88</div><div class="rv-g-stat-l">c/u</div></div>' +
+          '<div id="rv-s-eyebrow">&#9989; Lote liquidado</div>' +
+          '<h2 id="rv-s-headline">VENDIDO<br>EN 2 D&Iacute;AS</h2>' +
+          '<p id="rv-s-hl2">Parrilla Dyna-Glo 4 Quemadores &mdash; $88/u</p>' +
+          '<div id="rv-s-divider"></div>' +
+          '<p id="rv-s-proof">Liquidamos <strong>208 unidades &middot; 26 pallets</strong> en menos de 48 horas.<br>Los mejores lotes se agotan r&aacute;pido. &iquest;No te quieres perder el pr&oacute;ximo?</p>' +
+          '<div id="rv-s-stats">' +
+            '<div class="rv-s-stat"><div class="rv-s-stat-n">208</div><div class="rv-s-stat-l">Unidades</div></div>' +
+            '<div class="rv-s-stat"><div class="rv-s-stat-n">26</div><div class="rv-s-stat-l">Pallets</div></div>' +
+            '<div class="rv-s-stat"><div class="rv-s-stat-n">&lt;48h</div><div class="rv-s-stat-l">Liquidado</div></div>' +
           '</div>' +
         '</div>' +
         '<div>' +
-          '<a id="rv-g-cta" href="' + waHref + '" target="_blank" rel="noopener">Consultar disponibilidad &rarr;</a>' +
-          '<button id="rv-g-dismiss">No me interesa por ahora</button>' +
+          '<a id="rv-s-cta" href="' + waHref + '" target="_blank" rel="noopener">Avisarme de pr&oacute;ximas ofertas &rarr;</a>' +
+          '<button id="rv-s-dismiss">Cerrar</button>' +
         '</div>' +
       '</div>' +
     '</div>';
 
   function closePopup() {
-    sessionStorage.setItem('rv_grill_closed', '1');
+    sessionStorage.setItem('rv_sold_closed', '1');
     overlay.style.opacity = '0';
     overlay.style.transition = 'opacity .25s';
     setTimeout(function() { overlay.remove(); }, 260);
   }
 
-  overlay.addEventListener('click', function(e) {
-    if (e.target === overlay) closePopup();
-  });
-  overlay.querySelector('#rv-g-close').addEventListener('click', closePopup);
-  overlay.querySelector('#rv-g-dismiss').addEventListener('click', closePopup);
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) closePopup(); });
+  overlay.querySelector('#rv-s-close').addEventListener('click', closePopup);
+  overlay.querySelector('#rv-s-dismiss').addEventListener('click', closePopup);
 
   setTimeout(function() { document.body.appendChild(overlay); }, 1200);
 })();
