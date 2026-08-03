@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Importación LATAM — Rivero Commerce</title>
+<meta name="description" content="Calculá el costo total de importar desde Miami a 13 países de LATAM. Aranceles, IVA, flete incluidos.">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#070e1c;--bg2:#0b1527;--card:#0f1e38;--card2:#142244;
+  --b:rgba(255,255,255,.07);--b2:rgba(255,255,255,.13);
+  --blue:#2d5be3;--bp:#4a74f5;--bglow:rgba(61,110,245,.15);
+  --w:#fff;--w90:rgba(255,255,255,.9);--w70:rgba(255,255,255,.7);
+  --w50:rgba(255,255,255,.5);--w30:rgba(255,255,255,.3);--w10:rgba(255,255,255,.1);
+  --grn:#10b981;--grbg:rgba(16,185,129,.12);--grb:rgba(16,185,129,.28);
+  --amb:#f59e0b;--abg:rgba(245,158,11,.12);--ab:rgba(245,158,11,.28);
+  --red:#f43f5e;--rbg:rgba(244,63,94,.12);--rb:rgba(244,63,94,.28);
+  --wa:#25D366;
+}
+html,body{min-height:100%;font-family:'Sora',sans-serif;background:var(--bg);color:var(--w);-webkit-font-smoothing:antialiased}
+/* DISC */
+#disc{background:#0d1b35;border-bottom:1px solid rgba(245,158,11,.25);padding:8px 32px;display:flex;align-items:center;gap:10px}
+#disc p{font-size:11px;color:rgba(255,255,255,.5);line-height:1.5;flex:1;margin:0}
+#disc b{color:rgba(245,158,11,.85)}#disc strong{color:rgba(255,255,255,.7)}
+.dx{background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:5px;padding:3px 8px;color:rgba(255,255,255,.3);font-size:10px;cursor:pointer;font-family:'Sora',sans-serif;flex-shrink:0}
+/* TOPBAR */
+.topbar{background:rgba(7,14,28,.97);border-bottom:1px solid var(--b);padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:300}
+.logo{display:flex;align-items:center;gap:9px}
+.tri{width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-left:14px solid var(--bp);flex-shrink:0}
+.logo-name{font-size:17px;font-weight:800;letter-spacing:.05em;color:var(--w)}
+.tbtn{border:1px solid var(--b2);border-radius:7px;padding:6px 14px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Sora',sans-serif;background:transparent;color:var(--w70);transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.tbtn:hover{border-color:var(--w30);color:var(--w)}
+.tbtn.pri{background:var(--blue);border-color:var(--blue);color:#fff}
+.cpill{display:none;align-items:center;gap:6px;background:var(--card);border:1px solid var(--b2);border-radius:100px;padding:4px 12px;font-size:11px;font-weight:600;color:var(--w70);cursor:pointer}
+.cpill:hover{color:var(--w)}
+/* SCREENS */
+.screen{display:none}
+.screen.on{display:block}
+/* COUNTRIES */
+.chero{text-align:center;padding:48px 24px 32px}
+.chero h2{font-size:28px;font-weight:800;letter-spacing:-.6px;margin-bottom:8px}
+.chero p{font-size:13px;color:var(--w50)}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:10px;max-width:1100px;margin:0 auto;padding:0 24px 60px}
+.ccard{background:var(--card);border:1px solid var(--b);border-radius:12px;padding:18px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.ccard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--blue);opacity:0;transition:opacity .2s}
+.ccard:hover{border-color:var(--b2);transform:translateY(-2px)}
+.ccard:hover::before{opacity:1}
+.cflag{font-size:30px;margin-bottom:8px;display:block}
+.cname{font-size:13px;font-weight:700;color:var(--w90);margin-bottom:6px}
+.cbadges{display:flex;gap:5px;flex-wrap:wrap}
+.cbadge{font-size:9px;padding:2px 7px;border-radius:20px;font-weight:500}
+.fta-yes{background:var(--grbg);color:var(--grn);border:1px solid var(--grb)}
+.fta-no{background:var(--abg);color:var(--amb);border:1px solid var(--ab)}
+.vat-b{background:var(--w10);color:var(--w70);border:1px solid var(--b2)}
+.carr{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--w30);transition:all .2s}
+.ccard:hover .carr{color:var(--bp);right:10px}
+/* CALCULATOR */
+#calc-wrap{padding:0 24px 60px;max-width:1100px;margin:0 auto}
+.calch{padding:22px 0 18px;display:flex;align-items:flex-start;justify-content:space-between;border-bottom:1px solid var(--b);margin-bottom:18px;gap:12px;flex-wrap:wrap}
+.chfl{font-size:32px;margin-bottom:4px}
+.chname{font-size:24px;font-weight:800;letter-spacing:-.6px;margin-bottom:3px}
+.chsub{font-size:11px;color:var(--w50)}
+.fta-badge{display:inline-flex;align-items:center;gap:5px;background:var(--grbg);border:1px solid var(--grb);border-radius:100px;padding:4px 10px;font-size:10px;font-weight:600;color:var(--grn);margin-top:6px}
+.nofta-badge{display:inline-flex;align-items:center;gap:5px;background:var(--abg);border:1px solid var(--ab);border-radius:100px;padding:4px 10px;font-size:10px;font-weight:600;color:var(--amb);margin-top:6px}
+.tsw{position:relative;display:inline-block;width:38px;height:20px}
+.tsw input{opacity:0;width:0;height:0}
+.tsl{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:var(--b2);border-radius:20px;transition:.2s}
+.tsl:before{position:absolute;content:"";height:14px;width:14px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s}
+input:checked+.tsl{background:var(--grn)}
+input:checked+.tsl:before{transform:translateX(18px)}
+.frow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
+.cfg{background:var(--card);border:1px solid var(--b);border-radius:10px;padding:12px 14px}
+.cfg label{display:block;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--w30);margin-bottom:7px}
+.iw{position:relative;display:flex;align-items:center}
+.ipre{position:absolute;left:9px;font-size:11px;color:var(--w30);font-family:'DM Mono',monospace;pointer-events:none;z-index:1}
+.isuf{position:absolute;right:9px;font-size:10px;color:var(--w30);pointer-events:none}
+.cin{width:100%;background:var(--bg);border:1.5px solid var(--b2);border-radius:7px;padding:8px 10px 8px 22px;color:var(--w);font-size:13px;font-weight:600;font-family:'DM Mono',monospace;outline:none;transition:border-color .2s}
+.cin.np{padding-left:10px}.cin.ws{padding-right:22px}
+.cin:focus{border-color:var(--bp)}
+.cder{font-size:10px;font-family:'DM Mono',monospace;color:var(--bp);margin-top:5px}
+.rhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.rtitle{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--w50)}
+.add-btn{display:inline-flex;align-items:center;gap:5px;background:var(--blue);border:none;border-radius:7px;padding:7px 14px;color:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:'Sora',sans-serif}
+.add-btn:hover{background:var(--bp)}
+.rt{width:100%;border-collapse:collapse;background:var(--card);border-radius:10px;overflow:hidden;border:1px solid var(--b);margin-bottom:14px}
+.rt thead th{background:var(--bg2);font-size:9px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--w30);padding:9px 12px;text-align:left;border-bottom:1px solid var(--b)}
+.rt thead th.r{text-align:right}.rt thead th.c{text-align:center}
+.rt tbody tr{border-bottom:1px solid rgba(255,255,255,.05)}
+.rt tbody tr:last-child{border-bottom:none}
+.rt tbody td{padding:9px 12px;vertical-align:middle}
+.rt tbody td.r{text-align:right}.rt tbody td.c{text-align:center}
+.rt tfoot tr{background:var(--bglow);border-top:1px solid rgba(61,110,245,.2)}
+.rt tfoot td{padding:9px 12px;font-size:12px;font-weight:700}
+.csel{width:100%;background:var(--bg);border:1.5px solid var(--b2);border-radius:7px;padding:7px 10px;color:var(--w);font-size:12px;font-family:'Sora',sans-serif;outline:none;cursor:pointer}
+.csel:focus{border-color:var(--bp)}.csel option{background:var(--card2)}
+.fw{position:relative;display:inline-flex;align-items:center;width:110px}
+.fp{position:absolute;left:8px;font-size:11px;color:var(--w30);font-family:'DM Mono',monospace;pointer-events:none}
+.fi{width:100%;background:var(--bg);border:1.5px solid var(--b2);border-radius:7px;padding:6px 8px 6px 18px;color:var(--w);font-size:13px;font-weight:600;font-family:'DM Mono',monospace;outline:none;text-align:right;transition:border-color .2s}
+.fi:focus{border-color:var(--bp)}
+.ncmb{font-family:'DM Mono',monospace;font-size:10px;color:var(--bp);background:var(--bglow);border:1px solid rgba(61,110,245,.2);border-radius:5px;padding:2px 7px;white-space:nowrap}
+.dp{font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;font-family:'DM Mono',monospace}
+.dp-z{background:var(--grbg);color:var(--grn);border:1px solid var(--grb)}
+.dp-l{background:var(--abg);color:var(--amb);border:1px solid var(--ab)}
+.dp-h{background:var(--rbg);color:var(--red);border:1px solid var(--rb)}
+.del-btn{width:24px;height:24px;background:transparent;border:1px solid var(--b2);border-radius:5px;color:var(--w30);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.del-btn:hover{background:var(--rbg);border-color:var(--rb);color:var(--red)}
+.mn{font-family:'DM Mono',monospace;font-weight:600;font-size:12px}
+.mn.b{color:var(--bp)}.mn.g{color:var(--grn)}.mn.d{color:var(--w30)}.mn.r{color:var(--red)}.mn.w{color:var(--w90)}
+/* BREAKDOWN */
+.bl{display:grid;grid-template-columns:1fr 330px;gap:14px;align-items:start}
+.bcard{background:var(--card);border:1px solid var(--b);border-radius:12px;overflow:hidden}
+.bhead{padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--b);display:flex;justify-content:space-between;align-items:center}
+.btitle{font-size:12px;font-weight:700}
+.bbody{padding:4px 0}
+.br{display:flex;align-items:center;gap:8px;padding:8px 16px;border-bottom:1px solid rgba(255,255,255,.04)}
+.br:last-child{border-bottom:none}
+.br.sub{background:rgba(61,110,245,.05)}
+.br.tot{background:var(--bglow);border-top:1px solid rgba(61,110,245,.2)}
+.br.csr{background:rgba(255,255,255,.02);border-left:2px solid var(--blue)}
+.bll{font-size:12px;color:var(--w70);flex:1;line-height:1.3}
+.bll b{font-weight:600;color:var(--w90)}
+.bll small{font-size:10px;color:var(--w30);display:block;margin-top:1px}
+.bw{width:60px;height:4px;background:var(--b2);border-radius:2px;overflow:hidden;flex-shrink:0}
+.bb{height:100%;border-radius:2px}
+.ba{font-family:'DM Mono',monospace;font-size:12px;font-weight:600;min-width:72px;text-align:right;flex-shrink:0}
+.btg{font-size:9px;padding:2px 6px;border-radius:10px;white-space:nowrap;flex-shrink:0}
+.t-nr{background:var(--rbg);color:var(--red);border:1px solid var(--rb)}
+.t-vat{background:var(--abg);color:var(--amb);border:1px solid var(--ab)}
+.t-log{background:var(--w10);color:var(--w50);border:1px solid var(--b2)}
+.t-base{background:var(--bglow);color:var(--bp);border:1px solid rgba(61,110,245,.25)}
+.t-rec{background:var(--grbg);color:var(--grn);border:1px solid var(--grb)}
+/* SUMMARY */
+.scard{background:var(--card);border:1px solid var(--b);border-radius:12px;overflow:hidden;position:sticky;top:66px}
+.shead{background:var(--blue);padding:14px 16px}
+.stit{font-size:13px;font-weight:700;color:#fff}
+.ssub{font-size:10px;color:rgba(255,255,255,.6);margin-top:2px}
+.sbody{padding:12px 16px}
+.srow{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--b)}
+.srow:last-of-type{border-bottom:none}
+.srow .sl{font-size:11px;color:var(--w50)}
+.srow .sv{font-family:'DM Mono',monospace;font-size:12px;font-weight:600}
+.stot{background:var(--bglow);border:1px solid rgba(61,110,245,.2);border-radius:8px;padding:12px;margin:12px 0 4px}
+.stot .tl{font-size:10px;color:var(--w50);margin-bottom:3px}
+.stot .tv{font-size:22px;font-weight:800;font-family:'DM Mono',monospace;color:var(--bp);letter-spacing:-.5px}
+.stot .ts{font-size:10px;color:var(--w30);margin-top:2px}
+.mgbox{background:var(--card2);border-radius:8px;padding:10px 12px;margin-bottom:10px;display:none}
+.mgbox-t{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--w30);margin-bottom:8px}
+.mgrow{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.mgrow:last-child{border-bottom:none}
+.mgrow .mp{font-size:11px;color:var(--w50)}.mgrow .mv{font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:var(--bp)}
+.mgrow.hl .mp{color:var(--grn);font-weight:600}.mgrow.hl .mv{color:var(--grn)}
+.wa-btn{width:100%;background:var(--wa);border:none;border-radius:10px;padding:13px;color:#fff;font-size:13px;font-weight:700;font-family:'Sora',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:7px;transition:all .2s}
+.wa-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.cat-btn{width:100%;background:transparent;border:1px solid var(--b2);border-radius:10px;padding:10px;color:var(--w70);font-size:12px;font-weight:600;font-family:'Sora',sans-serif;cursor:pointer;transition:all .2s}
+.cat-btn:hover{border-color:var(--bp);color:var(--bp)}
+.nbox{background:var(--card);border-left:2px solid var(--bp);border-radius:0 7px 7px 0;padding:10px 12px;margin:8px 16px 16px;font-size:10px;color:var(--w50);line-height:1.6}
+/* OVERLAYS */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
+.overlay.show{display:flex}
+.popup{background:var(--card2);border:1px solid var(--b2);border-radius:20px;max-width:460px;width:100%;overflow:hidden;animation:pi .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pi{from{opacity:0;transform:scale(.88) translateY(16px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.phead{padding:26px 26px 22px;text-align:center;background:var(--blue)}
+.phead.dark{background:linear-gradient(135deg,#1a2d5a,#0f1e38);border-bottom:1px solid var(--b2)}
+.picon{font-size:38px;margin-bottom:10px;display:block}
+.phead h3{font-size:20px;font-weight:800;color:#fff;letter-spacing:-.4px;margin-bottom:5px}
+.phead p{font-size:13px;color:rgba(255,255,255,.65);line-height:1.6}
+.pbody{padding:22px 26px}
+.catgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:16px}
+.chip{background:var(--card);border:1px solid var(--b2);border-radius:7px;padding:8px 11px;color:var(--w70);display:flex;align-items:center;gap:9px}
+.chip-icon{font-size:16px;flex-shrink:0}
+.chip-name{font-size:11px;font-weight:600;color:var(--w80)}
+.chip-sub{font-size:9px;color:var(--w30)}
+.trust-bar{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:8px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.pop-cta{width:100%;background:var(--blue);border:none;border-radius:11px;padding:14px;color:#fff;font-size:13px;font-weight:700;font-family:'Sora',sans-serif;cursor:pointer;margin-bottom:9px;transition:all .2s}
+.pop-cta:hover{background:var(--bp);transform:translateY(-1px)}
+.pop-skip{background:transparent;border:none;color:var(--w30);font-size:12px;font-family:'Sora',sans-serif;cursor:pointer;width:100%;padding:3px}
+.pop-skip:hover{color:var(--w50)}
+.ff{margin-bottom:13px}
+.ff label{display:block;font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--w30);margin-bottom:6px}
+.ff input{width:100%;background:var(--bg);border:1.5px solid var(--b2);border-radius:8px;padding:10px 13px;color:var(--w);font-size:13px;font-family:'Sora',sans-serif;outline:none;transition:border-color .2s}
+.ff input:focus{border-color:var(--bp)}
+.ff input::placeholder{color:var(--w30)}
+.fsummary{background:var(--card);border:1px solid var(--b);border-radius:8px;padding:11px;margin-bottom:14px;font-size:11px;color:var(--w50);line-height:1.7}
+.fsummary b{color:var(--w80)}
+.wa-sub{width:100%;background:var(--wa);border:none;border-radius:11px;padding:14px;color:#fff;font-size:13px;font-weight:700;font-family:'Sora',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:9px;transition:all .2s}
+.wa-sub:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.priv{font-size:10px;color:var(--w30);text-align:center;line-height:1.5;margin-bottom:10px}
+/* FOOTER */
+.footer{background:#060c18;border-top:1px solid var(--b);padding:28px 32px;text-align:center}
+.footer p{font-size:11px;color:var(--w30);line-height:1.7;max-width:680px;margin:0 auto 6px}
+.fcopy{font-size:10px;color:rgba(255,255,255,.15);margin-top:12px;padding-top:12px;border-top:1px solid var(--b)}
+@media(max-width:800px){
+  .frow{grid-template-columns:1fr 1fr}
+  .bl{grid-template-columns:1fr}
+  .scard{position:static}
+  .cgrid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr))}
+  .topbar{padding:0 16px}
+  #calc-wrap{padding:0 16px 40px}
+}
+@media print{
+  #disc,.tbtn,.cpill,.add-btn,.del-btn,.tsw,.wa-btn,.cat-btn,.overlay{display:none!important}
+  .bl{grid-template-columns:1fr}.scard{position:static}
+  body{background:#fff;color:#111}
+}
+</style>
+</head>
+<body>
+
+<div id="disc">
+  <span style="font-size:13px;flex-shrink:0">⚠️</span>
+  <p><b>Aviso legal:</b> Los aranceles son <strong>orientativos y referenciales</strong>. Pueden variar por cambios legislativos. Los costos de flete son estimativos y <strong>no están a cargo de Rivero Commerce LLC</strong>.</p>
+  <button class="dx" onclick="document.getElementById('disc').style.display='none'">✕</button>
+</div>
+
+<div class="topbar">
+  <div class="logo">
+    <div class="tri"></div><span class="logo-name">RIVERO</span>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <div class="cpill" id="cpill" onclick="goTo('countries')">
+      <span id="pill-flag"></span><span id="pill-name"></span>
+      <span style="color:var(--w30);font-size:10px">· cambiar</span>
+    </div>
+    <a href="index.html" class="tbtn">← Inicio</a>
+    <button class="tbtn" id="btn-back" style="display:none" onclick="goTo('countries')">← Países</button>
+    <button class="tbtn" id="btn-contact" style="display:none" onclick="openContact()">📲 Contactar</button>
+    <button class="tbtn pri" id="btn-pdf" style="display:none" onclick="window.print()">⬇ PDF</button>
+  </div>
+</div>
+
+<!-- ══ COUNTRIES — visible by default ══ -->
+<div class="screen on" id="countries">
+  <div class="chero">
+    <h2>Seleccioná tu país de destino</h2>
+    <p>Cargamos automáticamente los aranceles e impuestos vigentes</p>
+  </div>
+  <div class="cgrid">
+<div class="ccard" onclick="selectCountry('AR')">
+      <span class="cflag">🇦🇷</span>
+      <div class="cname">Argentina</div>
+      <div class="cbadges"><span class="cbadge fta-no">Sin TLC</span><span class="cbadge vat-b">IVA 21%</span></div>
+      <div class="carr">›</div>
+    </div>
+<div class="ccard" onclick="selectCountry('CO')">
+      <span class="cflag">🇨🇴</span>
+      <div class="cname">Colombia</div>
+      <div class="cbadges"><span class="cbadge fta-yes">TLC USA ✓</span><span class="cbadge vat-b">IVA 19%</span></div>
+      <div class="carr">›</div>
+    </div>
+<div class="ccard" onclick="selectCountry('CL')">
+      <span class="cflag">🇨🇱</span>
+      <div class="cname">Chile</div>
+      <div class="cbadges"><span class="cbadge fta-yes">TLC USA ✓</span><span class="cbadge vat-b">IVA 19%</span></div>
+      <div class="carr">›</div>
+    </div>
+<div class="ccard" onclick="selectCountry('PE')">
+      <span class="cflag">🇵🇪</span>
+      <div class="cname">Perú</div>
+      <div class="cbadges"><span class="cbadge fta-yes">TLC USA ✓</span><span class="cbadge vat-b">IGV + IPM 18%</span></div>
+      <div class="carr">›</div>
+    </div>
+<div class="ccard" onclick="selectCountry('EC')">
+      <span class="cflag">🇪🇨</span>
+      <div class="cname">Ecuador</div>
+      <div class="cbadges"><span class="cbadge fta-no">Sin TLC</span><span class="cbadge vat-b">IVA 15%</span></div>
+      <div class="carr">›</div>
+    </div>
+<div class="ccard" onclick="selectCountry('UY')">
+      <span class="cflag">🇺🇾</span>
+      <div class="cname">Uruguay</div>
+      <div class="cbadges"><span class="cbadge fta-no">Sin TLC</span><span class="cbadge vat-b">IVA 22%</span></div>
+      <div class="carr">›</div>
+    </div>
+<div class="ccard" onclick="selectCountry('PY')">
+      <span class="cflag">🇵🇾</span>
+      <div class="cname">Paraguay</div>
+      <div class="cbadges"><span class="cbadge fta-no">Sin TLC</span><span class="cbadge vat-b">IVA 10%</span></div>
+      <div class="carr">›</div>
+    </div>
+<div class="ccard" onclick="selectCountry('GT')">
+      <span class="cflag">🇬🇹</span>
+      <div class="cname">Guatemala</div>
+      <div class="cbadges"><span class="cbadge fta-yes">TLC USA ✓</span><span class="cbadge vat-b">IVA 12%</span></div>
+      <div class="carr">›</div>
+    </div>
+<div class="ccard" onclick="selectCountry('SV')">
+      <span class="cflag">🇸🇻</span>
+      <div class="cname">El Salvador</div>
+      <div class="cbadges"><span class="cbadge fta-yes">TLC USA ✓</span><span class="cbadge vat-b">IVA 13%</span></div>
+      <div class="carr">›</div>
+    </div>
+<div class="ccard" onclick="selectCountry('CR')">
+      <span class="cflag">🇨🇷</span>
+      <div class="cname">Costa Rica</div>
+      <div class="cbadges"><span class="cbadge fta-yes">TLC USA ✓</span><span class="cbadge vat-b">IVA 13%</span></div>
+      <div class="carr">›</div>
+    </div>
+<div class="ccard" onclick="selectCountry('BZ')">
+      <span class="cflag">🇧🇿</span>
+      <div class="cname">Belize</div>
+      <div class="cbadges"><span class="cbadge fta-no">Sin TLC</span><span class="cbadge vat-b">GST 12.5%</span></div>
+      <div class="carr">›</div>
+    </div>
+<div class="ccard" onclick="selectCountry('JM')">
+      <span class="cflag">🇯🇲</span>
+      <div class="cname">Jamaica</div>
+      <div class="cbadges"><span class="cbadge fta-no">Sin TLC</span><span class="cbadge vat-b">GCT 15%</span></div>
+      <div class="carr">›</div>
+    </div>
+<div class="ccard" onclick="selectCountry('DO')">
+      <span class="cflag">🇩🇴</span>
+      <div class="cname">República Dominicana</div>
+      <div class="cbadges"><span class="cbadge fta-yes">TLC USA ✓</span><span class="cbadge vat-b">ITBIS 18%</span></div>
+      <div class="carr">›</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CALCULATOR ══ -->
+<div class="screen" id="calculator">
+<div id="calc-wrap">
+  <div class="calch">
+    <div>
+      <div class="chfl" id="chfl"></div>
+      <div class="chname" id="chname"></div>
+      <div class="chsub" id="chsub"></div>
+      <div id="fta-area"></div>
+    </div>
+    <div id="fta-wrap" style="display:none">
+      <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--w50)">
+        <span>TLC / FTA con EE.UU.</span>
+        <label class="tsw"><input type="checkbox" id="ftacb" checked onchange="recalc()"><span class="tsl"></span></label>
+        <span id="ftalbl" style="font-weight:600;color:var(--grn)">Activado</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="frow">
+    <div class="cfg"><label>Flete marítimo estimado</label>
+      <div class="iw"><span class="ipre">$</span><input class="cin" type="number" id="infr" value="2500" min="0" step="100" oninput="recalc()"></div>
+      <div class="cder">USD · para toda la carga</div></div>
+    <div class="cfg"><label>Seguro de carga</label>
+      <div class="iw"><input class="cin np ws" type="number" id="inseg" value="0.5" min="0" step="0.1" oninput="recalc()"><span class="isuf">%</span></div>
+      <div class="cder">% sobre FOB total</div></div>
+    <div class="cfg"><label>Margen objetivo</label>
+      <div class="iw"><input class="cin np ws" type="number" id="inmg" value="35" min="1" max="90" oninput="recalc()"><span class="isuf">%</span></div>
+      <div class="cder">sobre precio de venta</div></div>
+  </div>
+
+  <div class="rhead">
+    <span class="rtitle">Categorías y valores FOB</span>
+    <button class="add-btn" onclick="addRow()">
+      <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+      Agregar categoría
+    </button>
+  </div>
+
+  <table class="rt">
+    <thead><tr>
+      <th style="width:36%">Categoría</th>
+      <th style="width:13%">NCM / HS</th>
+      <th class="r" style="width:13%">FOB (USD)</th>
+      <th class="c" style="width:11%">Arancel</th>
+      <th class="r" style="width:11%">Duty $</th>
+      <th class="r" style="width:8%">% total</th>
+      <th style="width:4%"></th>
+    </tr></thead>
+    <tbody id="rtbody"></tbody>
+    <tfoot id="rtfoot" style="display:none">
+      <tr><td colspan="2">Total FOB</td>
+      <td class="r"><span class="mn b" id="ftfob">$0</span></td>
+      <td colspan="2" class="r"><span class="mn r" id="ftduty">$0</span></td>
+      <td class="c"><span style="font-size:10px;color:var(--w30)">100%</span></td>
+      <td></td></tr>
+    </tfoot>
+  </table>
+
+  <div class="bl">
+    <div class="bcard">
+      <div class="bhead"><span class="btitle">Desglose completo</span><span id="ncats" style="font-size:10px;color:var(--w30)"></span></div>
+      <div class="bbody" id="bbody">
+        <div style="padding:40px;text-align:center;color:var(--w30);font-size:13px">Agregá una categoría con valor FOB para ver el cálculo.</div>
+      </div>
+    </div>
+    <div>
+      <div class="scard">
+        <div class="shead"><div class="stit" id="stit">Resumen</div><div class="ssub" id="ssub">Agregá categorías para calcular</div></div>
+        <div class="sbody">
+          <div class="srow"><span class="sl">FOB Miami</span><span class="sv" id="sfob">—</span></div>
+          <div class="srow"><span class="sl">Flete + seguro</span><span class="sv" id="sfr">—</span></div>
+          <div class="srow"><span class="sl">CIF destino</span><span class="sv" id="scif">—</span></div>
+          <div class="srow"><span class="sl">Aranceles</span><span class="sv" id="sduty" style="color:var(--red)">—</span></div>
+          <div class="srow"><span class="sl" id="sVatLbl">IVA</span><span class="sv" id="svat" style="color:var(--amb)">—</span></div>
+          <div class="srow"><span class="sl">Otros impuestos</span><span class="sv" id="soth" style="color:var(--amb)">—</span></div>
+          <div class="srow"><span class="sl">Despachante</span><span class="sv" id="sbrk">—</span></div>
+          <div class="stot"><div class="tl">Total aterrizado / nacionalizado</div><div class="tv" id="stotv">—</div><div class="ts" id="smul">—</div></div>
+          <div class="mgbox" id="mgbox"><div class="mgbox-t">Precio de venta sugerido</div><div id="mgrows"></div></div>
+          <button class="wa-btn" onclick="openContact()">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Quiero ver los precios
+          </button>
+          <button class="cat-btn" onclick="openCatalog()">📦 Ver catálogo de productos</button>
+        </div>
+        <div class="nbox" id="nbox"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="footer">
+  <div style="display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:10px"><div class="tri"></div><span style="font-size:15px;font-weight:800;letter-spacing:.04em">RIVERO</span></div>
+  <p>Rivero Commerce LLC · Miami, Florida · riveroco.com · hola@rivero.website</p>
+  <p style="font-size:10px;color:rgba(255,255,255,.2)">Los aranceles son orientativos y pueden variar sin aviso. Los costos logísticos son estimativos y no están a cargo de Rivero. Verificá siempre con un agente aduanal certificado.</p>
+  <div class="fcopy">© 2026 Rivero Commerce LLC · Todos los derechos reservados</div>
+</div>
+
+<!-- POPUP: CATALOG -->
+<div class="overlay" id="ov-catalog">
+  <div class="popup">
+    <div class="phead">
+      <span class="picon">📦</span>
+      <h3>¿Querés conocer nuestros productos?</h3>
+      <p>Más de 150 productos de marcas premium del retail norteamericano listos para importar.</p>
+    </div>
+    <div class="pbody">
+      <div class="catgrid">
+        <div class="chip"><span class="chip-icon">🪑</span><div><div class="chip-name">Muebles</div><div class="chip-sub">Sillas, camas, cabeceros</div></div></div>
+        <div class="chip"><span class="chip-icon">💡</span><div><div class="chip-name">Iluminación</div><div class="chip-sub">Lámparas, ventiladores</div></div></div>
+        <div class="chip"><span class="chip-icon">🔧</span><div><div class="chip-name">Herramientas</div><div class="chip-sub">Mano y eléctricas</div></div></div>
+        <div class="chip"><span class="chip-icon">🏠</span><div><div class="chip-name">Ferretería</div><div class="chip-sub">Fijaciones, accesorios</div></div></div>
+        <div class="chip"><span class="chip-icon">🪵</span><div><div class="chip-name">Pisos</div><div class="chip-sub">Tiles, revestimientos</div></div></div>
+        <div class="chip"><span class="chip-icon">❄️</span><div><div class="chip-name">Climatización</div><div class="chip-sub">Fans, HVAC</div></div></div>
+        <div class="chip"><span class="chip-icon">🚿</span><div><div class="chip-name">Cocina y baño</div><div class="chip-sub">Grifería, sanitarios</div></div></div>
+        <div class="chip"><span class="chip-icon">🏗️</span><div><div class="chip-name">Construcción</div><div class="chip-sub">Materiales, eléctrico</div></div></div>
+      </div>
+      <div class="trust-bar">
+        <span style="font-size:18px;flex-shrink:0">✅</span>
+        <div style="font-size:11px;color:var(--w70);line-height:1.6">Packaging original del retail USA · Documentación completa · Cargas mixtas disponibles</div>
+      </div>
+      <button class="pop-cta" onclick="closeCatalog(); openContact()">Quiero ver los precios y el catálogo →</button>
+      <button class="pop-skip" onclick="closeCatalog()">Seguir calculando</button>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP: CONTACT -->
+<div class="overlay" id="ov-contact">
+  <div class="popup">
+    <div class="phead dark">
+      <span class="picon">🤝</span>
+      <h3>Contactá al representante<br>en <span id="form-country">tu país</span></h3>
+      <p>Completá tus datos y te respondemos por WhatsApp con precios y disponibilidad.</p>
+    </div>
+    <div class="pbody">
+      <div class="fsummary" id="fsummary">Completá el cálculo para ver el resumen aquí.</div>
+      <div class="ff"><label>Nombre completo</label><input type="text" id="fname" placeholder="Tu nombre"></div>
+      <div class="ff"><label>Email</label><input type="email" id="femail" placeholder="tu@empresa.com"></div>
+      <div class="ff"><label>WhatsApp / Teléfono</label><input type="tel" id="fphone" placeholder="+54 9 11 1234 5678"></div>
+      <button class="wa-sub" onclick="submitForm()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Enviar por WhatsApp →
+      </button>
+      <div class="priv">🔒 Tus datos van directo a nuestro equipo. No compartimos con terceros.</div>
+      <button class="pop-skip" onclick="closeContact()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const COUNTRIES = [{"code": "AR", "name": "Argentina", "flag": "🇦🇷", "fta_usa": false, "fta_name": null, "vat": 21, "vat_name": "IVA", "other": [{"name": "Tasa estadística (TE) 2.5%", "pct": 2.5}, {"name": "IVA adicional 10.5% (recuperable)", "pct": 10.5}, {"name": "Ganancias anticipo 6% (recuperable)", "pct": 6}, {"name": "IIBB ingresos brutos 3% (recuperable)", "pct": 3}], "broker_pct": 1.5, "duties_mfn": {"furniture": 20, "lighting": 16, "tools": 14, "hardware": 16, "flooring": 16, "electrical": 16, "hvac": 14, "kitchen_bath": 16, "cabinets": 20, "storage": 16, "building": 12, "appliances": 20}, "duties_fta": null, "notes": "Argentina aplica el AEC del MERCOSUR. Sin TLC con USA — aranceles completos. IVA 21% permanente. Los anticipos de IVA adicional (10.5%), Ganancias (6%) e IIBB (3%) son recuperables como crédito fiscal para importadores registrados. Tasa de estadística (TE) 2.5% adicional sobre CIF."}, {"code": "CO", "name": "Colombia", "flag": "🇨🇴", "fta_usa": true, "fta_name": "TLC Colombia–EE.UU. (2012)", "vat": 19, "vat_name": "IVA", "other": [{"name": "Arancel consular", "pct": 0}], "broker_pct": 1.0, "duties_mfn": {"furniture": 20, "lighting": 15, "tools": 10, "hardware": 10, "flooring": 15, "electrical": 10, "hvac": 10, "kitchen_bath": 10, "cabinets": 20, "storage": 15, "building": 10, "appliances": 15}, "duties_fta": {"furniture": 0, "lighting": 0, "tools": 0, "hardware": 0, "flooring": 0, "electrical": 0, "hvac": 0, "kitchen_bath": 0, "cabinets": 0, "storage": 0, "building": 0, "appliances": 0}, "notes": "Con TLC, prácticamente todos los bienes manufacturados de origen USA entran con 0% arancel. Solo aplica IVA 19% sobre CIF."}, {"code": "CL", "name": "Chile", "flag": "🇨🇱", "fta_usa": true, "fta_name": "TLC Chile–EE.UU. (2004)", "vat": 19, "vat_name": "IVA", "other": [], "broker_pct": 0.5, "duties_mfn": {"furniture": 6, "lighting": 6, "tools": 6, "hardware": 6, "flooring": 6, "electrical": 6, "hvac": 6, "kitchen_bath": 6, "cabinets": 6, "storage": 6, "building": 6, "appliances": 6}, "duties_fta": {"furniture": 0, "lighting": 0, "tools": 0, "hardware": 0, "flooring": 0, "electrical": 0, "hvac": 0, "kitchen_bath": 0, "cabinets": 0, "storage": 0, "building": 0, "appliances": 0}, "notes": "Chile tiene arancel plano del 6% para todo. Con TLC USA → 0%. Una de las estructuras arancelarias más simples de la región."}, {"code": "PE", "name": "Perú", "flag": "🇵🇪", "fta_usa": true, "fta_name": "TLC Perú–EE.UU. (2009)", "vat": 18, "vat_name": "IGV + IPM", "other": [{"name": "Percepción IGV (anticipo recup.)", "pct": 5}], "broker_pct": 0.8, "duties_mfn": {"furniture": 6, "lighting": 6, "tools": 11, "hardware": 6, "flooring": 6, "electrical": 6, "hvac": 0, "kitchen_bath": 6, "cabinets": 6, "storage": 6, "building": 6, "appliances": 6}, "duties_fta": {"furniture": 0, "lighting": 0, "tools": 0, "hardware": 0, "flooring": 0, "electrical": 0, "hvac": 0, "kitchen_bath": 0, "cabinets": 0, "storage": 0, "building": 0, "appliances": 0}, "notes": "Con TLC USA → 0%. IGV 18% (IGV 16% + IPM 2%). La percepción del 5% es un anticipo recuperable como crédito fiscal."}, {"code": "EC", "name": "Ecuador", "flag": "🇪🇨", "fta_usa": false, "fta_name": null, "vat": 15, "vat_name": "IVA", "other": [{"name": "FODINFA", "pct": 0.5}], "broker_pct": 1.0, "duties_mfn": {"furniture": 20, "lighting": 15, "tools": 10, "hardware": 10, "flooring": 15, "electrical": 10, "hvac": 10, "kitchen_bath": 15, "cabinets": 20, "storage": 15, "building": 10, "appliances": 20}, "duties_fta": null, "notes": "Ecuador no tiene TLC con USA. IVA subió al 15% en 2024. FODINFA 0.5% sobre CIF. Aranceles aplicables según NANDINA (Comunidad Andina)."}, {"code": "UY", "name": "Uruguay", "flag": "🇺🇾", "fta_usa": false, "fta_name": null, "vat": 22, "vat_name": "IVA", "other": [{"name": "IMESI (si aplica)", "pct": 0}], "broker_pct": 1.2, "duties_mfn": {"furniture": 20, "lighting": 16, "tools": 14, "hardware": 16, "flooring": 16, "electrical": 16, "hvac": 14, "kitchen_bath": 16, "cabinets": 20, "storage": 16, "building": 12, "appliances": 20}, "duties_fta": null, "notes": "MERCOSUR TEC (Arancel Externo Común). IVA del 22% es el más alto de la región. Sin TLC con USA — pagan AEC completo."}, {"code": "PY", "name": "Paraguay", "flag": "🇵🇾", "fta_usa": false, "fta_name": null, "vat": 10, "vat_name": "IVA", "other": [], "broker_pct": 1.0, "duties_mfn": {"furniture": 20, "lighting": 16, "tools": 14, "hardware": 16, "flooring": 16, "electrical": 16, "hvac": 14, "kitchen_bath": 16, "cabinets": 20, "storage": 16, "building": 12, "appliances": 20}, "duties_fta": null, "notes": "MERCOSUR TEC. IVA del 10% — el más bajo de la región. Carga tributaria total relativamente competitiva a pesar de los aranceles."}, {"code": "GT", "name": "Guatemala", "flag": "🇬🇹", "fta_usa": true, "fta_name": "CAFTA-DR (2006)", "vat": 12, "vat_name": "IVA", "other": [{"name": "DAI (sin CAFTA)", "pct": 0}], "broker_pct": 0.8, "duties_mfn": {"furniture": 15, "lighting": 10, "tools": 10, "hardware": 10, "flooring": 10, "electrical": 10, "hvac": 5, "kitchen_bath": 10, "cabinets": 15, "storage": 10, "building": 5, "appliances": 10}, "duties_fta": {"furniture": 0, "lighting": 0, "tools": 0, "hardware": 0, "flooring": 0, "electrical": 0, "hvac": 0, "kitchen_bath": 0, "cabinets": 0, "storage": 0, "building": 0, "appliances": 0}, "notes": "CAFTA-DR → 0% para bienes manufacturados de USA. DAI (Derecho Arancelario de Importación) según SAC. IVA 12%."}, {"code": "SV", "name": "El Salvador", "flag": "🇸🇻", "fta_usa": true, "fta_name": "CAFTA-DR (2006)", "vat": 13, "vat_name": "IVA", "other": [], "broker_pct": 0.8, "duties_mfn": {"furniture": 15, "lighting": 10, "tools": 10, "hardware": 10, "flooring": 10, "electrical": 10, "hvac": 5, "kitchen_bath": 10, "cabinets": 15, "storage": 10, "building": 5, "appliances": 10}, "duties_fta": {"furniture": 0, "lighting": 0, "tools": 0, "hardware": 0, "flooring": 0, "electrical": 0, "hvac": 0, "kitchen_bath": 0, "cabinets": 0, "storage": 0, "building": 0, "appliances": 0}, "notes": "CAFTA-DR → 0% para manufacturados de USA. Arancel centroamericano armonizado (SAC). IVA 13%."}, {"code": "CR", "name": "Costa Rica", "flag": "🇨🇷", "fta_usa": true, "fta_name": "CAFTA-DR (2009)", "vat": 13, "vat_name": "IVA", "other": [{"name": "1% arancel consular", "pct": 1}], "broker_pct": 1.0, "duties_mfn": {"furniture": 14, "lighting": 10, "tools": 10, "hardware": 10, "flooring": 14, "electrical": 10, "hvac": 5, "kitchen_bath": 10, "cabinets": 14, "storage": 10, "building": 5, "appliances": 10}, "duties_fta": {"furniture": 0, "lighting": 0, "tools": 0, "hardware": 0, "flooring": 0, "electrical": 0, "hvac": 0, "kitchen_bath": 0, "cabinets": 0, "storage": 0, "building": 0, "appliances": 0}, "notes": "CAFTA-DR → 0%. Costa Rica aplica 1% de arancel consular adicional sobre el valor de la factura. IVA 13%."}, {"code": "BZ", "name": "Belize", "flag": "🇧🇿", "fta_usa": false, "fta_name": null, "vat": 12.5, "vat_name": "GST", "other": [{"name": "Environmental Tax", "pct": 2}], "broker_pct": 1.5, "duties_mfn": {"furniture": 20, "lighting": 20, "tools": 10, "hardware": 10, "flooring": 20, "electrical": 5, "hvac": 5, "kitchen_bath": 20, "cabinets": 20, "storage": 20, "building": 5, "appliances": 20}, "duties_fta": null, "notes": "CARICOM CET (Arancel Externo Común del Caribe). Sin TLC con USA. GST 12.5%. Environmental Tax 2% sobre valor CIF."}, {"code": "JM", "name": "Jamaica", "flag": "🇯🇲", "fta_usa": false, "fta_name": null, "vat": 15, "vat_name": "GCT", "other": [{"name": "CESS (levy)", "pct": 0.5}, {"name": "ASD (Adv. duties stmp)", "pct": 0.5}], "broker_pct": 1.5, "duties_mfn": {"furniture": 20, "lighting": 20, "tools": 10, "hardware": 10, "flooring": 20, "electrical": 10, "hvac": 5, "kitchen_bath": 20, "cabinets": 20, "storage": 20, "building": 5, "appliances": 20}, "duties_fta": null, "notes": "CARICOM CET. Sin TLC con USA. GCT (General Consumption Tax) 15%. CESS 0.5% + ASD 0.5% adicionales sobre CIF."}, {"code": "DO", "name": "República Dominicana", "flag": "🇩🇴", "fta_usa": true, "fta_name": "CAFTA-DR (2007)", "vat": 18, "vat_name": "ITBIS", "other": [{"name": "CESC (seguridad social)", "pct": 3}], "broker_pct": 1.0, "duties_mfn": {"furniture": 20, "lighting": 15, "tools": 10, "hardware": 10, "flooring": 15, "electrical": 10, "hvac": 10, "kitchen_bath": 15, "cabinets": 20, "storage": 15, "building": 10, "appliances": 15}, "duties_fta": {"furniture": 0, "lighting": 0, "tools": 0, "hardware": 0, "flooring": 0, "electrical": 0, "hvac": 0, "kitchen_bath": 0, "cabinets": 0, "storage": 0, "building": 0, "appliances": 0}, "notes": "CAFTA-DR → 0%. ITBIS (IVA equivalente) 18%. CESC 3% contribución especial seguridad social de la policía."}];
+const CATEGORIES = [{"id": "furniture", "name": "Muebles y sillas", "hs": "9401-9403", "ncm": "9401.61 / 9403.20"}, {"id": "lighting", "name": "Iluminación y lámparas", "hs": "9405", "ncm": "9405.10 / 9405.40"}, {"id": "tools", "name": "Herramientas", "hs": "8201-8215", "ncm": "8205.51 / 8211.91"}, {"id": "hardware", "name": "Ferretería y fijaciones", "hs": "7318-7326", "ncm": "7318.15 / 7326.90"}, {"id": "flooring", "name": "Pisos y cerámicos", "hs": "6907-6908", "ncm": "6907.21 / 6908.90"}, {"id": "electrical", "name": "Eléctrico", "hs": "8536/8544", "ncm": "8536.50 / 8544.49"}, {"id": "hvac", "name": "Climatización y ventiladores", "hs": "8414-8415", "ncm": "8414.51 / 8415.10"}, {"id": "kitchen_bath", "name": "Cocina y baño (grifería)", "hs": "7324/8481", "ncm": "7324.10 / 8481.80"}, {"id": "cabinets", "name": "Gabinetes de cocina", "hs": "9403.40", "ncm": "9403.40 / 9403.60"}, {"id": "storage", "name": "Organización del hogar", "hs": "9403/3924", "ncm": "3924.90 / 9403.20"}, {"id": "building", "name": "Materiales de construcción", "hs": "3917/7308", "ncm": "3917.31 / 7308.90"}, {"id": "appliances", "name": "Electrodomésticos", "hs": "8516/8422", "ncm": "8516.50 / 8422.11"}];
+const WA = '15558016189';
+
+var currentCountry = null;
+var rows = [], rowId = 0;
+var popupShown = false, popupTimer = null;
+
+function goTo(screen) {
+  ['countries','calculator'].forEach(function(s) {
+    var el = document.getElementById(s);
+    if(el) { el.className = 'screen' + (s === screen ? ' on' : ''); }
+  });
+  var isCalc = screen === 'calculator';
+  var el = document.getElementById('btn-back');
+  if(el) el.style.display = screen === 'countries' ? 'none' : (isCalc ? 'inline-flex' : 'none');
+  var ec = document.getElementById('btn-contact');
+  if(ec) ec.style.display = isCalc ? 'inline-flex' : 'none';
+  var ep = document.getElementById('btn-pdf');
+  if(ep) ep.style.display = isCalc ? 'inline-flex' : 'none';
+  var pill = document.getElementById('cpill');
+  if(pill) pill.style.display = (currentCountry && isCalc) ? 'flex' : 'none';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function selectCountry(code) {
+  currentCountry = null;
+  for(var i=0;i<COUNTRIES.length;i++) {
+    if(COUNTRIES[i].code === code) { currentCountry = COUNTRIES[i]; break; }
+  }
+  if(!currentCountry) return;
+  rows = []; rowId = 0; popupShown = false;
+  if(popupTimer) clearTimeout(popupTimer);
+
+  document.getElementById('pill-flag').textContent = currentCountry.flag;
+  document.getElementById('pill-name').textContent = currentCountry.name;
+  document.getElementById('chfl').textContent = currentCountry.flag;
+  document.getElementById('chname').textContent = currentCountry.name;
+  document.getElementById('chsub').textContent = 'Calculadora FOB Miami → ' + currentCountry.name;
+  document.getElementById('stit').textContent = 'Resumen · ' + currentCountry.name;
+  document.getElementById('sVatLbl').textContent = currentCountry.vat_name;
+  document.getElementById('nbox').innerHTML = '<b>Nota:</b> ' + currentCountry.notes;
+  document.getElementById('form-country').textContent = currentCountry.name;
+
+  var ftaArea = document.getElementById('fta-area');
+  var ftaWrap = document.getElementById('fta-wrap');
+  if(currentCountry.fta_usa) {
+    ftaArea.innerHTML = '<div class="fta-badge">✓ ' + currentCountry.fta_name + '</div>';
+    ftaWrap.style.display = 'block';
+    document.getElementById('ftacb').checked = true;
+    document.getElementById('ftalbl').textContent = 'Activado';
+    document.getElementById('ftalbl').style.color = 'var(--grn)';
+  } else {
+    ftaArea.innerHTML = '<div class="nofta-badge">⚠ Sin TLC con EE.UU. — aranceles MFN</div>';
+    ftaWrap.style.display = 'none';
+  }
+
+  renderRows();
+  recalc();
+  goTo('calculator');
+
+  popupTimer = setTimeout(function() {
+    if(!popupShown && rows.filter(function(r){ return r.catId && parseFloat(r.fob)>0; }).length >= 1) {
+      popupShown = true; openCatalog();
+    }
+  }, 90000);
+}
+
+function addRow() {
+  rows.push({id:rowId++, catId:'', fob:''});
+  renderRows(); checkTrigger();
+}
+function removeRow(id) {
+  rows = rows.filter(function(r){ return r.id !== id; });
+  renderRows(); recalc();
+}
+function setRowCat(id,val) {
+  for(var i=0;i<rows.length;i++) { if(rows[i].id===id) { rows[i].catId=val; break; } }
+  recalc(); checkTrigger();
+}
+function setRowFob(id,val) {
+  for(var i=0;i<rows.length;i++) { if(rows[i].id===id) { rows[i].fob=val; break; } }
+  recalc(); checkTrigger();
+}
+function getCat(catId) {
+  for(var i=0;i<CATEGORIES.length;i++) { if(CATEGORIES[i].id===catId) return CATEGORIES[i]; }
+  return null;
+}
+function getDutyRate(catId) {
+  if(!catId||!currentCountry) return 0;
+  var useFta = currentCountry.fta_usa && currentCountry.duties_fta && document.getElementById('ftacb').checked;
+  var rates = useFta ? currentCountry.duties_fta : currentCountry.duties_mfn;
+  return (rates && rates[catId] !== undefined) ? rates[catId] : 0;
+}
+function checkTrigger() {
+  if(popupShown) return;
+  var valid = rows.filter(function(r){ return r.catId && parseFloat(r.fob)>0; });
+  var tot = valid.reduce(function(s,r){ return s+(parseFloat(r.fob)||0); },0);
+  if(valid.length >= 2 || tot >= 5000) {
+    popupShown = true;
+    setTimeout(function(){ openCatalog(); }, 3000);
+  }
+}
+function renderRows() {
+  var tbody = document.getElementById('rtbody');
+  var tfoot = document.getElementById('rtfoot');
+  if(!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="padding:28px;text-align:center;font-size:12px;color:var(--w30)">Hacé click en <strong>&ldquo;Agregar categoría&rdquo;</strong> para comenzar</td></tr>';
+    tfoot.style.display = 'none'; return;
+  }
+  tfoot.style.display = 'table-footer-group';
+  var totalFob = rows.reduce(function(s,r){ return s+(parseFloat(r.fob)||0); },0);
+  var fr = parseFloat(document.getElementById('infr').value)||0;
+  var seg = parseFloat(document.getElementById('inseg').value)||0;
+  var totalCif = totalFob + fr + totalFob*seg/100;
+  var cifRatio = totalFob > 0 ? totalCif/totalFob : 1;
+  var catOpts = '<option value="">— Seleccionar —</option>' + CATEGORIES.map(function(c){
+    return '<option value="'+c.id+'">'+c.name+'</option>';
+  }).join('');
+  tbody.innerHTML = rows.map(function(r) {
+    var fobV = parseFloat(r.fob)||0;
+    var cat = getCat(r.catId);
+    var dr = r.catId ? getDutyRate(r.catId) : null;
+    var cifThis = fobV*cifRatio;
+    var dutyThis = dr !== null ? cifThis*dr/100 : 0;
+    var pct = totalFob>0 ? Math.round(fobV/totalFob*100)+'%' : '—';
+    var dpHtml = dr===null ? '<span style="font-size:10px;color:var(--w30)">—</span>'
+      : '<span class="dp '+(dr===0?'dp-z':dr<15?'dp-l':'dp-h')+'">'+dr+'%</span>';
+    var selOpts = '<option value="">— Seleccionar —</option>' + CATEGORIES.map(function(c){
+      return '<option value="'+c.id+'"'+(c.id===r.catId?' selected':'')+'>'+c.name+'</option>';
+    }).join('');
+    return '<tr>'
+      +'<td><select class="csel" onchange="setRowCat('+r.id+',this.value)">'+selOpts+'</select></td>'
+      +'<td>'+(cat?'<span class="ncmb">'+cat.ncm.split('/')[0].trim()+'</span>':'<span style="font-size:9px;color:var(--w30)">—</span>')+'</td>'
+      +'<td class="r"><div class="fw"><span class="fp">$</span><input class="fi" type="number" min="0" step="100" value="'+(r.fob||'')+'" placeholder="0" oninput="setRowFob('+r.id+',this.value)"></div></td>'
+      +'<td class="c">'+dpHtml+'</td>'
+      +'<td class="r"><span class="mn '+(dr===0?'g':'r')+'">'+(dutyThis>0?'$'+Math.round(dutyThis).toLocaleString():dr===0?'$0 ✓':'—')+'</span></td>'
+      +'<td class="r"><span style="font-size:11px;color:var(--w30)">'+(fobV>0?pct:'—')+'</span></td>'
+      +'<td class="c"><button class="del-btn" onclick="removeRow('+r.id+')">&times;</button></td>'
+      +'</tr>';
+  }).join('');
+}
+function fmt(n){ return '$'+Math.round(n).toLocaleString('en-US'); }
+function recalc() {
+  var c = currentCountry; if(!c) return;
+  if(c.fta_usa) {
+    var useFta = document.getElementById('ftacb').checked;
+    var lbl = document.getElementById('ftalbl');
+    lbl.textContent = useFta?'Activado':'Desactivado';
+    lbl.style.color = useFta?'var(--grn)':'var(--red)';
+  }
+  renderRows();
+  var validRows = rows.filter(function(r){ return r.catId && parseFloat(r.fob)>0; });
+  var totalFob = rows.reduce(function(s,r){ return s+(parseFloat(r.fob)||0); },0);
+  var fr = parseFloat(document.getElementById('infr').value)||0;
+  var seg = parseFloat(document.getElementById('inseg').value)||0;
+  var tgMg = parseFloat(document.getElementById('inmg').value)||35;
+  document.getElementById('ftfob').textContent = totalFob>0?fmt(totalFob):'$0';
+  if(!validRows.length||totalFob<=0) {
+    document.getElementById('bbody').innerHTML='<div style="padding:40px;text-align:center;color:var(--w30);font-size:13px">Agregá una categoría con valor FOB para ver el cálculo.</div>';
+    ['sfob','sfr','scif','sduty','svat','soth','sbrk','stotv'].forEach(function(id){document.getElementById(id).textContent='—';});
+    document.getElementById('smul').textContent='—';
+    document.getElementById('mgbox').style.display='none';
+    document.getElementById('ncats').textContent='';
+    return;
+  }
+  var ins = totalFob*seg/100;
+  var totalCif = totalFob+fr+ins;
+  var cifRatio = totalCif/totalFob;
+  var totalDuty = 0;
+  var catDuties = validRows.map(function(r) {
+    var fob=parseFloat(r.fob), cifThis=fob*cifRatio, rate=getDutyRate(r.catId), duty=cifThis*rate/100;
+    totalDuty+=duty;
+    return {r:r,fob:fob,cifThis:cifThis,rate:rate,duty:duty,cat:getCat(r.catId)};
+  });
+  document.getElementById('ftduty').textContent = totalDuty>0?fmt(totalDuty):'$0';
+  var vatBase=totalCif+totalDuty, vat=vatBase*c.vat/100;
+  var otherTotal=0, otherLines=[];
+  (c.other||[]).forEach(function(o) {
+    if(o.pct>0) {
+      var base=(o.name.indexOf('adicional')>=0||o.name.indexOf('Ganancias')>=0||o.name.indexOf('IIBB')>=0)?vatBase:totalCif;
+      var amt=base*o.pct/100; otherTotal+=amt;
+      var isRec=(o.name.indexOf('recuperable')>=0||o.name.indexOf('Ganancias')>=0||o.name.indexOf('IIBB')>=0||o.name.indexOf('adicional')>=0);
+      otherLines.push({name:o.name,pct:o.pct,amt:amt,isRec:isRec});
+    }
+  });
+  var broker=totalCif*c.broker_pct/100, grand=totalCif+totalDuty+vat+otherTotal+broker;
+  var mult=(grand/totalFob).toFixed(3), M=grand;
+  function bar(n,col){ var w=Math.max(0,Math.min(100,n/M*100)).toFixed(1); return '<div class="bw"><div class="bb" style="width:'+w+'%;background:'+col+'"></div></div>'; }
+  var useFtaFlag = c.fta_usa&&c.duties_fta&&document.getElementById('ftacb').checked;
+  var html='';
+  html+='<div class="br sub"><div class="bll"><b>FOB total Miami</b><small>'+validRows.length+' categoría'+(validRows.length!==1?'s':'')+'</small></div>'+bar(totalFob,'#4a74f5')+'<div class="ba" style="color:var(--bp)">'+fmt(totalFob)+'</div><span class="btg t-base">FOB</span></div>';
+  catDuties.forEach(function(cd){html+='<div class="br csr"><div class="bll" style="padding-left:8px">↳ '+cd.cat.name+'<small>HS '+cd.cat.hs+' · FOB '+fmt(cd.fob)+'</small></div>'+bar(cd.fob,'#4a74f5')+'<div class="ba" style="color:var(--w50);font-size:11px">'+fmt(cd.fob)+'</div><span class="btg t-base">'+cd.rate+'%</span></div>';});
+  html+='<div class="br"><div class="bll">Flete marítimo</div>'+bar(fr,'#6b7280')+'<div class="ba" style="color:var(--w50)">'+fmt(fr)+'</div><span class="btg t-log">logística</span></div>';
+  html+='<div class="br"><div class="bll">Seguro de carga<small>'+seg+'% FOB</small></div>'+bar(ins,'#6b7280')+'<div class="ba" style="color:var(--w50)">'+fmt(ins)+'</div><span class="btg t-log">logística</span></div>';
+  html+='<div class="br sub"><div class="bll"><b>CIF destino</b><small>base imponible</small></div>'+bar(totalCif,'#4a74f5')+'<div class="ba" style="color:var(--bp)">'+fmt(totalCif)+'</div><span class="btg t-base">CIF</span></div>';
+  catDuties.forEach(function(cd){var ft=useFtaFlag?' (TLC USA)':' (MFN)';html+='<div class="br csr"><div class="bll" style="padding-left:8px">↳ Arancel '+cd.cat.name+'<small>'+cd.rate+'%'+ft+'</small></div>'+bar(cd.duty,'#f43f5e')+'<div class="ba" style="color:'+(cd.rate===0?'var(--grn)':'var(--red)')+'">'+( cd.rate===0?'$0 ✓':fmt(cd.duty))+'</div><span class="btg '+(cd.rate===0?'t-base':'t-nr')+'">'+(cd.rate===0?'exento':'arancel')+'</span></div>';});
+  if(totalDuty>0) html+='<div class="br sub"><div class="bll"><b>Total aranceles</b></div>'+bar(totalDuty,'#f43f5e')+'<div class="ba" style="color:var(--red)">'+fmt(totalDuty)+'</div><span class="btg t-nr">aranceles</span></div>';
+  html+='<div class="br"><div class="bll">'+c.vat_name+' '+c.vat+'%<small>sobre CIF+aranceles</small></div>'+bar(vat,'#f59e0b')+'<div class="ba" style="color:var(--amb)">'+fmt(vat)+'</div><span class="btg t-vat">impuesto</span></div>';
+  otherLines.forEach(function(o){html+='<div class="br"><div class="bll">'+o.name+'</div>'+bar(o.amt,o.isRec?'#10b981':'#f59e0b')+'<div class="ba" style="color:'+(o.isRec?'var(--grn)':'var(--amb)')+'">'+fmt(o.amt)+'</div><span class="btg '+(o.isRec?'t-rec':'t-vat')+'">'+(o.isRec?'recup.':'adicional')+'</span></div>';});
+  html+='<div class="br"><div class="bll">Despachante<small>~'+c.broker_pct+'% CIF</small></div>'+bar(broker,'#6b7280')+'<div class="ba" style="color:var(--w50)">'+fmt(broker)+'</div><span class="btg t-log">servicio</span></div>';
+  html+='<div class="br tot"><div class="bll"><b>Total aterrizado / nacionalizado</b></div>'+bar(grand,'#4a74f5')+'<div class="ba" style="color:var(--bp);font-size:13px">'+fmt(grand)+'</div><span class="btg t-base">×'+mult+'</span></div>';
+  document.getElementById('bbody').innerHTML=html;
+  document.getElementById('ncats').textContent=validRows.length+' categoría'+(validRows.length!==1?'s':'');
+  document.getElementById('sfob').textContent=fmt(totalFob);
+  document.getElementById('sfr').textContent=fmt(fr+ins);
+  document.getElementById('scif').textContent=fmt(totalCif);
+  document.getElementById('sduty').textContent=fmt(totalDuty);
+  document.getElementById('svat').textContent=fmt(vat);
+  document.getElementById('soth').textContent=otherTotal>0?fmt(otherTotal):'$0';
+  document.getElementById('sbrk').textContent=fmt(broker);
+  document.getElementById('stotv').textContent=fmt(grand);
+  document.getElementById('smul').textContent='×'+mult+' del FOB';
+  document.getElementById('ssub').textContent=validRows.length+' cat. · FOB '+fmt(totalFob);
+  document.getElementById('mgbox').style.display='block';
+  document.getElementById('mgrows').innerHTML=[25,30,35,40,45,50].map(function(m){
+    var sp=grand/(1-m/100);
+    return '<div class="mgrow'+(m===tgMg?' hl':'')+'"><span class="mp">'+m+'% margen</span><span class="mv">'+fmt(sp)+'</span></div>';
+  }).join('');
+  var cats=catDuties.map(function(cd){return cd.cat?cd.cat.name:'';}).filter(Boolean).join(', ');
+  document.getElementById('fsummary').innerHTML='<b>Tu consulta:</b><br>País: <b>'+(c.name||'—')+'</b><br>Categorías: <b>'+(cats||'—')+'</b><br>FOB estimado: <b>'+fmt(totalFob)+'</b><br>Costo aterrizado: <b>'+fmt(grand)+'</b> (×'+mult+' FOB)';
+}
+function openCatalog(){ document.getElementById('ov-catalog').classList.add('show'); }
+function closeCatalog(){ document.getElementById('ov-catalog').classList.remove('show'); }
+function openContact(){ closeCatalog(); document.getElementById('ov-contact').classList.add('show'); }
+function closeContact(){ document.getElementById('ov-contact').classList.remove('show'); }
+document.getElementById('ov-catalog').addEventListener('click',function(e){if(e.target===this)closeCatalog();});
+document.getElementById('ov-contact').addEventListener('click',function(e){if(e.target===this)closeContact();});
+function submitForm() {
+  var name=document.getElementById('fname').value.trim();
+  var email=document.getElementById('femail').value.trim();
+  var phone=document.getElementById('fphone').value.trim();
+  if(!name||!email){alert('Por favor completá nombre y email.');return;}
+  var c=currentCountry;
+  var validRows=rows.filter(function(r){return r.catId&&parseFloat(r.fob)>0;});
+  var totalFob=rows.reduce(function(s,r){return s+(parseFloat(r.fob)||0);},0);
+  var cats=validRows.map(function(r){var cat=getCat(r.catId);return cat?cat.name:'';}).filter(Boolean).join(', ');
+  var grand=document.getElementById('stotv').textContent;
+  var msg='Hola! Usé la calculadora de importación Rivero y me gustaría conocer más sobre sus productos.\n\n'
+    +'*País de destino:* '+(c?c.name:'—')+'\n'
+    +'*Categorías evaluadas:* '+(cats||'—')+'\n'
+    +'*Valor FOB estimado:* '+fmt(totalFob)+'\n'
+    +'*Costo aterrizado estimado:* '+grand+'\n\n'
+    +'*Mis datos:*\nNombre: '+name+'\nEmail: '+email+(phone?'\nTeléfono: '+phone:'')+'\n\nQuedo a la espera. ¡Gracias!';
+  window.open('https://wa.me/'+WA+'?text='+encodeURIComponent(msg),'_blank');
+  closeContact();
+}
+</script>
+</body>
+</html>
