@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -552,7 +553,7 @@ function setRowCat(id,val) {
 }
 function setRowFob(id,val) {
   for(var i=0;i<rows.length;i++) { if(rows[i].id===id) { rows[i].fob=val; break; } }
-  recalc(); checkTrigger();
+  recalc(true); checkTrigger();
 }
 function getCat(catId) {
   for(var i=0;i<CATEGORIES.length;i++) { if(CATEGORIES[i].id===catId) return CATEGORIES[i]; }
@@ -606,14 +607,30 @@ function renderRows() {
       +'<td>'+(cat?'<span class="ncmb">'+cat.ncm.split('/')[0].trim()+'</span>':'<span style="font-size:9px;color:var(--w30)">—</span>')+'</td>'
       +'<td class="r"><div class="fw"><span class="fp">$</span><input class="fi" type="number" min="0" step="100" value="'+(r.fob||'')+'" placeholder="0" oninput="setRowFob('+r.id+',this.value)"></div></td>'
       +'<td class="c">'+dpHtml+'</td>'
-      +'<td class="r"><span class="mn '+(dr===0?'g':'r')+'">'+(dutyThis>0?'$'+Math.round(dutyThis).toLocaleString():dr===0?'$0 ✓':'—')+'</span></td>'
-      +'<td class="r"><span style="font-size:11px;color:var(--w30)">'+(fobV>0?pct:'—')+'</span></td>'
+      +'<td class="r"><span class="mn '+(dr===0?'g':'r')+'" id="dutyc-'+r.id+'">'+(dutyThis>0?'$'+Math.round(dutyThis).toLocaleString():dr===0?'$0 ✓':'—')+'</span></td>'
+      +'<td class="r"><span style="font-size:11px;color:var(--w30)" id="pctc-'+r.id+'">'+(fobV>0?pct:'—')+'</span></td>'
       +'<td class="c"><button class="del-btn" onclick="removeRow('+r.id+')">&times;</button></td>'
       +'</tr>';
   }).join('');
 }
 function fmt(n){ return '$'+Math.round(n).toLocaleString('en-US'); }
-function recalc() {
+function updateRowComputed() {
+  var totalFob = rows.reduce(function(s,r){ return s+(parseFloat(r.fob)||0); },0);
+  var fr = parseFloat(document.getElementById('infr').value)||0;
+  var seg = parseFloat(document.getElementById('inseg').value)||0;
+  var totalCif = totalFob + fr + totalFob*seg/100;
+  var cifRatio = totalFob>0 ? totalCif/totalFob : 1;
+  rows.forEach(function(r) {
+    var fobV = parseFloat(r.fob)||0;
+    var dr = r.catId ? getDutyRate(r.catId) : null;
+    var dutyThis = dr!==null ? fobV*cifRatio*dr/100 : 0;
+    var dc = document.getElementById('dutyc-'+r.id);
+    if(dc) dc.textContent = dutyThis>0 ? '$'+Math.round(dutyThis).toLocaleString() : (dr===0?'$0 \u2713':'\u2014');
+    var pc = document.getElementById('pctc-'+r.id);
+    if(pc) pc.textContent = (fobV>0&&totalFob>0) ? Math.round(fobV/totalFob*100)+'%' : '\u2014';
+  });
+}
+function recalc(skipRows) {
   var c = currentCountry; if(!c) return;
   if(c.fta_usa) {
     var useFta = document.getElementById('ftacb').checked;
@@ -621,7 +638,7 @@ function recalc() {
     lbl.textContent = useFta?'Activado':'Desactivado';
     lbl.style.color = useFta?'var(--grn)':'var(--red)';
   }
-  renderRows();
+  if(skipRows) { updateRowComputed(); } else { renderRows(); }
   var validRows = rows.filter(function(r){ return r.catId && parseFloat(r.fob)>0; });
   var totalFob = rows.reduce(function(s,r){ return s+(parseFloat(r.fob)||0); },0);
   var fr = parseFloat(document.getElementById('infr').value)||0;
