@@ -1,0 +1,591 @@
+<title>Rivero Configurador</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700;800;900&display=swap">
+<style>
+:root {
+  --blue: #235CF2;
+  --blue-light: #EEF2FF;
+  --orange: #FF8001;
+  --green: #25D366;
+  --ink: #080808;
+  --ink-700: #26282c;
+  --ink-500: #565a62;
+  --ink-400: #9aa0a9;
+  --ink-300: #c2c6cd;
+  --ink-200: #dee1e6;
+  --ink-100: #eef0f3;
+  --ink-50: #f7f8fa;
+  --surface: #ffffff;
+  --bg: #f4f6fc;
+  --font: 'Jost', 'Century Gothic', system-ui, sans-serif;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ink: #f0f2f5;
+    --ink-700: #d0d4da;
+    --ink-500: #9aa0a9;
+    --ink-400: #6b717a;
+    --ink-300: #3a3f48;
+    --ink-200: #2a2f38;
+    --ink-100: #1e2229;
+    --ink-50: #181c22;
+    --surface: #1a1e26;
+    --bg: #13161b;
+    --blue-light: #1a2140;
+  }
+}
+:root[data-theme="dark"] {
+  --ink: #f0f2f5; --ink-700: #d0d4da; --ink-500: #9aa0a9; --ink-400: #6b717a;
+  --ink-300: #3a3f48; --ink-200: #2a2f38; --ink-100: #1e2229; --ink-50: #181c22;
+  --surface: #1a1e26; --bg: #13161b; --blue-light: #1a2140;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--bg); color: var(--ink); font-size: 15px; line-height: 1.5; }
+button, input { font-family: var(--font); }
+
+/* ── Top bar */
+.topbar { background: var(--ink); padding: 0 24px; height: 52px; display: flex; align-items: center; justify-content: space-between; }
+.topbar-brand { font-size: 15px; font-weight: 900; letter-spacing: -.01em; color: #fff; }
+.topbar-brand span { color: var(--blue); }
+.topbar-badge { font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.45); }
+
+/* ── Hero strip */
+.hero { background: #0a0a0a; padding: 32px 24px 28px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; }
+.hero-eye { font-size: 10px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: var(--orange); }
+.hero-hl { font-size: clamp(22px, 4vw, 38px); font-weight: 900; line-height: 1.0; color: #fff; letter-spacing: -.025em; text-wrap: balance; }
+.hero-sub { font-size: 13px; color: rgba(255,255,255,.5); font-weight: 400; max-width: 44ch; margin-top: 4px; }
+.hero-stats { display: flex; gap: 28px; margin: 16px 0 20px; }
+.hero-stat-n { font-size: 24px; font-weight: 900; color: #fff; line-height: 1; }
+.hero-stat-l { font-size: 10px; text-transform: uppercase; letter-spacing: .12em; color: rgba(255,255,255,.4); margin-top: 2px; font-weight: 700; }
+
+/* Newsletter in hero */
+.nl-row { display: flex; gap: 0; max-width: 360px; width: 100%; }
+.nl-inp { flex: 1; background: rgba(255,255,255,.08); border: 1.5px solid rgba(255,255,255,.18); border-right: none; border-radius: 8px 0 0 8px; padding: 11px 14px; font-size: 13px; color: #fff; font-family: var(--font); outline: none; }
+.nl-inp::placeholder { color: rgba(255,255,255,.3); }
+.nl-inp:focus { border-color: var(--blue); background: rgba(35,92,242,.15); }
+.nl-btn { padding: 11px 18px; background: var(--orange); color: #fff; border: none; border-radius: 0 8px 8px 0; font-size: 12px; font-weight: 800; font-family: var(--font); cursor: pointer; letter-spacing: .04em; white-space: nowrap; transition: filter .15s; }
+.nl-btn:hover { filter: brightness(1.1); }
+.nl-label { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.4); }
+.nl-ok { font-size: 13px; color: var(--green); font-weight: 700; }
+
+/* ── Wizard wrapper */
+.wz-wrap { max-width: 720px; margin: 0 auto; padding: 40px 20px 64px; }
+
+/* Progress */
+.wz-prog { display: flex; align-items: center; margin-bottom: 32px; }
+.wz-pi { display: flex; flex-direction: column; align-items: center; gap: 5px; min-width: 60px; }
+.wz-pi-dot { width: 32px; height: 32px; border-radius: 50%; background: var(--ink-200); color: var(--ink-400); font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; transition: background .3s, color .3s; border: 2px solid var(--ink-200); }
+.wz-pi.active .wz-pi-dot { background: var(--blue); color: #fff; border-color: var(--blue); box-shadow: 0 0 0 4px rgba(35,92,242,.15); }
+.wz-pi.done .wz-pi-dot { background: #16a34a; color: #fff; border-color: #16a34a; }
+.wz-pi-lbl { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-400); white-space: nowrap; }
+.wz-pi.active .wz-pi-lbl, .wz-pi.done .wz-pi-lbl { color: var(--ink-700); }
+.wz-pline { flex: 1; height: 2px; background: var(--ink-200); margin: 0 4px 18px; transition: background .3s; }
+.wz-pline.done { background: #16a34a; }
+
+/* Panel */
+.wz-panel { display: none; animation: wzIn .28s ease; }
+.wz-panel.active { display: block; }
+@keyframes wzIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+.wz-card { background: var(--surface); border: 1px solid var(--ink-200); border-radius: 14px; padding: 28px 28px 24px; }
+.wz-hdr { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+.wz-num { font-size: 30px; font-weight: 900; line-height: 1; color: var(--blue); min-width: 40px; font-variant-numeric: tabular-nums; }
+.wz-num.done { color: #16a34a; }
+.wz-hdr-text { display: flex; flex-direction: column; gap: 2px; }
+.wz-q { font-size: 16px; font-weight: 700; color: var(--ink); }
+.wz-hint { font-size: 12px; color: var(--ink-400); }
+.wz-back { background: none; border: 1px solid var(--ink-300); border-radius: 6px; padding: 5px 11px; font-size: 11px; font-weight: 700; color: var(--ink-500); cursor: pointer; transition: border-color .15s, color .15s; margin-right: auto; margin-left: 0; }
+.wz-back:hover { border-color: var(--blue); color: var(--blue); }
+
+/* Layout grid */
+.lt-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+@media (max-width: 520px) { .lt-grid { grid-template-columns: repeat(2, 1fr); } }
+.lt-btn { background: var(--surface); border: 2px solid var(--ink-200); border-radius: 10px; padding: 14px 10px 12px; cursor: pointer; text-align: center; transition: border-color .18s, box-shadow .18s, background .18s; }
+.lt-btn:hover { border-color: var(--blue); }
+.lt-btn.active { border-color: var(--blue); background: var(--blue-light); box-shadow: 0 0 0 3px rgba(35,92,242,.12); }
+.lt-svg { height: 52px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+.lt-svg svg { max-height: 100%; width: auto; }
+.lt-name { font-size: 13px; font-weight: 800; color: var(--ink); }
+.lt-sub { font-size: 11px; color: var(--ink-400); margin-top: 2px; font-weight: 600; }
+.lt-btn.active .lt-name { color: var(--blue); }
+
+/* Color chips */
+.col-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.col-btn { display: flex; align-items: center; gap: 8px; padding: 8px 14px 8px 10px; border: 2px solid var(--ink-200); border-radius: 30px; background: var(--surface); cursor: pointer; font-size: 12px; font-weight: 700; color: var(--ink-500); transition: border-color .18s, background .18s; }
+.col-btn:hover:not(:disabled) { border-color: var(--blue); color: var(--ink); }
+.col-btn.active { border-color: var(--blue); background: var(--blue-light); color: var(--blue); }
+.col-btn:disabled { opacity: .35; cursor: not-allowed; }
+.col-swatch { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid rgba(0,0,0,.1); flex-shrink: 0; }
+.col-kits { font-size: 10px; font-weight: 800; background: var(--blue); color: #fff; border-radius: 10px; padding: 2px 6px; margin-left: 2px; }
+.col-btn.active .col-kits { background: var(--blue); }
+
+/* Qty row */
+.qty-row { display: flex; align-items: center; gap: 0; }
+.qty-btn { width: 40px; height: 40px; background: var(--ink-100); border: 1.5px solid var(--ink-200); font-size: 20px; font-weight: 700; color: var(--ink-500); cursor: pointer; transition: background .15s; display: flex; align-items: center; justify-content: center; }
+.qty-btn:first-child { border-radius: 8px 0 0 8px; }
+.qty-btn:last-of-type { border-radius: 0 8px 8px 0; }
+.qty-btn:hover { background: var(--ink-200); }
+.qty-inp { width: 64px; height: 40px; border: 1.5px solid var(--ink-200); border-left: none; border-right: none; text-align: center; font-size: 18px; font-weight: 800; color: var(--ink); background: var(--surface); outline: none; font-variant-numeric: tabular-nums; }
+.qty-meta { margin-left: 14px; font-size: 13px; color: var(--ink-400); font-weight: 600; }
+
+/* BOM preview */
+.bom-preview { margin-top: 16px; background: var(--bg); border: 1px solid var(--ink-200); border-radius: 8px; padding: 14px 16px; }
+.bom-prev-title { font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-400); margin-bottom: 10px; }
+.bom-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.bom-pill { background: var(--surface); border: 1px solid var(--ink-200); border-radius: 5px; padding: 4px 10px; font-size: 11px; font-weight: 700; color: var(--ink-500); font-variant-numeric: tabular-nums; }
+.bom-pill strong { color: var(--blue); }
+
+/* Form */
+.wz-form { display: flex; flex-direction: column; gap: 16px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
+.form-field { display: flex; flex-direction: column; gap: 6px; }
+.form-lbl { font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-500); }
+.form-inp { padding: 11px 14px; border: 1.5px solid var(--ink-200); border-radius: 8px; font-size: 14px; font-family: var(--font); color: var(--ink); background: var(--surface); outline: none; transition: border-color .15s; }
+.form-inp:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(35,92,242,.1); }
+
+/* Action bar */
+.wz-actions { display: flex; align-items: center; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+.btn-next { padding: 13px 28px; background: var(--blue); color: #fff; border: none; border-radius: 9px; font-size: 14px; font-weight: 800; font-family: var(--font); cursor: pointer; letter-spacing: .02em; box-shadow: 0 4px 14px rgba(35,92,242,.3); transition: filter .15s, transform .1s; }
+.btn-next:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.btn-next:active { transform: none; filter: brightness(.96); }
+.btn-ghost { padding: 12px 20px; background: none; border: 1.5px solid var(--ink-300); border-radius: 9px; font-size: 13px; font-weight: 700; color: var(--ink-500); cursor: pointer; font-family: var(--font); transition: border-color .15s; }
+.btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
+
+/* Summary (step 5) */
+.sum-card { background: var(--surface); border: 1px solid var(--ink-200); border-radius: 14px; overflow: hidden; }
+.sum-hdr { background: var(--blue); color: #fff; padding: 20px 24px; display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+.sum-info { flex: 1; min-width: 0; }
+.sum-name { font-size: 20px; font-weight: 900; }
+.sum-meta { font-size: 12px; opacity: .8; margin-top: 4px; line-height: 1.5; }
+.sum-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.sum-badge { background: rgba(255,255,255,.18); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 800; letter-spacing: .04em; }
+.sum-stats { display: flex; gap: 20px; }
+.sum-stat { text-align: right; }
+.sum-stat-n { font-size: 26px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
+.sum-stat-l { font-size: 10px; text-transform: uppercase; letter-spacing: .1em; opacity: .7; margin-top: 2px; }
+
+.sum-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.sum-table th { font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-400); padding: 10px 16px; text-align: left; border-bottom: 1.5px solid var(--ink-100); }
+.sum-table td { padding: 10px 16px; border-bottom: 1px solid var(--ink-100); color: var(--ink); vertical-align: middle; }
+.sum-table tr:last-child td { border-bottom: none; }
+.sum-sku { font-family: 'Courier New', monospace; font-size: 11px; color: var(--ink-400); }
+.sum-title { font-size: 12px; max-width: 240px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sum-type { font-size: 11px; color: var(--ink-400); text-transform: capitalize; }
+.sum-qty { font-size: 14px; font-weight: 800; color: var(--blue); text-align: right; font-variant-numeric: tabular-nums; }
+
+.btn-wa { display: inline-flex; align-items: center; gap: 10px; padding: 14px 26px; background: var(--green); color: #fff; border-radius: 10px; font-size: 14px; font-weight: 800; text-decoration: none; transition: filter .15s; font-family: var(--font); }
+.btn-wa:hover { filter: brightness(1.08); }
+
+/* Responsive overflow on table */
+.sum-table-wrap { overflow-x: auto; }
+</style>
+
+<!-- Top bar -->
+<div class="topbar">
+  <div class="topbar-brand">Rivero<span>.</span></div>
+  <div class="topbar-badge">DEMO — Configurador v2</div>
+</div>
+
+<!-- Hero + newsletter -->
+<div class="hero">
+  <div class="hero-eye">Liquidación exclusiva · Gabinetes de Cocina</div>
+  <div class="hero-hl">Hampton Bay · KraftMaid<br>Leyton Slim Shaker</div>
+  <div class="hero-sub">304 SKUs en stock. Armá tu cocina completa y envianos el pedido directo por WhatsApp.</div>
+  <div class="hero-stats">
+    <div>
+      <div class="hero-stat-n">304</div>
+      <div class="hero-stat-l">SKUs</div>
+    </div>
+    <div>
+      <div class="hero-stat-n">10.9K</div>
+      <div class="hero-stat-l">Unidades</div>
+    </div>
+    <div>
+      <div class="hero-stat-n">$776K</div>
+      <div class="hero-stat-l">Valor USD</div>
+    </div>
+  </div>
+  <div class="nl-label" style="margin-bottom:8px">Recibí novedades y precios exclusivos</div>
+  <form class="nl-row" id="nl-form" onsubmit="nlSubmit(event)">
+    <input class="nl-inp" type="email" id="nl-email" placeholder="tu@email.com" required>
+    <button class="nl-btn" type="submit">Suscribirme</button>
+  </form>
+  <div class="nl-ok" id="nl-ok" style="display:none">✓ ¡Listo! Te contactaremos pronto.</div>
+</div>
+
+<!-- Wizard -->
+<div class="wz-wrap">
+
+  <!-- Progress bar -->
+  <div class="wz-prog" id="wz-prog">
+    <div class="wz-pi active" id="wz-pi-1">
+      <div class="wz-pi-dot" id="wz-dot-1">1</div>
+      <div class="wz-pi-lbl">Layout</div>
+    </div>
+    <div class="wz-pline" id="wz-line-1"></div>
+    <div class="wz-pi" id="wz-pi-2">
+      <div class="wz-pi-dot" id="wz-dot-2">2</div>
+      <div class="wz-pi-lbl">Color</div>
+    </div>
+    <div class="wz-pline" id="wz-line-2"></div>
+    <div class="wz-pi" id="wz-pi-3">
+      <div class="wz-pi-dot" id="wz-dot-3">3</div>
+      <div class="wz-pi-lbl">Cantidad</div>
+    </div>
+    <div class="wz-pline" id="wz-line-3"></div>
+    <div class="wz-pi" id="wz-pi-4">
+      <div class="wz-pi-dot" id="wz-dot-4">4</div>
+      <div class="wz-pi-lbl">Tus datos</div>
+    </div>
+  </div>
+
+  <!-- Step 1: Layout -->
+  <div class="wz-panel active" id="wz-p1">
+    <div class="wz-card">
+      <div class="wz-hdr">
+        <div class="wz-num">01</div>
+        <div class="wz-hdr-text">
+          <div class="wz-q">¿Qué tipo de cocina querés armar?</div>
+          <div class="wz-hint">Seleccioná el layout que mejor se ajusta al espacio</div>
+        </div>
+      </div>
+      <div class="lt-grid">
+        <button class="lt-btn active" data-lt="kitchenette" onclick="selectLayout('kitchenette')">
+          <div class="lt-svg"><svg viewBox="0 0 100 54" width="90"><rect x="8" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="36" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="64" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="6" y="25" width="88" height="2" fill="#DEE1E6" rx="1"/><rect x="8" y="30" width="26" height="18" fill="#235CF2" rx="2"/><rect x="36" y="30" width="26" height="18" fill="#5B8CFF" rx="2"/><text x="50" y="42" font-size="7" fill="#fff" text-anchor="middle" font-weight="700">S</text><rect x="64" y="30" width="26" height="18" fill="#235CF2" rx="2"/></svg></div>
+          <div class="lt-name">Kitchenette</div>
+          <div class="lt-sub">6 gabinetes</div>
+        </button>
+        <button class="lt-btn" data-lt="galley" onclick="selectLayout('galley')">
+          <div class="lt-svg"><svg viewBox="0 0 156 54" width="90"><rect x="8" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="36" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="64" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="92" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="120" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="6" y="25" width="144" height="2" fill="#DEE1E6" rx="1"/><rect x="8" y="30" width="26" height="18" fill="#FF8001" rx="2"/><rect x="36" y="30" width="26" height="18" fill="#FF8001" rx="2"/><rect x="64" y="30" width="26" height="18" fill="#5B8CFF" rx="2"/><text x="78" y="42" font-size="7" fill="#fff" text-anchor="middle" font-weight="700">S</text><rect x="92" y="30" width="26" height="18" fill="#04B704" rx="2"/><text x="106" y="42" font-size="7" fill="#fff" text-anchor="middle" font-weight="700">D</text><rect x="120" y="30" width="26" height="18" fill="#FF8001" rx="2"/></svg></div>
+          <div class="lt-name">Galley</div>
+          <div class="lt-sub">10 gabinetes</div>
+        </button>
+        <button class="lt-btn" data-lt="lshape" onclick="selectLayout('lshape')">
+          <div class="lt-svg"><svg viewBox="0 0 100 90" width="70"><rect x="8" y="8" width="16" height="10" fill="#9AA0A9" rx="1.5"/><rect x="26" y="8" width="16" height="10" fill="#9AA0A9" rx="1.5"/><rect x="44" y="8" width="16" height="10" fill="#9AA0A9" rx="1.5"/><rect x="62" y="8" width="16" height="10" fill="#9AA0A9" rx="1.5"/><rect x="6" y="20" width="76" height="2" fill="#DEE1E6" rx="1"/><rect x="8" y="24" width="16" height="12" fill="#04B704" rx="1.5"/><rect x="26" y="24" width="16" height="12" fill="#04B704" rx="1.5"/><rect x="44" y="24" width="16" height="12" fill="#5B8CFF" rx="1.5"/><text x="52" y="33" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">S</text><rect x="62" y="24" width="16" height="12" fill="#FF8001" rx="1.5"/><text x="70" y="33" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">C</text><rect x="80" y="20" width="2" height="68" fill="#DEE1E6" rx="1"/><rect x="83" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="83" y="24" width="10" height="14" fill="#04B704" rx="1.5"/><rect x="83" y="40" width="10" height="14" fill="#04B704" rx="1.5"/><rect x="83" y="56" width="10" height="14" fill="#C2000B" rx="1.5"/><text x="88" y="65" font-size="4" fill="#fff" text-anchor="middle" font-weight="700">T</text></svg></div>
+          <div class="lt-name">L-Shape</div>
+          <div class="lt-sub">14 gabinetes</div>
+        </button>
+        <button class="lt-btn" data-lt="ushape" onclick="selectLayout('ushape')">
+          <div class="lt-svg"><svg viewBox="0 0 110 90" width="70"><rect x="4" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="4" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="4" y="38" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="4" y="52" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="14" y="20" width="2" height="48" fill="#DEE1E6" rx="1"/><rect x="18" y="62" width="74" height="2" fill="#DEE1E6" rx="1"/><rect x="18" y="66" width="14" height="12" fill="#C2000B" rx="1.5"/><rect x="34" y="66" width="14" height="12" fill="#5B8CFF" rx="1.5"/><text x="41" y="75" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">S</text><rect x="50" y="66" width="14" height="12" fill="#04B704" rx="1.5"/><text x="57" y="75" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">D</text><rect x="66" y="66" width="14" height="12" fill="#C2000B" rx="1.5"/><rect x="82" y="66" width="10" height="12" fill="#FF8001" rx="1.5"/><text x="87" y="75" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">C</text><rect x="92" y="20" width="2" height="48" fill="#DEE1E6" rx="1"/><rect x="18" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="30" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="42" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="54" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="66" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="78" y="8" width="14" height="10" fill="#9AA0A9" rx="1.5"/><rect x="18" y="20" width="74" height="2" fill="#DEE1E6" rx="1"/><rect x="18" y="24" width="14" height="12" fill="#C2000B" rx="1.5"/><rect x="34" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="46" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="58" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="70" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="82" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="94" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="94" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="94" y="38" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="94" y="52" width="10" height="12" fill="#C2000B" rx="1.5"/></svg></div>
+          <div class="lt-name">U-Shape</div>
+          <div class="lt-sub">18 gabinetes</div>
+        </button>
+      </div>
+      <div class="wz-actions">
+        <button class="btn-next" onclick="goStep(2)">Elegir color →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Color -->
+  <div class="wz-panel" id="wz-p2">
+    <div class="wz-card">
+      <div class="wz-hdr">
+        <button class="wz-back" onclick="goStep(1)">← Volver</button>
+        <div class="wz-num">02</div>
+        <div class="wz-hdr-text">
+          <div class="wz-q">¿Qué color de gabinetes querés?</div>
+          <div class="wz-hint">Solo se muestran los colores con stock suficiente para el layout elegido</div>
+        </div>
+      </div>
+      <div class="col-grid" id="col-grid"></div>
+      <div class="wz-actions">
+        <button class="btn-next" onclick="goStep(3)">Elegir cantidad →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: Quantity -->
+  <div class="wz-panel" id="wz-p3">
+    <div class="wz-card">
+      <div class="wz-hdr">
+        <button class="wz-back" onclick="goStep(2)">← Volver</button>
+        <div class="wz-num">03</div>
+        <div class="wz-hdr-text">
+          <div class="wz-q">¿Cuántos kits necesitás?</div>
+          <div class="wz-hint" id="qty-hint">Un kit = una cocina completa</div>
+        </div>
+      </div>
+      <div class="qty-row">
+        <button class="qty-btn" onclick="adjQty(-1)">−</button>
+        <input class="qty-inp" type="number" id="qty-inp" value="1" min="1" max="99" oninput="onQtyChange()">
+        <button class="qty-btn" onclick="adjQty(1)">+</button>
+        <div class="qty-meta" id="qty-meta"></div>
+      </div>
+      <div id="bom-preview"></div>
+      <div class="wz-actions">
+        <button class="btn-next" onclick="goStep(4)">Continuar con mis datos →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 4: Form -->
+  <div class="wz-panel" id="wz-p4">
+    <div class="wz-card">
+      <div class="wz-hdr">
+        <button class="wz-back" onclick="goStep(3)">← Volver</button>
+        <div class="wz-num">04</div>
+        <div class="wz-hdr-text">
+          <div class="wz-q">Tus datos para el pedido</div>
+          <div class="wz-hint">Para que podamos procesar y confirmar tu orden</div>
+        </div>
+      </div>
+      <form class="wz-form" onsubmit="submitForm(event)">
+        <div class="form-row">
+          <div class="form-field">
+            <label class="form-lbl">Nombre</label>
+            <input class="form-inp" type="text" id="f-fname" placeholder="Juan" required>
+          </div>
+          <div class="form-field">
+            <label class="form-lbl">Apellido</label>
+            <input class="form-inp" type="text" id="f-lname" placeholder="García" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label class="form-lbl">Teléfono / WhatsApp</label>
+            <input class="form-inp" type="tel" id="f-tel" placeholder="+54 9 11 1234-5678" required>
+          </div>
+          <div class="form-field">
+            <label class="form-lbl">Email</label>
+            <input class="form-inp" type="email" id="f-email" placeholder="juan@empresa.com" required>
+          </div>
+        </div>
+        <div class="wz-actions">
+          <button class="btn-next" type="submit">Ver resumen del pedido →</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Step 5: Summary -->
+  <div class="wz-panel" id="wz-p5">
+    <div class="sum-card" id="sum-card"></div>
+    <div class="wz-actions" style="margin-top:16px">
+      <a class="btn-wa" id="wa-link" href="#" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Enviar pedido por WhatsApp
+      </a>
+      <button class="btn-ghost" onclick="restart()">Nuevo pedido</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var WA_PHONE = '15558016189';
+
+var RECIPES = {
+  kitchenette: { recipe: {base:2, sink:1, wall:3}, total: 6 },
+  galley:      { recipe: {base:3, sink:1, drawer:1, wall:5}, total: 10 },
+  lshape:      { recipe: {base:4, sink:1, corner:1, drawer:1, tall:1, wall:6}, total: 14 },
+  ushape:      { recipe: {base:5, sink:1, corner:2, drawer:1, tall:1, wall:8}, total: 18 }
+};
+
+var SWATCH = {
+  White: '#f5f5f5', 'Shaker White': '#ece9e0', Gray: '#9aa0a9', 'Shaker Gray': '#b0b8c1',
+  Navy: '#1e3a5f', Blue: '#235CF2', Black: '#1a1a1a', Green: '#2d6a4f',
+  Natural: '#c8a97a', Java: '#4a2c1a', Espresso: '#3b1f0e', Other: '#c2c6cd'
+};
+
+function swatchFor(c) { return SWATCH[c] || '#c2c6cd'; }
+
+var CFG_PRODUCTS = [{"sku":"1013162088","title":"Leyton 9 in. W x 24 in. D x 34.5 in. H Ready to Assemble Plywood Slim Shaker Bas","type":"base","color_es":"Blanco","color_en":"White","qty":129,"price":226.0},{"sku":"1013871109","title":"Leyton 18 in. W x 24 in. D x 16.5 in H Ready To Assemble Plywood Slim Shaker Ben","type":"base","color_es":"Blanco","color_en":"White","qty":25,"price":21.0},{"sku":"1013161712","title":"Leyton 36 in. W x 24 in D x 34.5 in H Ready to Assemble Plywood Slim Shaker Cook","type":"base","color_es":"Blanco","color_en":"White","qty":16,"price":54.0},{"sku":"1013161955","title":"Leyton 36 in. W x 24 in. D x 34.5 in. H Ready to Assemble Plywood Slim Shaker Co","type":"base","color_es":"Blanco","color_en":"White","qty":12,"price":452.0},{"sku":"1013223882","title":"Leyton 15 in. W x 12 in. D x 36 in. H Ready to Assemble Plywood Slim Shaker Wall","type":"wall","color_es":"Blanco","color_en":"White","qty":582,"price":24.0},{"sku":"1013223885","title":"Leyton 30 in. W x 12 in. D x 15 in. H Ready to Assemble Plywood Slim Shaker Wall","type":"wall","color_es":"Blanco","color_en":"White","qty":458,"price":20.0},{"sku":"1013162037","title":"Leyton 15 in. W x 12 in. D x 30 in. H Ready to Assemble Plywood Slim Shaker Wall","type":"wall","color_es":"Blanco","color_en":"White","qty":308,"price":34.0},{"sku":"1006893162","title":"Avondale 11.25 in. W X 30 in. H Wall Cabinet Decorative End Panel in Alpine Whit","type":"wall","color_es":"Blanco","color_en":"White","qty":131,"price":5.0},{"sku":"1013162483","title":"Leyton 24 in. W x 21 in. D x 34.5 in. H Ready to Assemble Plywood Slim Shaker Ba","type":"sink","color_es":"Blanco","color_en":"White","qty":24,"price":27.0},{"sku":"1013162603","title":"Leyton 36 in. W x 21 in. D x 34.5 in. H Ready to Assemble Plywood Slim Shaker Ba","type":"sink","color_es":"Blanco","color_en":"White","qty":16,"price":255.0},{"sku":"1013162764","title":"Leyton 36 in. W x 24 in. D x 34.5 in. H Ready to Assemble Plywood Slim Shaker Si","type":"sink","color_es":"Blanco","color_en":"White","qty":13,"price":305.0},{"sku":"8935364805454","title":"Leyton 36 in. W X 24 in. D X 34.5 in. H Ready to Assemble Plywood Slim Shaker Si","type":"sink","color_es":"Blanco","color_en":"White","qty":12,"price":45.0},{"sku":"1013224017","title":"Leyton 24 in. W X 24 in. D X 36 in. H Ready to Assemble Plywood Slim Shaker Corn","type":"corner","color_es":"Blanco","color_en":"White","qty":73,"price":45.0},{"sku":"1006596145","title":"Avondale 36 in. W X 24 in. D X 34.5 in. H Ready to Assemble Plywood Shaker Blind","type":"corner","color_es":"Blanco","color_en":"White","qty":5,"price":38.0},{"sku":"1002429811","title":"Cambridge White Shaker Assembled Blind Wall Corner Cabinet with 1 Soft Close Doo","type":"corner","color_es":"Blanco","color_en":"White","qty":1,"price":38.0},{"sku":"094803042237","title":"Hampton 24 in. W x 12 in. D x 30 in. H Assembled Diagonal Corner Wall Kitchen Ca","type":"corner","color_es":"Blanco","color_en":"White","qty":1,"price":37.0},{"sku":"888422320179","title":"Arlington 24 in W X 21 in D X 34.5 in H in Vesper White Assembled Plywood Bath-D","type":"drawer","color_es":"Blanco","color_en":"White","qty":4,"price":66.0},{"sku":"1816822467","title":"Arlington 24 in W X 21 in D X 34.5 in H in Vesper White Assembled Plywood Bath-D","type":"drawer","color_es":"Blanco","color_en":"White","qty":4,"price":66.0},{"sku":"10000243386","title":"Courtland 18 in. W x 24 in. D x 34.5 in. H Assembled Shaker Drawer Base Kitchen ","type":"drawer","color_es":"Blanco","color_en":"White","qty":1,"price":47.0},{"sku":"1013896522","title":"Leyton 18 in. W x 24 in D x 96 in H Ready To Assemble Plywood Slim Shaker Utilit","type":"tall","color_es":"Blanco","color_en":"White","qty":267,"price":64.0},{"sku":"1013896547","title":"Leyton 24 in. W x 24 in D x 96 in H Ready To Assemble Plywood Slim Shaker Utilit","type":"tall","color_es":"Blanco","color_en":"White","qty":242,"price":74.0},{"sku":"1013896514","title":"Leyton 18 in. W x 24 in D x 84 in H Ready To Assemble Plywood Slim Shaker Utilit","type":"tall","color_es":"Blanco","color_en":"White","qty":222,"price":56.0},{"sku":"1013896543","title":"Leyton 24 in. W X 24 in D X 90 in H Ready to Assemble Plywood Slim Shaker Utilit","type":"tall","color_es":"Blanco","color_en":"White","qty":222,"price":68.0},{"sku":"888422243720","title":"Arlington Veiled Gray Plywood Shaker Stock Assembled Base Kitchen Cabinet Soft C","type":"base","color_es":"Gris","color_en":"Gray","qty":12,"price":48.0},{"sku":"1006774483","title":"Richmond Vesuvius Gray Plywood Shaker Stock Ready to Assemble Wall Kitchen Cabin","type":"wall","color_es":"Gris","color_en":"Gray","qty":186,"price":45.0},{"sku":"888422311290","title":"Richmond Vesuvius Gray Plywood Shaker Ready to Assemble Wall Kitchen Laundry Cab","type":"wall","color_es":"Gris","color_en":"Gray","qty":135,"price":30.0},{"sku":"772515453922","title":"Westfield Dusk Gray Shaker Stock Assembled Wall Kitchen Cabinet (21 in. W X 12 i","type":"wall","color_es":"Gris","color_en":"Gray","qty":70,"price":32.0},{"sku":"888422311146","title":"Richmond Vesuvius Gray Plywood Shaker Stock Ready to Assemble Wall Kitchen Cabin","type":"wall","color_es":"Gris","color_en":"Gray","qty":69,"price":37.0},{"sku":"888422244673","title":"Arlington Veiled Gray Plywood Shaker Assembled Vanity Sink Base Kitchen Cabinet ","type":"sink","color_es":"Gris","color_en":"Gray","qty":41,"price":95.0},{"sku":"094803141411","title":"Shaker 36 in. W X 24 in. D X 34.5 in. H Assembled Accessible Sink Base Kitchen C","type":"sink","color_es":"Gris","color_en":"Gray","qty":4,"price":45.0},{"sku":"888422311375","title":"Richmond Vesuvius Gray Plywood Shaker Ready to Assemble Corner Kitchen Cabinet S","type":"corner","color_es":"Gris","color_en":"Gray","qty":26,"price":58.0},{"sku":"772515453588","title":"Westfield Dusk Gray Shaker Stock Assembled Corner Wall Kitchen Cabinet (24 in. W","type":"corner","color_es":"Gris","color_en":"Gray","qty":12,"price":40.0},{"sku":"1005496830","title":"Cambridge Gray Shaker Assembled Corner Cabinet (24 in. W x 24.5 in. D x 30 in. H","type":"corner","color_es":"Gris","color_en":"Gray","qty":1,"price":44.0},{"sku":"094803141831","title":"Shaker 24 in. W X 12 in. D X 30 in. H Assembled Diagonal Corner Wall Kitchen Cab","type":"corner","color_es":"Gris","color_en":"Gray","qty":1,"price":40.0},{"sku":"888422244727","title":"Arlington 15 in W x 21 in D x 34.5 in H in Veiled Gray Assembled Plywood Bath-Dr","type":"drawer","color_es":"Gris","color_en":"Gray","qty":22,"price":70.0},{"sku":"888422320261","title":"Arlington 24 in W X 21 in D X 34.5 in H in Veiled Gray Assembled Plywood Bath-Dr","type":"drawer","color_es":"Gris","color_en":"Gray","qty":4,"price":66.0},{"sku":"1005496886","title":"Cambridge Gray Shaker Assembled Base Kitchen Cabinet with 3-Soft Close Drawers (","type":"drawer","color_es":"Gris","color_en":"Gray","qty":1,"price":100.0},{"sku":"1010747244","title":"Avondale 36 in. W x 24 in. D x 96 in. H Ready to Assemble Plywood Shaker Open Pa","type":"tall","color_es":"Gris","color_en":"Gray","qty":42,"price":77.0},{"sku":"1013871107","title":"Avondale 18 in. W x 84 in. H x 24 in. D Ready To Assemble Plywood Shaker Utility","type":"tall","color_es":"Gris","color_en":"Gray","qty":34,"price":77.0},{"sku":"1013871027","title":"Avondale 36 in. W x 72 in. H x 12 in. D Ready To Assemble Plywood Shaker Hall Tr","type":"tall","color_es":"Gris","color_en":"Gray","qty":34,"price":363.0},{"sku":"1013871005","title":"Avondale 24 in. W x 96 in. H x 24 in. D Ready To Assemble Plywood Shaker Utility","type":"tall","color_es":"Gris","color_en":"Gray","qty":21,"price":100.0},{"sku":"1013161617","title":"Leyton 24 in. W x 12 in. D x 36 in. H Ready to Assemble Plywood Slim Shaker Wall","type":"wall","color_es":"Negro","color_en":"Black","qty":139,"price":193.0},{"sku":"1013160595","title":"Leyton 30 in. W x 12 in. D x 18 in. H Ready to Assemble Plywood Slim Shaker Wall","type":"wall","color_es":"Negro","color_en":"Black","qty":125,"price":27.0},{"sku":"1013161530","title":"Leyton 21 in. W x 12 in. D x 36 in. H Ready to Assemble Plywood Slim Shaker Wall","type":"wall","color_es":"Negro","color_en":"Black","qty":81,"price":213.0},{"sku":"1015022514","title":"Leyton 33 in. W x 12 in. D x 30 in. H Ready to Assemble Plywood Shaker Wall Kitc","type":"wall","color_es":"Negro","color_en":"Black","qty":28,"price":30.0},{"sku":"1013223942","title":"Leyton 36 in. W X 24 in. D X 34.5 in. H Ready to Assemble Plywood Slim Shaker Si","type":"sink","color_es":"Negro","color_en":"Black","qty":106,"price":39.0},{"sku":"1013160589","title":"Leyton 30 in. W x 21 in. D x 34.5 in. H Ready to Assemble Plywood Slim Shaker Ba","type":"sink","color_es":"Negro","color_en":"Black","qty":17,"price":233.0},{"sku":"1013160593","title":"Leyton 36 in. W x 24 in. D x 34.5 in. H Ready to Assemble Plywood Slim Shaker Si","type":"sink","color_es":"Negro","color_en":"Black","qty":14,"price":40.0},{"sku":"1013871176","title":"Leyton 30 in. W x 21 in. D x 7.5 in. H Ready To Assemble Plywood Slim Shaker Kne","type":"drawer","color_es":"Negro","color_en":"Black","qty":11,"price":17.0},{"sku":"1013896508","title":"Leyton 24 in. W x 84 in. H x 24 in. D Ready To Assemble Plywood Slim Shaker Util","type":"tall","color_es":"Negro","color_en":"Black","qty":42,"price":65.0},{"sku":"1013871123","title":"Avondale 18 in. W x 90 in. H x 24 in. D Ready To Assemble Plywood Shaker Utility","type":"tall","color_es":"Negro","color_en":"Black","qty":39,"price":80.0},{"sku":"1013871066","title":"Leyton 18 in. W x 24 in. D x 84 in H Ready To Assemble Plywood Slim Shaker Utili","type":"tall","color_es":"Negro","color_en":"Black","qty":39,"price":56.0},{"sku":"1013871143","title":"Avondale 24 in. W x 96 in. H x 24 in. D Ready To Assemble Plywood Shaker Utility","type":"tall","color_es":"Negro","color_en":"Black","qty":32,"price":100.0},{"sku":"1013161740","title":"Leyton 21 in. W x 24 in. D x 34.5 in. H Ready to Assemble Plywood Slim Shaker Ba","type":"base","color_es":"Verde","color_en":"Green","qty":76,"price":194.0},{"sku":"1013161824","title":"Leyton 21 in. W x 12 in. D x 30 in. H Ready to Assemble Plywood Slim Shaker Wall","type":"wall","color_es":"Verde","color_en":"Green","qty":70,"price":27.0},{"sku":"1013161813","title":"Leyton 27 in. W x 12 in. D x 36 in. H Ready to Assemble Plywood Slim Shaker Wall","type":"wall","color_es":"Verde","color_en":"Green","qty":68,"price":30.0},{"sku":"1013161777","title":"Leyton 33 in. W x 24 in. D x 12 in. H Ready to Assemble Plywood Slim Shaker Wall","type":"wall","color_es":"Verde","color_en":"Green","qty":25,"price":41.0},{"sku":"1015022489","title":"Leyton 33 in. W x 12 in. D x 42 in. H Ready to Assemble Plywood Shaker Wall Kitc","type":"wall","color_es":"Verde","color_en":"Green","qty":22,"price":146.0},{"sku":"1013161771","title":"Leyton 30 in. W x 21 in. D x 34.5 in. H Ready to Assemble Plywood Slim Shaker Ba","type":"sink","color_es":"Verde","color_en":"Green","qty":21,"price":41.0},{"sku":"1013161816","title":"Leyton 36 in. W x 24 in. D x 34.5 in. H Ready to Assemble Plywood Slim Shaker Si","type":"sink","color_es":"Verde","color_en":"Green","qty":3,"price":40.0},{"sku":"1012871218","title":"Leyton 30 in. W X 21 in. D X 7.5 in. H Ready to Assemble Plywood Slim Shaker Kne","type":"drawer","color_es":"Verde","color_en":"Green","qty":29,"price":17.0},{"sku":"1013871115","title":"Leyton 24 in. W X 24 in. D X 96 in. H Ready to Assemble Plywood Slim Shaker Util","type":"tall","color_es":"Verde","color_en":"Green","qty":42,"price":74.0},{"sku":"1013722085","title":"Avondale 36 in. W X 72 in. H X 12 in. D Ready to Assemble Plywood Shaker Hall Tr","type":"tall","color_es":"Verde","color_en":"Green","qty":35,"price":64.0},{"sku":"1013722030","title":"Avondale 18 in. W x 96 in. H x 24 in. D Ready To Assemble Plywood Shaker Utility","type":"tall","color_es":"Verde","color_en":"Green","qty":30,"price":87.0},{"sku":"1013722010","title":"Avondale 18 in. W X 84 in. H X 24 in. D Ready to Assemble Plywood Shaker Utility","type":"tall","color_es":"Verde","color_en":"Green","qty":22,"price":76.0},{"sku":"094803165660","title":"Hampton Bay Hampton Unfinished Beech Recessed Kitchen Base Cabinet","type":"base","color_es":"Otro","color_en":"Other","qty":109,"price":18.0},{"sku":"094803165677","title":"Unfinished Beech Recessed Panel Stock Assembled Base Kitchen Cabinet (24 in. X 3","type":"base","color_es":"Otro","color_en":"Other","qty":97,"price":21.0},{"sku":"1013871202","title":"Leyton 18 in. W x 24 in. D x 16.5 in. H Ready To Assemble Plywood Slim Shaker Be","type":"base","color_es":"Otro","color_en":"Other","qty":30,"price":21.0},{"sku":"1013161555","title":"Leyton 18 in. W x 24 in. D x 34.5 in. H Ready to Assemble Plywood Slim Shaker Do","type":"base","color_es":"Otro","color_en":"Other","qty":11,"price":274.0},{"sku":"1013161541","title":"Leyton 30 in. W x 12 in. D x 42 in. H Ready to Assemble Plywood Slim Shaker Wall","type":"wall","color_es":"Otro","color_en":"Other","qty":122,"price":255.0},{"sku":"094803139524","title":"Shaker 48 in. W X 11.25 in. D X 13.5 in. H Partially Assembled Configurable Wall","type":"wall","color_es":"Otro","color_en":"Other","qty":104,"price":19.0},{"sku":"094803181790","title":"Sinclair 18in.W X12 in.D X30in.H Assembled Specialty Wall Flex Microwave or Shel","type":"wall","color_es":"Otro","color_en":"Other","qty":91,"price":21.0},{"sku":"1013161539","title":"Leyton 27 in. W x 12 in. D x 36 in. H Ready to Assemble Plywood Slim Shaker Wall","type":"wall","color_es":"Otro","color_en":"Other","qty":69,"price":40.0},{"sku":"1013161558","title":"Leyton 30 in. W x 21 in. D x 34.5 in. H Ready to Assemble Plywood Slim Shaker Ba","type":"sink","color_es":"Otro","color_en":"Other","qty":15,"price":31.0},{"sku":"1013161553","title":"Leyton 24 in. W x 21 in. D x 34.5 in. H Ready to Assemble Plywood Slim Shaker Ba","type":"sink","color_es":"Otro","color_en":"Other","qty":13,"price":204.0},{"sku":"1013160601","title":"Leyton 36 in. W x 21 in. D x 34.5 in. H Ready to Assemble Plywood Slim Shaker Ba","type":"sink","color_es":"Otro","color_en":"Other","qty":13,"price":45.0},{"sku":"094803115535","title":"Shaker 36 in. W X 24 in. D X 34.5 in. H Assembled Accessible Sink Base Kitchen C","type":"sink","color_es":"Otro","color_en":"Other","qty":12,"price":40.0},{"sku":"1013223994","title":"Leyton 24 in. W x 24 in. D x 30 in. H Ready to Assemble Plywood Slim Shaker Corn","type":"corner","color_es":"Otro","color_en":"Other","qty":56,"price":38.0},{"sku":"094803099897","title":"Hampton 24 in. W x 12 in. D x 36 in. H Assembled Diagonal Corner Wall Kitchen Ca","type":"corner","color_es":"Otro","color_en":"Other","qty":1,"price":46.0},{"sku":"094803141039","title":"Hampton 12 in. W x 21 in. D x 34.5 in. H Assembled Bath 3-Drawer Base Cabinet in","type":"drawer","color_es":"Otro","color_en":"Other","qty":28,"price":28.0},{"sku":"1013722209","title":"Avondale 18 in. W x 16.5 in. H x 24 in. D Ready To Assemble Plywood Shaker Drawe","type":"drawer","color_es":"Otro","color_en":"Other","qty":7,"price":176.0},{"sku":"1013896550","title":"Leyton 36 in. W x 24 in. D x 90 in. H Ready To Assemble Plywood Slim Shaker Wide","type":"tall","color_es":"Otro","color_en":"Other","qty":48,"price":86.0},{"sku":"1013896546","title":"Leyton 24 in. W x 24 in. D x 96 in. H Ready To Assemble Plywood Slim Shaker Util","type":"tall","color_es":"Otro","color_en":"Other","qty":37,"price":417.0},{"sku":"1013896533","title":"Leyton 24 in. W x 24 in. D x 90 in. H Ready To Assemble Plywood Slim Shaker Util","type":"tall","color_es":"Otro","color_en":"Other","qty":32,"price":68.0},{"sku":"1013896557","title":"Leyton 18 in. W x 24 in. D x 90 in. H Ready To Assemble Plywood Slim Shaker Util","type":"tall","color_es":"Otro","color_en":"Other","qty":30,"price":59.0}];
+
+// ── State
+var st = { layout: 'kitchenette', color: 'White', color_es: 'Blanco', qty: 1, fname: '', lname: '', tel: '', email: '' };
+
+// ── Progress navigation
+function goStep(n) {
+  for (var i = 1; i <= 5; i++) {
+    var p = document.getElementById('wz-p' + i);
+    if (p) p.classList.toggle('active', i === n);
+    var pi = document.getElementById('wz-pi-' + i);
+    if (pi) { pi.classList.toggle('active', i === n); pi.classList.toggle('done', i < n); }
+    var dot = document.getElementById('wz-dot-' + i);
+    if (dot) dot.textContent = i < n ? '✓' : i;
+    var line = document.getElementById('wz-line-' + i);
+    if (line) line.classList.toggle('done', i < n);
+  }
+  if (n === 2) buildColors();
+  if (n === 3) updateQty();
+  if (n === 5) buildSummary();
+  document.getElementById('wz-prog').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Layout selection
+function selectLayout(lt) {
+  st.layout = lt;
+  document.querySelectorAll('.lt-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.lt === lt); });
+}
+
+// ── Color kit calc
+function kitCount(color) {
+  var recipe = RECIPES[st.layout].recipe;
+  var mn = 9999;
+  Object.keys(recipe).forEach(function(t) {
+    var need = recipe[t]; if (!need) return;
+    var tot = CFG_PRODUCTS.filter(function(p) { return p.color_en === color && p.type === t; }).reduce(function(a, p) { return a + p.qty; }, 0);
+    mn = Math.min(mn, Math.floor(tot / need));
+  });
+  return mn === 9999 ? 0 : mn;
+}
+
+function buildColors() {
+  var all = {};
+  CFG_PRODUCTS.forEach(function(p) { if (!all[p.color_en]) all[p.color_en] = p.color_es; });
+  var order = ['White', 'Gray', 'Green', 'Black', 'Other'];
+  var sorted = Object.keys(all).sort(function(a, b) { var ai = order.indexOf(a), bi = order.indexOf(b); return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi); });
+  var grid = document.getElementById('col-grid');
+  grid.innerHTML = sorted.map(function(c) {
+    var kits = kitCount(c);
+    var dis = kits === 0;
+    var active = c === st.color;
+    var sw = swatchFor(c);
+    var border = sw === '#f5f5f5' || sw === '#ece9e0' ? '1.5px solid #c2c6cd' : 'none';
+    return '<button class="col-btn' + (active ? ' active' : '') + (dis ? ' disabled' : '') + '" ' +
+      (dis ? 'disabled' : '') + ' onclick="pickColor(\'' + c + '\',\'' + all[c] + '\')" data-c="' + c + '">' +
+      '<span class="col-swatch" style="background:' + sw + ';border:' + border + '"></span>' +
+      '<span>' + all[c] + '</span>' +
+      (!dis ? '<span class="col-kits">' + kits + '</span>' : '') +
+      '</button>';
+  }).join('');
+  // auto-fix if current color unavailable
+  if (kitCount(st.color) === 0) {
+    var first = sorted.find(function(c) { return kitCount(c) > 0; });
+    if (first) pickColor(first, all[first]);
+  }
+}
+
+function pickColor(c, es) {
+  st.color = c; st.color_es = es;
+  document.querySelectorAll('.col-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.c === c); });
+}
+
+// ── Qty / BOM
+function adjQty(d) {
+  var inp = document.getElementById('qty-inp');
+  var max = parseInt(inp.max) || 99;
+  inp.value = Math.max(1, Math.min(max, (parseInt(inp.value) || 1) + d));
+  st.qty = parseInt(inp.value);
+  updateQty();
+}
+
+function onQtyChange() {
+  st.qty = parseInt(document.getElementById('qty-inp').value) || 1;
+  updateQty();
+}
+
+function buildBOM() {
+  var recipe = RECIPES[st.layout].recipe;
+  var n = st.qty;
+  var rows = [];
+  Object.keys(recipe).forEach(function(t) {
+    var need = recipe[t] * n;
+    if (!need) return;
+    var prods = CFG_PRODUCTS.filter(function(p) { return p.type === t && p.color_en === st.color && p.qty > 0; });
+    prods.sort(function(a, b) { return b.qty - a.qty; });
+    var rem = need;
+    prods.forEach(function(p) {
+      if (rem <= 0) return;
+      var take = Math.min(p.qty, rem);
+      rows.push({ sku: p.sku, title: p.title, type: t, qty: take });
+      rem -= take;
+    });
+  });
+  return rows;
+}
+
+function updateQty() {
+  var max = kitCount(st.color);
+  var inp = document.getElementById('qty-inp');
+  inp.max = max || 1;
+  if (parseInt(inp.value) > max) { inp.value = max; st.qty = max; }
+  document.getElementById('qty-meta').textContent = 'Máx disponible: ' + max + ' kit' + (max !== 1 ? 's' : '');
+  document.getElementById('qty-hint').textContent = 'Un kit = una cocina ' + ({kitchenette:'Kitchenette',galley:'Galley',lshape:'L-Shape',ushape:'U-Shape'}[st.layout]||st.layout) + ' completa';
+  var bom = buildBOM();
+  var totalUnits = bom.reduce(function(a, r) { return a + r.qty; }, 0);
+  var prev = document.getElementById('bom-preview');
+  if (!bom.length) { prev.innerHTML = '<div class="bom-preview"><div class="bom-prev-title">Sin stock para esta selección</div></div>'; return; }
+  prev.innerHTML = '<div class="bom-preview">' +
+    '<div class="bom-prev-title">' + bom.length + ' SKUs · ' + totalUnits + ' unidades para ' + st.qty + ' kit' + (st.qty > 1 ? 's' : '') + '</div>' +
+    '<div class="bom-pills">' +
+    bom.map(function(r) { return '<div class="bom-pill">' + r.sku + ' <strong>×' + r.qty + '</strong></div>'; }).join('') +
+    '</div></div>';
+}
+
+// ── Form submit
+function submitForm(e) {
+  e.preventDefault();
+  st.fname = document.getElementById('f-fname').value.trim();
+  st.lname = document.getElementById('f-lname').value.trim();
+  st.tel   = document.getElementById('f-tel').value.trim();
+  st.email = document.getElementById('f-email').value.trim();
+  goStep(5);
+}
+
+// ── Summary
+function buildSummary() {
+  var bom = buildBOM();
+  var ltName = { kitchenette: 'Kitchenette', galley: 'Galley', lshape: 'L-Shape', ushape: 'U-Shape' }[st.layout] || st.layout;
+  var totalUnits = bom.reduce(function(a, r) { return a + r.qty; }, 0);
+
+  var card = document.getElementById('sum-card');
+  card.innerHTML =
+    '<div class="sum-hdr">' +
+      '<div class="sum-info">' +
+        '<div class="sum-name">' + st.fname + ' ' + st.lname + '</div>' +
+        '<div class="sum-meta">' + st.email + '<br>' + st.tel + '</div>' +
+        '<div class="sum-badges">' +
+          '<span class="sum-badge">' + ltName + '</span>' +
+          '<span class="sum-badge">' + st.color_es + '</span>' +
+          '<span class="sum-badge">' + st.qty + ' kit' + (st.qty > 1 ? 's' : '') + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="sum-stats">' +
+        '<div class="sum-stat"><div class="sum-stat-n">' + bom.length + '</div><div class="sum-stat-l">SKUs</div></div>' +
+        '<div class="sum-stat"><div class="sum-stat-n">' + totalUnits + '</div><div class="sum-stat-l">Unidades</div></div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="sum-table-wrap">' +
+    '<table class="sum-table">' +
+      '<thead><tr><th>SKU</th><th>Producto</th><th>Tipo</th><th style="text-align:right">Cant.</th></tr></thead>' +
+      '<tbody>' + bom.map(function(r) {
+        return '<tr>' +
+          '<td class="sum-sku">' + r.sku + '</td>' +
+          '<td class="sum-title">' + r.title + '</td>' +
+          '<td class="sum-type">' + r.type + '</td>' +
+          '<td class="sum-qty">×' + r.qty + '</td>' +
+          '</tr>';
+      }).join('') + '</tbody>' +
+    '</table></div>';
+
+  // Build WA message
+  var msg = 'Hola, soy ' + st.fname + ' ' + st.lname +
+    '\nEmail: ' + st.email + '\nTeléfono: ' + st.tel +
+    '\n\nQuiero hacer un pedido de gabinetes:' +
+    '\nLayout: ' + ltName + '\nColor: ' + st.color_es + '\nKits: ' + st.qty +
+    '\n\nLista de SKUs:\n' + bom.map(function(r) { return r.sku + ' x' + r.qty; }).join('\n');
+  document.getElementById('wa-link').href = 'https://wa.me/' + WA_PHONE + '?text=' + encodeURIComponent(msg);
+}
+
+// ── Restart
+function restart() {
+  st = { layout: 'kitchenette', color: 'White', color_es: 'Blanco', qty: 1, fname: '', lname: '', tel: '', email: '' };
+  document.querySelectorAll('.lt-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.lt === 'kitchenette'); });
+  document.getElementById('qty-inp').value = 1;
+  ['f-fname','f-lname','f-tel','f-email'].forEach(function(id) { var el = document.getElementById(id); if(el) el.value = ''; });
+  goStep(1);
+}
+
+// ── Newsletter
+function nlSubmit(e) {
+  e.preventDefault();
+  var email = document.getElementById('nl-email').value.trim();
+  window.location.href = 'mailto:sales@riveroco.com?subject=Newsletter%20Gabinetes&body=Suscripci%C3%B3n%20desde%20cat%C3%A1logo.%20Email%3A%20' + encodeURIComponent(email);
+  document.getElementById('nl-form').style.display = 'none';
+  document.getElementById('nl-ok').style.display = '';
+}
+</script>
