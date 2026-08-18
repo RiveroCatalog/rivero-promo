@@ -58,14 +58,15 @@
   </section>
 
   <section style="max-width:1180px;margin:0 auto;padding:60px 48px 84px">
-    <a href="{{ fullHref }}" style="display:flex;align-items:center;justify-content:space-between;gap:24px;margin:0 0 44px;padding:30px 36px;border-radius:16px;background:var(--retro-blue);color:#fff;text-decoration:none;box-shadow:0 14px 34px rgba(35,92,242,.22)" style-hover="filter:brightness(1.06)">
+    <a href="{{ gabHref }}" style="display:flex;align-items:center;justify-content:space-between;gap:24px;margin:0 0 44px;padding:30px 36px;border-radius:16px;background:var(--retro-blue);color:#fff;text-decoration:none;box-shadow:0 14px 34px rgba(35,92,242,.22)" style-hover="filter:brightness(1.06)">
       <div>
-        <div style="font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.16em;color:rgba(255,255,255,.82)">{{ t.idxFullEyebrow }}</div>
-        <div style="font-size:30px;font-weight:700;margin-top:6px">{{ t.idxFullTitle }}</div>
+        <div style="font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.16em;color:rgba(255,255,255,.82)">{{ gabEyebrow }}</div>
+        <div style="font-size:30px;font-weight:700;margin-top:6px">{{ gabTitle }}</div>
       </div>
       <div style="display:flex;align-items:center;gap:34px">
-        <div style="text-align:right"><div style="font-size:34px;font-weight:700;line-height:1">{{ totalSkus }}</div><div style="font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,.78)">SKUs</div></div>
-        <div style="text-align:right"><div style="font-size:34px;font-weight:700;line-height:1">{{ totalValue }}</div><div style="font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,.78)">{{ t.valueUsd }}</div></div>
+        <div style="text-align:right"><div style="font-size:34px;font-weight:700;line-height:1">{{ gabSkus }}</div><div style="font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,.78)">SKUs</div></div>
+        <div style="text-align:right"><div style="font-size:34px;font-weight:700;line-height:1">{{ gabUnits }}</div><div style="font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,.78)">{{ t.units }}</div></div>
+        <div style="text-align:right"><div style="font-size:34px;font-weight:700;line-height:1">{{ gabValue }}</div><div style="font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,.78)">{{ t.valueUsd }}</div></div>
         <span style="font-size:32px;line-height:1">→</span>
       </div>
     </a>
@@ -123,7 +124,7 @@ class Component extends DCLogic {
   renderVals() {
     const C = window.INVENTORY;
     const CATS = [
-      { name: 'Gabinetes de Cocina',       color: '#235CF2', file: 'gabinetes.html', skus_fixed: 304 },
+      { name: 'Gabinetes de Cocina',       color: '#235CF2', file: 'gabinetes.html', skus_fixed: 304, units_fixed: 10907, value_fixed: 776174 },
       { name: 'Muebles & hogar',           color: '#B23A48', file: 'muebles-y-hogar.html' },
       { name: 'Iluminación',               color: '#E2960F', file: 'iluminacion.html' },
       { name: 'Cocina',                    color: '#235CF2', file: 'cocina.html' },
@@ -150,8 +151,11 @@ class Component extends DCLogic {
     const compact = (n) => (n >= 1e6 ? '$' + (n / 1e6).toFixed(1) + (L === 'en' ? 'M' : 'MILL') : (n >= 1000 ? '$' + (n / 1000).toFixed(n >= 10000 ? 0 : 1) + 'K' : '$' + Math.round(n || 0)));
     if (!C) {
       return { ready: false, lang: L, t: I, esStyle, enStyle, flags: [],
-        cats: CATS.map((c, i) => ({ name: dn(c.name), color: c.color, href: encodeURI(c.file) + qs, num: c.skus_fixed !== undefined ? (L === 'es' ? '★ NUEVO' : '★ NEW') : catWord + ' ' + String(i + 1).padStart(2, '0'), skus: c.skus_fixed !== undefined ? c.skus_fixed : '—', units: '—', value: '—' })),
-        totalSkus: '—', totalValue: '—', totalUnits: '—', catCount: CATS.length, fullHref: encodeURI('completo.html') + qs };
+        cats: CATS.map((c, i) => ({ name: dn(c.name), color: c.color, href: encodeURI(c.file) + qs, num: c.skus_fixed !== undefined ? (L === 'es' ? '★ NUEVO' : '★ NEW') : catWord + ' ' + String(i + 1).padStart(2, '0'), skus: c.skus_fixed !== undefined ? c.skus_fixed : '—', units: c.units_fixed !== undefined ? units(c.units_fixed) : '—', value: c.value_fixed !== undefined ? compact(c.value_fixed) : '—' })),
+        totalSkus: '—', totalValue: '—', totalUnits: '—', catCount: CATS.length, fullHref: encodeURI('completo.html') + qs,
+        gabHref: encodeURI('gabinetes.html') + qs, gabSkus: 304, gabUnits: units(10907), gabValue: compact(776174),
+        gabEyebrow: L === 'es' ? '★ NUEVO — Gabinetes de Cocina' : '★ NEW — Kitchen Cabinets',
+        gabTitle: L === 'es' ? 'Hampton Bay · KraftMaid · Leyton Slim Shaker' : 'Hampton Bay · KraftMaid · Leyton Slim Shaker' };
     }
     const cats = CATS.map((c, i) => {
       const items = C.products.filter((p) => p.cat === c.name);
@@ -159,7 +163,9 @@ class Component extends DCLogic {
       const v = items.reduce((a, p) => a + p.price * p.qty, 0);
       const skus = c.skus_fixed !== undefined ? c.skus_fixed : items.length;
       const num = c.skus_fixed !== undefined ? (L === 'es' ? '★ NUEVO' : '★ NEW') : catWord + ' ' + String(i + 1).padStart(2, '0');
-      return { name: dn(c.name), color: c.color, href: encodeURI(c.file) + qs, num, skus, units: units(u), value: compact(v) };
+      const unitVal = c.units_fixed !== undefined ? units(c.units_fixed) : units(u);
+      const valVal = c.value_fixed !== undefined ? compact(c.value_fixed) : compact(v);
+      return { name: dn(c.name), color: c.color, href: encodeURI(c.file) + qs, num, skus, units: unitVal, value: valVal };
     });
     const wa = (C.contact && C.contact.whatsapp) || '15558016189';
     const flagMsg = (cn) => (L === 'en'
@@ -182,6 +188,9 @@ class Component extends DCLogic {
       totalValue: compact(C.products.reduce((a, p) => a + p.price * p.qty, 0)),
       catCount: cats.filter((c) => c.skus > 0).length,
       fullHref: encodeURI('completo.html') + qs,
+      gabHref: encodeURI('gabinetes.html') + qs, gabSkus: 304, gabUnits: units(10907), gabValue: compact(776174),
+      gabEyebrow: L === 'es' ? '★ NUEVO — Gabinetes de Cocina' : '★ NEW — Kitchen Cabinets',
+      gabTitle: L === 'es' ? 'Hampton Bay · KraftMaid · Leyton Slim Shaker' : 'Hampton Bay · KraftMaid · Leyton Slim Shaker',
     };
   }
 }
