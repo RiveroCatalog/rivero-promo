@@ -4605,19 +4605,21 @@ body{font-family:var(--font);background:var(--ink-50);color:var(--ink);line-heig
 
 <style>
 /* ── Wizard v2 */
-.wz-prog{display:flex;align-items:center;margin-bottom:28px}
-.wz-pi{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:56px}
-.wz-pi-dot{width:30px;height:30px;border-radius:50%;background:var(--ink-200);color:var(--ink-400);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;transition:background .3s,color .3s;border:2px solid var(--ink-200)}
-.wz-pi.active .wz-pi-dot{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 0 0 4px rgba(35,92,242,.15)}
+.wz-wrap{max-width:860px;margin:0 auto}
+.wz-prog{display:flex;align-items:flex-start;margin-bottom:32px}
+.wz-pi{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;width:70px}
+.wz-pi-dot{width:32px;height:32px;border-radius:50%;background:#e4e7ef;color:#9aa0b8;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;transition:background .3s,color .3s,box-shadow .3s;border:2px solid #e4e7ef}
+.wz-pi.active .wz-pi-dot{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 0 0 5px rgba(35,92,242,.15)}
 .wz-pi.done .wz-pi-dot{background:#16a34a;color:#fff;border-color:#16a34a}
-.wz-pi-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-400);white-space:nowrap}
-.wz-pi.active .wz-pi-lbl,.wz-pi.done .wz-pi-lbl{color:var(--ink)}
-.wz-pline{flex:1;height:2px;background:var(--ink-200);margin:0 4px 18px;transition:background .3s}
+.wz-pi-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9aa0b8;text-align:center;line-height:1.3}
+.wz-pi.active .wz-pi-lbl{color:var(--blue)}
+.wz-pi.done .wz-pi-lbl{color:#16a34a}
+.wz-pline{flex:1;height:2px;background:#e4e7ef;margin:15px 6px 0;transition:background .3s}
 .wz-pline.done{background:#16a34a}
 .wz-panel{display:none;animation:wzIn .25s ease}
 .wz-panel.active{display:block}
 @keyframes wzIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.wz-card{background:var(--surface,#fff);border:1px solid var(--ink-200);border-radius:14px;padding:24px 24px 20px}
+.wz-card{background:#fff;border:1px solid #e4e7ef;border-radius:16px;padding:28px 28px 22px;box-shadow:0 2px 12px rgba(8,8,8,.06)}
 .wz-hdr{display:flex;align-items:center;gap:12px;margin-bottom:20px}
 .wz-num{font-size:28px;font-weight:900;line-height:1;color:var(--blue);min-width:36px;font-variant-numeric:tabular-nums}
 .wz-hdr-text{display:flex;flex-direction:column;gap:2px}
@@ -4689,15 +4691,16 @@ body{font-family:var(--font);background:var(--ink-50);color:var(--ink);line-heig
 </style>
 
 <section class="configurator" id="configurador">
-  <div class="container">
-    <div class="conf-hdr">
+  <div class="section-wrap">
+    <div class="conf-hdr" style="max-width:860px;margin:0 auto 36px">
       <div>
         <div class="conf-title" data-es="Configurador de cocinas" data-en="Kitchen Configurator">Configurador de cocinas</div>
-        <div class="conf-title-main" data-es="Arm\u00e1 tu cocina con el stock actual" data-en="Build your kitchen from current stock">Arm\u00e1 tu cocina con el stock actual</div>
-        <div class="conf-sub" data-es="Segu\u00ed los pasos \u2014 generamos la lista exacta de SKUs y mand\u00e1s el pedido por WhatsApp." data-en="Follow the steps \u2014 we generate the exact SKU list so you can send the order via WhatsApp.">Segu\u00ed los pasos \u2014 generamos la lista exacta de SKUs y mand\u00e1s el pedido por WhatsApp.</div>
+        <div class="conf-title-main" data-es="Armá tu cocina con el stock actual" data-en="Build your kitchen from current stock">Armá tu cocina con el stock actual</div>
+        <div class="conf-sub" data-es="Seguí los pasos — generamos la lista exacta de SKUs y mandás el pedido por WhatsApp." data-en="Follow the steps — we generate the exact SKU list so you can send the order via WhatsApp.">Seguí los pasos — generamos la lista exacta de SKUs y mandás el pedido por WhatsApp.</div>
       </div>
     </div>
 
+    <div class="wz-wrap">
     <div class="wz-prog" id="wz-prog">
       <div class="wz-pi active" id="wz-pi-1"><div class="wz-pi-dot" id="wz-dot-1">1</div><div class="wz-pi-lbl" data-es="Layout" data-en="Layout">Layout</div></div>
       <div class="wz-pline" id="wz-line-1"></div>
@@ -4713,8 +4716,8 @@ body{font-family:var(--font);background:var(--ink-50);color:var(--ink);line-heig
         <div class="wz-hdr">
           <div class="wz-num">01</div>
           <div class="wz-hdr-text">
-            <div class="wz-q" data-es="\u00bfQu\u00e9 tipo de cocina quer\u00e9s armar?" data-en="What type of kitchen do you want to build?">\u00bfQu\u00e9 tipo de cocina quer\u00e9s armar?</div>
-            <div class="wz-hint" data-es="Selecci\u00f3n\u00e1 el layout que mejor se ajusta al espacio" data-en="Select the layout that best fits your space">Selecci\u00f3n\u00e1 el layout que mejor se ajusta al espacio</div>
+            <div class="wz-q" data-es="¿Qué tipo de cocina querés armar?" data-en="What type of kitchen do you want to build?">¿Qué tipo de cocina querés armar?</div>
+            <div class="wz-hint" data-es="Seleccióná el layout que mejor se ajusta al espacio" data-en="Select the layout that best fits your space">Seleccióná el layout que mejor se ajusta al espacio</div>
           </div>
         </div>
         <div class="lt-grid">
@@ -4740,7 +4743,7 @@ body{font-family:var(--font);background:var(--ink-50);color:var(--ink);line-heig
           </button>
         </div>
         <div class="wz-actions">
-          <button class="btn-next" onclick="wzGoStep(2)" data-es="Elegir color \u2192" data-en="Choose color \u2192">Elegir color \u2192</button>
+          <button class="btn-next" onclick="wzGoStep(2)" data-es="Elegir color →" data-en="Choose color →">Elegir color →</button>
         </div>
       </div>
     </div>
@@ -4750,14 +4753,14 @@ body{font-family:var(--font);background:var(--ink-50);color:var(--ink);line-heig
         <div class="wz-hdr">
           <div class="wz-num">02</div>
           <div class="wz-hdr-text">
-            <div class="wz-q" data-es="\u00bfQu\u00e9 color de gabinetes quer\u00e9s?" data-en="Which cabinet color do you prefer?">\u00bfQu\u00e9 color de gabinetes quer\u00e9s?</div>
+            <div class="wz-q" data-es="¿Qué color de gabinetes querés?" data-en="Which cabinet color do you prefer?">¿Qué color de gabinetes querés?</div>
             <div class="wz-hint" data-es="Solo colores con stock suficiente para el layout elegido" data-en="Only colors with enough stock for your layout">Solo colores con stock suficiente para el layout elegido</div>
           </div>
         </div>
         <div class="col-grid" id="wz-col-grid"></div>
         <div class="wz-actions">
-          <button class="btn-ghost" onclick="wzGoStep(1)" data-es="\u2190 Volver" data-en="\u2190 Back">\u2190 Volver</button>
-          <button class="btn-next" onclick="wzGoStep(3)" data-es="Elegir cantidad \u2192" data-en="Choose quantity \u2192">Elegir cantidad \u2192</button>
+          <button class="btn-ghost" onclick="wzGoStep(1)" data-es="← Volver" data-en="← Back">← Volver</button>
+          <button class="btn-next" onclick="wzGoStep(3)" data-es="Elegir cantidad →" data-en="Choose quantity →">Elegir cantidad →</button>
         </div>
       </div>
     </div>
@@ -4767,20 +4770,20 @@ body{font-family:var(--font);background:var(--ink-50);color:var(--ink);line-heig
         <div class="wz-hdr">
           <div class="wz-num">03</div>
           <div class="wz-hdr-text">
-            <div class="wz-q" data-es="\u00bfCu\u00e1ntos kits necesit\u00e1s?" data-en="How many kits do you need?">\u00bfCu\u00e1ntos kits necesit\u00e1s?</div>
+            <div class="wz-q" data-es="¿Cuántos kits necesitás?" data-en="How many kits do you need?">¿Cuántos kits necesitás?</div>
             <div class="wz-hint" id="wz-qty-hint">Un kit = una cocina completa</div>
           </div>
         </div>
         <div class="qty-row">
-          <button class="qty-btn" onclick="wzAdjQty(-1)">\u2212</button>
+          <button class="qty-btn" onclick="wzAdjQty(-1)">−</button>
           <input class="qty-inp" type="number" id="wz-qty-inp" value="1" min="1" max="99" oninput="wzOnQtyChange()">
           <button class="qty-btn" onclick="wzAdjQty(1)">+</button>
           <div class="qty-meta" id="wz-qty-meta"></div>
         </div>
         <div id="wz-bom-preview"></div>
         <div class="wz-actions">
-          <button class="btn-ghost" onclick="wzGoStep(2)" data-es="\u2190 Volver" data-en="\u2190 Back">\u2190 Volver</button>
-          <button class="btn-next" onclick="wzGoStep(4)" data-es="Continuar con mis datos \u2192" data-en="Continue with my info \u2192">Continuar con mis datos \u2192</button>
+          <button class="btn-ghost" onclick="wzGoStep(2)" data-es="← Volver" data-en="← Back">← Volver</button>
+          <button class="btn-next" onclick="wzGoStep(4)" data-es="Continuar con mis datos →" data-en="Continue with my info →">Continuar con mis datos →</button>
         </div>
       </div>
     </div>
@@ -4802,12 +4805,12 @@ body{font-family:var(--font);background:var(--ink-50);color:var(--ink);line-heig
             </div>
             <div class="form-field">
               <label class="form-lbl" data-es="Apellido" data-en="Last name">Apellido</label>
-              <input class="form-inp" type="text" id="wz-lname" placeholder="Garc\u00eda" required>
+              <input class="form-inp" type="text" id="wz-lname" placeholder="García" required>
             </div>
           </div>
           <div class="form-row">
             <div class="form-field">
-              <label class="form-lbl" data-es="Tel\u00e9fono / WhatsApp" data-en="Phone / WhatsApp">Tel\u00e9fono / WhatsApp</label>
+              <label class="form-lbl" data-es="Teléfono / WhatsApp" data-en="Phone / WhatsApp">Teléfono / WhatsApp</label>
               <input class="form-inp" type="tel" id="wz-tel" placeholder="+54 9 11 1234-5678" required>
             </div>
             <div class="form-field">
@@ -4816,8 +4819,8 @@ body{font-family:var(--font);background:var(--ink-50);color:var(--ink);line-heig
             </div>
           </div>
           <div class="wz-actions">
-            <button class="btn-ghost" type="button" onclick="wzGoStep(3)" data-es="\u2190 Volver" data-en="\u2190 Back">\u2190 Volver</button>
-            <button class="btn-next" type="submit" data-es="Ver resumen del pedido \u2192" data-en="View order summary \u2192">Ver resumen del pedido \u2192</button>
+            <button class="btn-ghost" type="button" onclick="wzGoStep(3)" data-es="← Volver" data-en="← Back">← Volver</button>
+            <button class="btn-next" type="submit" data-es="Ver resumen del pedido →" data-en="View order summary →">Ver resumen del pedido →</button>
           </div>
         </form>
       </div>
@@ -4833,6 +4836,7 @@ body{font-family:var(--font);background:var(--ink-50);color:var(--ink);line-heig
         <button class="btn-ghost" onclick="wzRestart()" data-es="Nuevo pedido" data-en="New order">Nuevo pedido</button>
       </div>
     </div>
+    </div><!-- /wz-wrap -->
   </div>
 </section>
 
