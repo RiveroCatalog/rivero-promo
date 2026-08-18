@@ -4603,63 +4603,236 @@ body{font-family:var(--font);background:var(--ink-50);color:var(--ink);line-heig
   </div>
 </div>
 
+<style>
+/* ── Wizard v2 */
+.wz-prog{display:flex;align-items:center;margin-bottom:28px}
+.wz-pi{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:56px}
+.wz-pi-dot{width:30px;height:30px;border-radius:50%;background:var(--ink-200);color:var(--ink-400);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;transition:background .3s,color .3s;border:2px solid var(--ink-200)}
+.wz-pi.active .wz-pi-dot{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 0 0 4px rgba(35,92,242,.15)}
+.wz-pi.done .wz-pi-dot{background:#16a34a;color:#fff;border-color:#16a34a}
+.wz-pi-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-400);white-space:nowrap}
+.wz-pi.active .wz-pi-lbl,.wz-pi.done .wz-pi-lbl{color:var(--ink)}
+.wz-pline{flex:1;height:2px;background:var(--ink-200);margin:0 4px 18px;transition:background .3s}
+.wz-pline.done{background:#16a34a}
+.wz-panel{display:none;animation:wzIn .25s ease}
+.wz-panel.active{display:block}
+@keyframes wzIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.wz-card{background:var(--surface,#fff);border:1px solid var(--ink-200);border-radius:14px;padding:24px 24px 20px}
+.wz-hdr{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.wz-num{font-size:28px;font-weight:900;line-height:1;color:var(--blue);min-width:36px;font-variant-numeric:tabular-nums}
+.wz-hdr-text{display:flex;flex-direction:column;gap:2px}
+.wz-q{font-size:15px;font-weight:700;color:var(--ink)}
+.wz-hint{font-size:12px;color:var(--ink-500)}
+.lt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:520px){.lt-grid{grid-template-columns:repeat(2,1fr)}}
+.lt-btn{background:var(--surface,#fff);border:2px solid var(--ink-200);border-radius:10px;padding:14px 10px 12px;cursor:pointer;text-align:center;transition:border-color .18s,box-shadow .18s,background .18s}
+.lt-btn:hover{border-color:var(--blue)}
+.lt-btn.active{border-color:var(--blue);background:var(--blue-light,#EEF2FF);box-shadow:0 0 0 3px rgba(35,92,242,.12)}
+.lt-svg{height:52px;display:flex;align-items:center;justify-content:center;margin-bottom:8px}
+.lt-svg svg{max-height:100%;width:auto}
+.lt-name{font-size:13px;font-weight:800;color:var(--ink)}
+.lt-sub{font-size:11px;color:var(--ink-400);margin-top:2px;font-weight:600}
+.lt-btn.active .lt-name{color:var(--blue)}
+.col-grid{display:flex;flex-wrap:wrap;gap:8px}
+.col-btn{display:flex;align-items:center;gap:8px;padding:8px 14px 8px 10px;border:2px solid var(--ink-200);border-radius:30px;background:var(--surface,#fff);cursor:pointer;font-size:12px;font-weight:700;color:var(--ink-500);transition:border-color .18s,background .18s}
+.col-btn:hover:not(:disabled){border-color:var(--blue);color:var(--ink)}
+.col-btn.active{border-color:var(--blue);background:var(--blue-light,#EEF2FF);color:var(--blue)}
+.col-btn:disabled{opacity:.35;cursor:not-allowed}
+.col-swatch{width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(0,0,0,.1);flex-shrink:0}
+.col-kits{font-size:10px;font-weight:800;background:var(--blue);color:#fff;border-radius:10px;padding:2px 6px;margin-left:2px}
+.qty-row{display:flex;align-items:center;gap:0}
+.qty-btn{width:40px;height:40px;background:var(--ink-100);border:1.5px solid var(--ink-200);font-size:20px;font-weight:700;color:var(--ink-500);cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center}
+.qty-btn:first-child{border-radius:8px 0 0 8px}
+.qty-btn:last-of-type{border-radius:0 8px 8px 0}
+.qty-btn:hover{background:var(--ink-200)}
+.qty-inp{width:64px;height:40px;border:1.5px solid var(--ink-200);border-left:none;border-right:none;text-align:center;font-size:18px;font-weight:800;color:var(--ink);background:var(--surface,#fff);outline:none;font-variant-numeric:tabular-nums}
+.qty-meta{margin-left:14px;font-size:13px;color:var(--ink-400);font-weight:600}
+.bom-preview{margin-top:16px;background:var(--bg,#f4f6fc);border:1px solid var(--ink-200);border-radius:8px;padding:14px 16px}
+.bom-prev-title{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-400);margin-bottom:10px}
+.bom-pills{display:flex;flex-wrap:wrap;gap:6px}
+.bom-pill{background:var(--surface,#fff);border:1px solid var(--ink-200);border-radius:5px;padding:4px 10px;font-size:11px;font-weight:700;color:var(--ink-500);font-variant-numeric:tabular-nums}
+.bom-pill strong{color:var(--blue)}
+.wz-form{display:flex;flex-direction:column;gap:16px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:480px){.form-row{grid-template-columns:1fr}}
+.form-field{display:flex;flex-direction:column;gap:6px}
+.form-lbl{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-500)}
+.form-inp{padding:11px 14px;border:1.5px solid var(--ink-200);border-radius:8px;font-size:14px;font-family:inherit;color:var(--ink);background:var(--surface,#fff);outline:none;transition:border-color .15s}
+.form-inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(35,92,242,.1)}
+.wz-actions{display:flex;align-items:center;gap:10px;margin-top:20px;flex-wrap:wrap}
+.btn-next{padding:12px 26px;background:var(--blue);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;letter-spacing:.02em;box-shadow:0 4px 14px rgba(35,92,242,.28);transition:filter .15s,transform .1s}
+.btn-next:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn-ghost{padding:11px 18px;background:none;border:1.5px solid var(--ink-300);border-radius:9px;font-size:13px;font-weight:700;color:var(--ink-500);cursor:pointer;font-family:inherit;transition:border-color .15s}
+.btn-ghost:hover{border-color:var(--blue);color:var(--blue)}
+.sum-card{background:var(--surface,#fff);border:1px solid var(--ink-200);border-radius:14px;overflow:hidden}
+.sum-hdr{background:var(--blue);color:#fff;padding:20px 24px;display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
+.sum-info{flex:1;min-width:0}
+.sum-name{font-size:19px;font-weight:900}
+.sum-meta{font-size:12px;opacity:.8;margin-top:4px;line-height:1.5}
+.sum-badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.sum-badge{background:rgba(255,255,255,.18);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:800;letter-spacing:.04em}
+.sum-stats{display:flex;gap:20px}
+.sum-stat{text-align:right}
+.sum-stat-n{font-size:24px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums}
+.sum-stat-l{font-size:10px;text-transform:uppercase;letter-spacing:.1em;opacity:.7;margin-top:2px}
+.sum-table{width:100%;border-collapse:collapse;font-size:13px}
+.sum-table th{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-400);padding:10px 16px;text-align:left;border-bottom:1.5px solid var(--ink-100)}
+.sum-table td{padding:10px 16px;border-bottom:1px solid var(--ink-100);color:var(--ink);vertical-align:middle}
+.sum-table tr:last-child td{border-bottom:none}
+.sum-sku{font-family:"Courier New",monospace;font-size:11px;color:var(--ink-400)}
+.sum-title{font-size:12px;max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sum-type{font-size:11px;color:var(--ink-400);text-transform:capitalize}
+.sum-qty{font-size:14px;font-weight:800;color:var(--blue);text-align:right;font-variant-numeric:tabular-nums}
+.sum-table-wrap{overflow-x:auto}
+.btn-wa{display:inline-flex;align-items:center;gap:10px;padding:13px 24px;background:#25D366;color:#fff;border-radius:10px;font-size:14px;font-weight:800;text-decoration:none;transition:filter .15s;font-family:inherit}
+.btn-wa:hover{filter:brightness(1.08)}
+</style>
+
 <section class="configurator" id="configurador">
   <div class="container">
     <div class="conf-hdr">
       <div>
         <div class="conf-title" data-es="Configurador de cocinas" data-en="Kitchen Configurator">Configurador de cocinas</div>
-        <div class="conf-title-main" data-es="Armá tu cocina con el stock actual" data-en="Build your kitchen from current stock">Armá tu cocina con el stock actual</div>
-        <div class="conf-sub" data-es="Elegí layout, color y cantidad — generamos la lista exacta de SKUs y mandás el pedido por WhatsApp." data-en="Choose layout, color and quantity — get the exact SKU list and send the order via WhatsApp.">Elegí layout, color y cantidad — generamos la lista exacta de SKUs y mandás el pedido por WhatsApp.</div>
+        <div class="conf-title-main" data-es="Arm\u00e1 tu cocina con el stock actual" data-en="Build your kitchen from current stock">Arm\u00e1 tu cocina con el stock actual</div>
+        <div class="conf-sub" data-es="Segu\u00ed los pasos \u2014 generamos la lista exacta de SKUs y mand\u00e1s el pedido por WhatsApp." data-en="Follow the steps \u2014 we generate the exact SKU list so you can send the order via WhatsApp.">Segu\u00ed los pasos \u2014 generamos la lista exacta de SKUs y mand\u00e1s el pedido por WhatsApp.</div>
       </div>
     </div>
-    <div class="cfg-wizard">
 
-      <div class="cfg-step">
-        <div class="cfg-step-hdr"><span class="cfg-step-num" data-es="01 ·" data-en="01 ·">01 ·</span><span class="cfg-step-label-text" data-es="Layout de cocina" data-en="Kitchen layout">Layout de cocina</span></div>
-        <div class="cfg-layout-row">
-          <button class="cfg-lt active" data-lt="kitchenette" style="--lt-c:#235CF2" onclick="cfgSelectLayout('kitchenette')">
-            <div class="cfg-lt-svg"><svg viewBox="0 0 100 54" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="36" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="64" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="6" y="25" width="88" height="2" fill="#DEE1E6" rx="1"/><rect x="8" y="30" width="26" height="18" fill="#235CF2" rx="2"/><rect x="36" y="30" width="26" height="18" fill="#5B8CFF" rx="2"/><text x="50" y="42" font-size="7" fill="#fff" text-anchor="middle" font-weight="700">S</text><rect x="64" y="30" width="26" height="18" fill="#235CF2" rx="2"/></svg></div>
-            <div class="cfg-lt-name">Kitchenette</div>
-            <div class="cfg-lt-sub">6 <span data-es="gabinetes" data-en="cabinets">gabinetes</span></div>
-          </button>
-          <button class="cfg-lt" data-lt="galley" style="--lt-c:#FF8001" onclick="cfgSelectLayout('galley')">
-            <div class="cfg-lt-svg"><svg viewBox="0 0 156 54" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="36" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="64" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="92" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="120" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="6" y="25" width="144" height="2" fill="#DEE1E6" rx="1"/><rect x="8" y="30" width="26" height="18" fill="#FF8001" rx="2"/><rect x="36" y="30" width="26" height="18" fill="#FF8001" rx="2"/><rect x="64" y="30" width="26" height="18" fill="#5B8CFF" rx="2"/><text x="78" y="42" font-size="7" fill="#fff" text-anchor="middle" font-weight="700">S</text><rect x="92" y="30" width="26" height="18" fill="#04B704" rx="2"/><text x="106" y="42" font-size="7" fill="#fff" text-anchor="middle" font-weight="700">D</text><rect x="120" y="30" width="26" height="18" fill="#FF8001" rx="2"/></svg></div>
-            <div class="cfg-lt-name">Galley</div>
-            <div class="cfg-lt-sub">10 <span data-es="gabinetes" data-en="cabinets">gabinetes</span></div>
-          </button>
-          <button class="cfg-lt" data-lt="lshape" style="--lt-c:#04B704" onclick="cfgSelectLayout('lshape')">
-            <div class="cfg-lt-svg"><svg viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="8" width="16" height="10" fill="#9AA0A9" rx="1.5"/><rect x="26" y="8" width="16" height="10" fill="#9AA0A9" rx="1.5"/><rect x="44" y="8" width="16" height="10" fill="#9AA0A9" rx="1.5"/><rect x="62" y="8" width="16" height="10" fill="#9AA0A9" rx="1.5"/><rect x="6" y="20" width="76" height="2" fill="#DEE1E6" rx="1"/><rect x="8" y="24" width="16" height="12" fill="#04B704" rx="1.5"/><rect x="26" y="24" width="16" height="12" fill="#04B704" rx="1.5"/><rect x="44" y="24" width="16" height="12" fill="#5B8CFF" rx="1.5"/><text x="52" y="33" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">S</text><rect x="62" y="24" width="16" height="12" fill="#FF8001" rx="1.5"/><text x="70" y="33" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">C</text><rect x="80" y="20" width="2" height="68" fill="#DEE1E6" rx="1"/><rect x="83" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="83" y="24" width="10" height="14" fill="#04B704" rx="1.5"/><rect x="83" y="40" width="10" height="14" fill="#04B704" rx="1.5"/><rect x="83" y="56" width="10" height="14" fill="#C2000B" rx="1.5"/><text x="88" y="65" font-size="4" fill="#fff" text-anchor="middle" font-weight="700">T</text></svg></div>
-            <div class="cfg-lt-name">L-Shape</div>
-            <div class="cfg-lt-sub">14 <span data-es="gabinetes" data-en="cabinets">gabinetes</span></div>
-          </button>
-          <button class="cfg-lt" data-lt="ushape" style="--lt-c:#C2000B" onclick="cfgSelectLayout('ushape')">
-            <div class="cfg-lt-svg"><svg viewBox="0 0 110 90" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="4" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="4" y="38" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="4" y="52" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="14" y="20" width="2" height="48" fill="#DEE1E6" rx="1"/><rect x="18" y="62" width="74" height="2" fill="#DEE1E6" rx="1"/><rect x="18" y="66" width="14" height="12" fill="#C2000B" rx="1.5"/><rect x="34" y="66" width="14" height="12" fill="#5B8CFF" rx="1.5"/><text x="41" y="75" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">S</text><rect x="50" y="66" width="14" height="12" fill="#04B704" rx="1.5"/><text x="57" y="75" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">D</text><rect x="66" y="66" width="14" height="12" fill="#C2000B" rx="1.5"/><rect x="82" y="66" width="10" height="12" fill="#FF8001" rx="1.5"/><text x="87" y="75" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">C</text><rect x="92" y="20" width="2" height="48" fill="#DEE1E6" rx="1"/><rect x="18" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="30" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="42" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="54" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="66" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="78" y="8" width="14" height="10" fill="#9AA0A9" rx="1.5"/><rect x="18" y="20" width="74" height="2" fill="#DEE1E6" rx="1"/><rect x="18" y="24" width="14" height="12" fill="#C2000B" rx="1.5"/><text x="25" y="32" font-size="4" fill="#fff" text-anchor="middle" font-weight="700">T</text><rect x="34" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="46" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="58" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="70" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="82" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="94" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="94" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="94" y="38" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="94" y="52" width="10" height="12" fill="#C2000B" rx="1.5"/></svg></div>
-            <div class="cfg-lt-name">U-Shape</div>
-            <div class="cfg-lt-sub">18 <span data-es="gabinetes" data-en="cabinets">gabinetes</span></div>
-          </button>
-        </div>
-      </div>
-
-      <div class="cfg-step">
-        <div class="cfg-step-hdr"><span class="cfg-step-num" data-es="02 ·" data-en="02 ·">02 ·</span><span class="cfg-step-label-text" data-es="Color" data-en="Color">Color</span></div>
-        <div class="cfg-color-row" id="cfg-color-row">
-          <!-- populated by JS -->
-        </div>
-      </div>
-
-      <div class="cfg-step">
-        <div class="cfg-step-hdr"><span class="cfg-step-num" data-es="03 ·" data-en="03 ·">03 ·</span><span class="cfg-step-label-text" data-es="Cantidad de kits" data-en="Number of kits">Cantidad de kits</span></div>
-        <div class="cfg-qty-row">
-          <button class="cfg-qty-btn" onclick="cfgQtyAdj(-1)">−</button>
-          <input class="cfg-qty-inp" type="number" id="cfg-n" value="1" min="1" max="50" oninput="cfgUpdate()">
-          <button class="cfg-qty-btn" onclick="cfgQtyAdj(1)">+</button>
-          <span class="cfg-qty-lbl" data-es="kits" data-en="kits">kits</span>
-          <span class="cfg-qty-max" id="cfg-max-lbl"></span>
-        </div>
-      </div>
-
+    <div class="wz-prog" id="wz-prog">
+      <div class="wz-pi active" id="wz-pi-1"><div class="wz-pi-dot" id="wz-dot-1">1</div><div class="wz-pi-lbl" data-es="Layout" data-en="Layout">Layout</div></div>
+      <div class="wz-pline" id="wz-line-1"></div>
+      <div class="wz-pi" id="wz-pi-2"><div class="wz-pi-dot" id="wz-dot-2">2</div><div class="wz-pi-lbl" data-es="Color" data-en="Color">Color</div></div>
+      <div class="wz-pline" id="wz-line-2"></div>
+      <div class="wz-pi" id="wz-pi-3"><div class="wz-pi-dot" id="wz-dot-3">3</div><div class="wz-pi-lbl" data-es="Cantidad" data-en="Quantity">Cantidad</div></div>
+      <div class="wz-pline" id="wz-line-3"></div>
+      <div class="wz-pi" id="wz-pi-4"><div class="wz-pi-dot" id="wz-dot-4">4</div><div class="wz-pi-lbl" data-es="Tus datos" data-en="Your info">Tus datos</div></div>
     </div>
-    <div id="cfg-bom" class="cfg-bom"></div>
+
+    <div class="wz-panel active" id="wz-p1">
+      <div class="wz-card">
+        <div class="wz-hdr">
+          <div class="wz-num">01</div>
+          <div class="wz-hdr-text">
+            <div class="wz-q" data-es="\u00bfQu\u00e9 tipo de cocina quer\u00e9s armar?" data-en="What type of kitchen do you want to build?">\u00bfQu\u00e9 tipo de cocina quer\u00e9s armar?</div>
+            <div class="wz-hint" data-es="Selecci\u00f3n\u00e1 el layout que mejor se ajusta al espacio" data-en="Select the layout that best fits your space">Selecci\u00f3n\u00e1 el layout que mejor se ajusta al espacio</div>
+          </div>
+        </div>
+        <div class="lt-grid">
+          <button class="lt-btn active" data-lt="kitchenette" onclick="wzSelectLayout('kitchenette')">
+            <div class="lt-svg"><svg viewBox="0 0 100 54" width="90"><rect x="8" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="36" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="64" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="6" y="25" width="88" height="2" fill="#DEE1E6" rx="1"/><rect x="8" y="30" width="26" height="18" fill="#235CF2" rx="2"/><rect x="36" y="30" width="26" height="18" fill="#5B8CFF" rx="2"/><text x="50" y="42" font-size="7" fill="#fff" text-anchor="middle" font-weight="700">S</text><rect x="64" y="30" width="26" height="18" fill="#235CF2" rx="2"/></svg></div>
+            <div class="lt-name">Kitchenette</div>
+            <div class="lt-sub" data-es="6 gabinetes" data-en="6 cabinets">6 gabinetes</div>
+          </button>
+          <button class="lt-btn" data-lt="galley" onclick="wzSelectLayout('galley')">
+            <div class="lt-svg"><svg viewBox="0 0 156 54" width="90"><rect x="8" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="36" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="64" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="92" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="120" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="6" y="25" width="144" height="2" fill="#DEE1E6" rx="1"/><rect x="8" y="30" width="26" height="18" fill="#FF8001" rx="2"/><rect x="36" y="30" width="26" height="18" fill="#FF8001" rx="2"/><rect x="64" y="30" width="26" height="18" fill="#5B8CFF" rx="2"/><text x="78" y="42" font-size="7" fill="#fff" text-anchor="middle" font-weight="700">S</text><rect x="92" y="30" width="26" height="18" fill="#04B704" rx="2"/><text x="106" y="42" font-size="7" fill="#fff" text-anchor="middle" font-weight="700">D</text><rect x="120" y="30" width="26" height="18" fill="#FF8001" rx="2"/></svg></div>
+            <div class="lt-name">Galley</div>
+            <div class="lt-sub" data-es="10 gabinetes" data-en="10 cabinets">10 gabinetes</div>
+          </button>
+          <button class="lt-btn" data-lt="lshape" onclick="wzSelectLayout('lshape')">
+            <div class="lt-svg"><svg viewBox="0 0 100 90" width="70"><rect x="8" y="8" width="16" height="10" fill="#9AA0A9" rx="1.5"/><rect x="26" y="8" width="16" height="10" fill="#9AA0A9" rx="1.5"/><rect x="44" y="8" width="16" height="10" fill="#9AA0A9" rx="1.5"/><rect x="62" y="8" width="16" height="10" fill="#9AA0A9" rx="1.5"/><rect x="6" y="20" width="76" height="2" fill="#DEE1E6" rx="1"/><rect x="8" y="24" width="16" height="12" fill="#04B704" rx="1.5"/><rect x="26" y="24" width="16" height="12" fill="#04B704" rx="1.5"/><rect x="44" y="24" width="16" height="12" fill="#5B8CFF" rx="1.5"/><text x="52" y="33" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">S</text><rect x="62" y="24" width="16" height="12" fill="#FF8001" rx="1.5"/><text x="70" y="33" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">C</text><rect x="80" y="20" width="2" height="68" fill="#DEE1E6" rx="1"/><rect x="83" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="83" y="24" width="10" height="14" fill="#04B704" rx="1.5"/><rect x="83" y="40" width="10" height="14" fill="#04B704" rx="1.5"/><rect x="83" y="56" width="10" height="14" fill="#C2000B" rx="1.5"/><text x="88" y="65" font-size="4" fill="#fff" text-anchor="middle" font-weight="700">T</text></svg></div>
+            <div class="lt-name">L-Shape</div>
+            <div class="lt-sub" data-es="14 gabinetes" data-en="14 cabinets">14 gabinetes</div>
+          </button>
+          <button class="lt-btn" data-lt="ushape" onclick="wzSelectLayout('ushape')">
+            <div class="lt-svg"><svg viewBox="0 0 110 90" width="70"><rect x="4" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="4" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="4" y="38" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="4" y="52" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="14" y="20" width="2" height="48" fill="#DEE1E6" rx="1"/><rect x="18" y="62" width="74" height="2" fill="#DEE1E6" rx="1"/><rect x="18" y="66" width="14" height="12" fill="#C2000B" rx="1.5"/><rect x="34" y="66" width="14" height="12" fill="#5B8CFF" rx="1.5"/><text x="41" y="75" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">S</text><rect x="50" y="66" width="14" height="12" fill="#04B704" rx="1.5"/><text x="57" y="75" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">D</text><rect x="66" y="66" width="14" height="12" fill="#C2000B" rx="1.5"/><rect x="82" y="66" width="10" height="12" fill="#FF8001" rx="1.5"/><text x="87" y="75" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">C</text><rect x="92" y="20" width="2" height="48" fill="#DEE1E6" rx="1"/><rect x="18" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="30" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="42" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="54" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="66" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="78" y="8" width="14" height="10" fill="#9AA0A9" rx="1.5"/><rect x="18" y="20" width="74" height="2" fill="#DEE1E6" rx="1"/><rect x="18" y="24" width="14" height="12" fill="#C2000B" rx="1.5"/><rect x="34" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="46" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="58" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="70" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="82" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="94" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="94" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="94" y="38" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="94" y="52" width="10" height="12" fill="#C2000B" rx="1.5"/></svg></div>
+            <div class="lt-name">U-Shape</div>
+            <div class="lt-sub" data-es="18 gabinetes" data-en="18 cabinets">18 gabinetes</div>
+          </button>
+        </div>
+        <div class="wz-actions">
+          <button class="btn-next" onclick="wzGoStep(2)" data-es="Elegir color \u2192" data-en="Choose color \u2192">Elegir color \u2192</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="wz-panel" id="wz-p2">
+      <div class="wz-card">
+        <div class="wz-hdr">
+          <div class="wz-num">02</div>
+          <div class="wz-hdr-text">
+            <div class="wz-q" data-es="\u00bfQu\u00e9 color de gabinetes quer\u00e9s?" data-en="Which cabinet color do you prefer?">\u00bfQu\u00e9 color de gabinetes quer\u00e9s?</div>
+            <div class="wz-hint" data-es="Solo colores con stock suficiente para el layout elegido" data-en="Only colors with enough stock for your layout">Solo colores con stock suficiente para el layout elegido</div>
+          </div>
+        </div>
+        <div class="col-grid" id="wz-col-grid"></div>
+        <div class="wz-actions">
+          <button class="btn-ghost" onclick="wzGoStep(1)" data-es="\u2190 Volver" data-en="\u2190 Back">\u2190 Volver</button>
+          <button class="btn-next" onclick="wzGoStep(3)" data-es="Elegir cantidad \u2192" data-en="Choose quantity \u2192">Elegir cantidad \u2192</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="wz-panel" id="wz-p3">
+      <div class="wz-card">
+        <div class="wz-hdr">
+          <div class="wz-num">03</div>
+          <div class="wz-hdr-text">
+            <div class="wz-q" data-es="\u00bfCu\u00e1ntos kits necesit\u00e1s?" data-en="How many kits do you need?">\u00bfCu\u00e1ntos kits necesit\u00e1s?</div>
+            <div class="wz-hint" id="wz-qty-hint">Un kit = una cocina completa</div>
+          </div>
+        </div>
+        <div class="qty-row">
+          <button class="qty-btn" onclick="wzAdjQty(-1)">\u2212</button>
+          <input class="qty-inp" type="number" id="wz-qty-inp" value="1" min="1" max="99" oninput="wzOnQtyChange()">
+          <button class="qty-btn" onclick="wzAdjQty(1)">+</button>
+          <div class="qty-meta" id="wz-qty-meta"></div>
+        </div>
+        <div id="wz-bom-preview"></div>
+        <div class="wz-actions">
+          <button class="btn-ghost" onclick="wzGoStep(2)" data-es="\u2190 Volver" data-en="\u2190 Back">\u2190 Volver</button>
+          <button class="btn-next" onclick="wzGoStep(4)" data-es="Continuar con mis datos \u2192" data-en="Continue with my info \u2192">Continuar con mis datos \u2192</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="wz-panel" id="wz-p4">
+      <div class="wz-card">
+        <div class="wz-hdr">
+          <div class="wz-num">04</div>
+          <div class="wz-hdr-text">
+            <div class="wz-q" data-es="Tus datos para el pedido" data-en="Your order details">Tus datos para el pedido</div>
+            <div class="wz-hint" data-es="Para que podamos procesar y confirmar tu orden" data-en="So we can process and confirm your order">Para que podamos procesar y confirmar tu orden</div>
+          </div>
+        </div>
+        <form class="wz-form" onsubmit="wzSubmitForm(event)">
+          <div class="form-row">
+            <div class="form-field">
+              <label class="form-lbl" data-es="Nombre" data-en="First name">Nombre</label>
+              <input class="form-inp" type="text" id="wz-fname" placeholder="Juan" required>
+            </div>
+            <div class="form-field">
+              <label class="form-lbl" data-es="Apellido" data-en="Last name">Apellido</label>
+              <input class="form-inp" type="text" id="wz-lname" placeholder="Garc\u00eda" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label class="form-lbl" data-es="Tel\u00e9fono / WhatsApp" data-en="Phone / WhatsApp">Tel\u00e9fono / WhatsApp</label>
+              <input class="form-inp" type="tel" id="wz-tel" placeholder="+54 9 11 1234-5678" required>
+            </div>
+            <div class="form-field">
+              <label class="form-lbl" data-es="Email" data-en="Email">Email</label>
+              <input class="form-inp" type="email" id="wz-email" placeholder="juan@empresa.com" required>
+            </div>
+          </div>
+          <div class="wz-actions">
+            <button class="btn-ghost" type="button" onclick="wzGoStep(3)" data-es="\u2190 Volver" data-en="\u2190 Back">\u2190 Volver</button>
+            <button class="btn-next" type="submit" data-es="Ver resumen del pedido \u2192" data-en="View order summary \u2192">Ver resumen del pedido \u2192</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="wz-panel" id="wz-p5">
+      <div class="sum-card" id="wz-sum-card"></div>
+      <div class="wz-actions" style="margin-top:16px">
+        <a class="btn-wa" id="wz-wa-link" href="#" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          <span data-es="Enviar pedido por WhatsApp" data-en="Send order via WhatsApp">Enviar pedido por WhatsApp</span>
+        </a>
+        <button class="btn-ghost" onclick="wzRestart()" data-es="Nuevo pedido" data-en="New order">Nuevo pedido</button>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -4688,6 +4861,7 @@ function setLang(l) {
   document.getElementById('unit-group').style.display = l==='es' ? 'flex' : 'none';
   if(l==='en') setUnits('in');
   applyI18n();
+  wzBuildColors();
 }
 
 function applyI18n() {
@@ -4968,9 +5142,207 @@ function buildWA(layout, color, n, types, recipe, alloc, totalUnits, totalValue)
 }
 
 // Init configurator on load
+// Init wizard on load
 document.addEventListener('DOMContentLoaded', function() {
-  cfgRebuildColors();
-  cfgUpdate();
+  wzGoStep(1);
 });
+
+
+// ── Wizard configurator
+var wzSt = {layout:'kitchenette', color:'White', color_es:'Blanco', qty:1, fname:'', lname:'', tel:'', email:''};
+var WZ_SWATCH = {White:'#f5f5f5', Gray:'#9aa0a9', Green:'#2d6a4f', Black:'#1a1a1a', Other:'#c2c6cd'};
+function wzSwatchFor(c){return WZ_SWATCH[c]||'#c2c6cd';}
+
+function wzGoStep(n) {
+  document.querySelectorAll('.wz-panel').forEach(function(p){p.classList.remove('active');});
+  var p = document.getElementById('wz-p'+n);
+  if(p) p.classList.add('active');
+  for(var i=1;i<=4;i++){
+    var dot=document.getElementById('wz-dot-'+i);
+    var pi=document.getElementById('wz-pi-'+i);
+    var line=document.getElementById('wz-line-'+i);
+    if(dot){dot.classList.toggle('done',i<n);dot.classList.toggle('active',i===n);}
+    if(pi) pi.classList.toggle('active',i===n||i<n);
+    if(line) line.classList.toggle('done',i<n);
+  }
+  if(n===2) wzBuildColors();
+  if(n===3) wzUpdateQty();
+  if(n===5) wzBuildSummary();
+  applyI18n();
+}
+
+function wzSelectLayout(lt) {
+  wzSt.layout = lt;
+  document.querySelectorAll('.lt-btn').forEach(function(b){b.classList.toggle('active',b.dataset.lt===lt);});
+}
+
+function wzKitCount(color) {
+  var counts={};
+  CFG_PRODUCTS.forEach(function(p){
+    if(p.color!==color) return;
+    counts[p.type]=(counts[p.type]||0)+p.qty;
+  });
+  var recipe=RECIPES[wzSt.layout].recipe;
+  var min=Infinity;
+  Object.keys(recipe).forEach(function(t){
+    var k=Math.floor((counts[t]||0)/recipe[t]);
+    if(k<min) min=k;
+  });
+  return min===Infinity?0:min;
+}
+
+function wzBuildColors() {
+  var grid=document.getElementById('wz-col-grid');
+  if(!grid) return;
+  var seen={}, colors=[];
+  CFG_PRODUCTS.forEach(function(p){
+    if(!seen[p.color]){seen[p.color]=true;colors.push({c:p.color,es:p.color_es,en:p.color_en});}
+  });
+  grid.innerHTML='';
+  colors.forEach(function(col){
+    var avail=wzKitCount(col.c);
+    var btn=document.createElement('button');
+    btn.className='col-btn'+(wzSt.color===col.c?' active':'');
+    btn.onclick=function(){wzPickColor(col.c,col.es);};
+    var dispName=lang==='es'?col.es:col.en;
+    var dispAvail=lang==='es'?avail+' disponibles':avail+' available';
+    btn.innerHTML='<span class="col-swatch" style="background:'+wzSwatchFor(col.c)+'"></span>'
+      +'<span class="col-name">'+dispName+'</span>'
+      +'<span class="col-avail">'+dispAvail+'</span>';
+    if(avail===0) btn.disabled=true;
+    grid.appendChild(btn);
+  });
+}
+
+function wzPickColor(c,es) {
+  wzSt.color=c; wzSt.color_es=es;
+  wzBuildColors();
+}
+
+function wzAdjQty(d) {
+  var max=wzKitCount(wzSt.color);
+  wzSt.qty=Math.max(1,Math.min(max||1,wzSt.qty+d));
+  var inp=document.getElementById('wz-qty-inp');
+  if(inp) inp.value=wzSt.qty;
+  wzUpdateQty();
+}
+
+function wzOnQtyChange() {
+  var inp=document.getElementById('wz-qty-inp');
+  var max=wzKitCount(wzSt.color);
+  wzSt.qty=Math.max(1,Math.min(max||1,parseInt(inp?inp.value:1)||1));
+  if(inp) inp.value=wzSt.qty;
+  wzUpdateQty();
+}
+
+function wzBuildBOM() {
+  var recipe=RECIPES[wzSt.layout].recipe;
+  var needed={};
+  Object.keys(recipe).forEach(function(t){needed[t]=recipe[t]*wzSt.qty;});
+  var pool=CFG_PRODUCTS.filter(function(p){return p.color===wzSt.color;}).map(function(p){return {sku:p.sku,title:p.title,type:p.type,qty:p.qty,price:p.price,taken:0};});
+  pool.sort(function(a,b){return b.qty-a.qty;});
+  var alloc=[];
+  Object.keys(needed).forEach(function(t){
+    var rem=needed[t];
+    pool.forEach(function(p){
+      if(p.type!==t||rem<=0) return;
+      var take=Math.min(p.qty-p.taken,rem);
+      p.taken+=take;
+      if(take>0) alloc.push({sku:p.sku,title:p.title,type:t,qty:take,price:p.price});
+      rem-=take;
+    });
+  });
+  return alloc;
+}
+
+function wzUpdateQty() {
+  var max=wzKitCount(wzSt.color);
+  var inp=document.getElementById('wz-qty-inp');
+  if(inp) inp.max=max;
+  var hint=document.getElementById('wz-qty-hint');
+  if(hint){
+    var hText=lang==='es'?'Máx. '+max+' cocinas disponibles':'Max. '+max+' kitchens available';
+    hint.textContent=hText;
+  }
+  var bom=wzBuildBOM();
+  var totalUnits=0,totalValue=0;
+  bom.forEach(function(r){totalUnits+=r.qty;totalValue+=r.qty*r.price;});
+  var meta=document.getElementById('wz-qty-meta');
+  if(meta) meta.textContent=lang==='es'?totalUnits+' piezas · $'+totalValue.toLocaleString():totalUnits+' pieces · $'+totalValue.toLocaleString();
+  var preview=document.getElementById('wz-bom-preview');
+  if(preview){
+    var html='<table style="width:100%;font-size:11px;border-collapse:collapse">';
+    bom.slice(0,6).forEach(function(r){html+='<tr><td style="padding:3px 6px;color:#888;font-size:10px">'+r.sku+'</td><td style="padding:3px 6px">'+r.title+'</td><td style="padding:3px 6px;text-align:right;color:#235CF2;font-weight:700">×'+r.qty+'</td></tr>';});
+    if(bom.length>6) html+='<tr><td colspan="3" style="padding:3px 6px;color:#888;font-style:italic">+'+(bom.length-6)+' more…</td></tr>';
+    html+='</table>';
+    preview.innerHTML=html;
+  }
+}
+
+function wzSubmitForm(e) {
+  e.preventDefault();
+  wzSt.fname=document.getElementById('wz-fname').value.trim();
+  wzSt.lname=document.getElementById('wz-lname').value.trim();
+  wzSt.tel=document.getElementById('wz-tel').value.trim();
+  wzSt.email=document.getElementById('wz-email').value.trim();
+  wzGoStep(5);
+}
+
+function wzBuildSummary() {
+  var recipe=RECIPES[wzSt.layout].recipe;
+  var bom=wzBuildBOM();
+  var totalUnits=0,totalValue=0;
+  bom.forEach(function(r){totalUnits+=r.qty;totalValue+=r.qty*r.price;});
+  var colorLabel=lang==='es'?wzSt.color_es:wzSt.color;
+  var layoutLabels={kitchenette:'Kitchenette (6 pcs)',galley:'Galley (10 pcs)',lshape:'L-Shape (14 pcs)',ushape:'U-Shape (18 pcs)'};
+  var card=document.getElementById('wz-sum-card');
+  if(card){
+    var th1=lang==='es'?'Distribución':'Layout';
+    var th2=lang==='es'?'Cocinas':'Kitchens';
+    var th3=lang==='es'?'Piezas':'Pieces';
+    var html='<table class="sum-table">';
+    html+='<tr><th>'+th1+'</th><td>'+(layoutLabels[wzSt.layout]||wzSt.layout)+'</td></tr>';
+    html+='<tr><th>Color</th><td>'+colorLabel+'</td></tr>';
+    html+='<tr><th>'+th2+'</th><td>'+wzSt.qty+'</td></tr>';
+    html+='<tr><th>'+th3+'</th><td>'+totalUnits+'</td></tr>';
+    html+='<tr><th>Total</th><td style="color:#235CF2;font-weight:700">$'+totalValue.toLocaleString()+'</td></tr>';
+    html+='</table>';
+    html+='<div style="margin-top:14px;font-size:11px;color:#555;border-top:1px solid #eee;padding-top:10px">';
+    bom.forEach(function(r){html+='<div style="display:flex;justify-content:space-between;padding:2px 0"><span>'+r.title+'</span><span style="color:#235CF2;font-weight:600">×'+r.qty+'</span></div>';});
+    html+='</div>';
+    card.innerHTML=html;
+  }
+  var waLink=document.getElementById('wz-wa-link');
+  if(waLink){
+    var lname2=RECIPES[wzSt.layout].name;
+    var size2=units==='cm'?RECIPES[wzSt.layout].size_cm:RECIPES[wzSt.layout].size_ft;
+    var wLines=['🏠 *Pedido de Cocinas — Rivero*','━━━━━━━━━━━━━━━━━━━━━',
+      '📐 Layout: '+lname2+' ('+size2+')','🎨 Color: '+colorLabel,
+      '📦 Cantidad: '+wzSt.qty+' kit'+(wzSt.qty>1?'s':''),'','📋 *LISTA DE MATERIALES:*',''];
+    Object.keys(recipe).forEach(function(t){
+      var perKit=recipe[t]; var tot=perKit*wzSt.qty;
+      var tname=lang==='es'?TYPE_ES[t]:TYPE_EN[t];
+      wLines.push('*'+tname+'* — '+tot+' uds ('+perKit+' × '+wzSt.qty+')');
+      bom.filter(function(a){return a.type===t;}).forEach(function(a){
+        wLines.push('  • SKU '+a.sku+' — '+a.title.substring(0,55)+' — '+a.qty+' uds');
+      });
+      wLines.push('');
+    });
+    wLines.push('━━━━━━━━━━━━━━━━━━━━━');
+    wLines.push('📊 Total unidades: '+totalUnits);
+    wLines.push('💰 Valor estimado: $'+totalValue.toFixed(0));
+    wLines.push('');
+    wLines.push('👤 '+wzSt.fname+' '+wzSt.lname);
+    if(wzSt.tel) wLines.push('📞 '+wzSt.tel);
+    if(wzSt.email) wLines.push('✉️ '+wzSt.email);
+    wLines.push('_Enviado desde catálogo Rivero_ 🏠');
+    waLink.href='https://wa.me/'+WA_PHONE+'?text='+encodeURIComponent(wLines.join('\n'));
+  }
+}
+
+function wzRestart() {
+  wzSt={layout:'kitchenette',color:'White',color_es:'Blanco',qty:1,fname:'',lname:'',tel:'',email:''};
+  wzGoStep(1);
+}
 
 </script>
