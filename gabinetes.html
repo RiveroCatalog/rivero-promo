@@ -5323,31 +5323,41 @@ function wzBuildSummary() {
     html+='<div style="font-size:11px;opacity:.7;margin-top:3px">'+totalUnits+' '+(lang==='es'?'piezas':'pieces')+'</div>';
     html+='</div>';
     html+='</div>';
-    // Product grid with photos + SKU
-    html+='<div style="padding:20px 20px 8px">';
-    html+='<div style="font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#888;margin-bottom:12px">'+( lang==='es'?'Lista de materiales':'Bill of materials')+'</div>';
-    html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px">';
-    bom.forEach(function(r){
+    // Product list with photos + SKU
+    html+='<div style="padding:0">';
+    html+='<div style="padding:16px 20px 10px;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#9aa0b8;border-bottom:1px solid #eef0f5">'+(lang==='es'?'Lista de materiales':'Bill of materials')+'</div>';
+    bom.forEach(function(r,i){
       var imgSrc=SKU_IMG[String(r.sku)]||'';
-      html+='<div style="border:1px solid #e4e7ef;border-radius:10px;overflow:hidden;background:#fff">';
+      var isLast=i===bom.length-1;
+      html+='<div style="display:flex;align-items:center;gap:14px;padding:12px 20px;'+(isLast?'':'border-bottom:1px solid #eef0f5;')+'">';
+      // Thumbnail
+      html+='<div style="flex-shrink:0;width:60px;height:60px;border-radius:8px;overflow:hidden;background:#f4f6fb;border:1px solid #e8eaf0;display:flex;align-items:center;justify-content:center">';
       if(imgSrc){
-        html+='<div style="height:90px;background:#f6f7fa;display:flex;align-items:center;justify-content:center;overflow:hidden">';
-        html+='<img src="'+imgSrc+'" style="width:100%;height:100%;object-fit:contain;padding:6px" loading="lazy" alt="">';
-        html+='</div>';
+        html+='<img src="'+imgSrc+'" style="width:100%;height:100%;object-fit:contain;padding:4px" loading="lazy" alt="">';
       } else {
-        html+='<div style="height:90px;background:#f0f2f8;display:flex;align-items:center;justify-content:center">';
-        html+='<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect x="4" y="10" width="24" height="14" rx="2" fill="#c8cdd8"/><rect x="4" y="4" width="24" height="5" rx="1.5" fill="#b0b7c6"/></svg>';
-        html+='</div>';
+        html+='<svg width="24" height="24" viewBox="0 0 32 32" fill="none"><rect x="4" y="10" width="24" height="14" rx="2" fill="#c8cdd8"/><rect x="4" y="4" width="24" height="5" rx="1.5" fill="#b0b7c6"/></svg>';
       }
-      html+='<div style="padding:8px 10px">';
-      html+='<div style="font-family:monospace;font-size:9.5px;color:#235CF2;font-weight:700;margin-bottom:3px">'+r.sku+'</div>';
-      html+='<div style="font-size:10.5px;color:#2a2e3a;line-height:1.35;font-weight:600;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">'+r.title.replace(/\.\.\.$/, '')+'</div>';
-      html+='<div style="margin-top:6px;display:flex;justify-content:space-between;align-items:center">';
-      html+='<span style="font-size:10px;color:#888">×'+r.qty+' '+(lang==='es'?'uds':'pcs')+'</span>';
-      html+='<span style="font-size:11px;font-weight:800;color:#235CF2">$'+(r.price*r.qty).toLocaleString()+'</span>';
-      html+='</div></div></div>';
+      html+='</div>';
+      // Info
+      html+='<div style="flex:1;min-width:0">';
+      html+='<div style="font-family:monospace;font-size:10px;color:#235CF2;font-weight:700;letter-spacing:.02em;margin-bottom:2px">SKU '+r.sku+'</div>';
+      html+='<div style="font-size:12.5px;color:#1a1e2e;font-weight:600;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+r.title.replace(/\.{2,}$/, '')+'</div>';
+      var typeName=lang==='es'?(TYPE_ES[r.type]||r.type):(TYPE_EN[r.type]||r.type);
+      html+='<div style="font-size:10.5px;color:#9aa0b8;margin-top:2px">'+typeName+'</div>';
+      html+='</div>';
+      // Qty + price
+      html+='<div style="flex-shrink:0;text-align:right">';
+      html+='<div style="font-size:13px;font-weight:900;color:#235CF2;font-variant-numeric:tabular-nums">$'+(r.price*r.qty).toLocaleString()+'</div>';
+      html+='<div style="font-size:10.5px;color:#9aa0b8;margin-top:2px">×'+r.qty+' '+(lang==='es'?'uds':'pcs')+' · $'+r.price.toLocaleString()+'/u</div>';
+      html+='</div>';
+      html+='</div>';
     });
-    html+='</div></div>';
+    // Total row
+    html+='<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-top:2px solid #eef0f5;background:#f8f9fc;border-radius:0 0 14px 14px">';
+    html+='<span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#9aa0b8">'+(lang==='es'?'Total ('+totalUnits+' piezas)':'Total ('+totalUnits+' pieces)')+'</span>';
+    html+='<span style="font-size:18px;font-weight:900;color:#235CF2;font-variant-numeric:tabular-nums">$'+totalValue.toLocaleString()+'</span>';
+    html+='</div>';
+    html+='</div>';
     card.innerHTML=html;
   }
   var waLink=document.getElementById('wz-wa-link');
