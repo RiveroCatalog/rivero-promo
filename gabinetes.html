@@ -5188,7 +5188,7 @@ function wzLoadInventory() {
       if(!sku) return;
       if(typeof item.availableQty === 'number') liveQty[sku] = item.availableQty;
       else if(typeof item.qty === 'number')      liveQty[sku] = item.qty;
-      if(item.image) liveImg[sku] = item.image;
+      if(item.image) liveImg[sku] = Array.isArray(item.image) ? item.image[0] : item.image;
     });
     // Patch CFG_PRODUCTS quantities from live data
     var updated = 0;
