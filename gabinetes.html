@@ -304,6 +304,158 @@ body{font-family:var(--font);background:var(--ink-50);color:var(--ink);line-heig
   </div>
 </section>
 
+<section class="configurator" id="configurador">
+  <div class="section-wrap">
+    <div class="conf-hdr" style="max-width:860px;margin:0 auto 36px">
+      <div>
+        <div class="conf-title" data-es="Configurador de cocinas" data-en="Kitchen Configurator">Configurador de cocinas</div>
+        <div class="conf-title-main" data-es="Armá tu cocina con el stock actual" data-en="Build your kitchen from current stock">Armá tu cocina con el stock actual</div>
+        <div class="conf-sub" data-es="Seguí los pasos — generamos la lista exacta de SKUs y mandás el pedido por WhatsApp." data-en="Follow the steps — we generate the exact SKU list so you can send the order via WhatsApp.">Seguí los pasos — generamos la lista exacta de SKUs y mandás el pedido por WhatsApp.</div>
+      <span id="wz-inv-status" style="font-size:11px;color:var(--ink-500);display:block;margin-top:6px;min-height:16px"></span>
+      </div>
+    </div>
+
+    <div class="wz-wrap">
+    <div class="wz-prog" id="wz-prog">
+      <div class="wz-pi active" id="wz-pi-1"><div class="wz-pi-dot" id="wz-dot-1">1</div><div class="wz-pi-lbl" data-es="Layout" data-en="Layout">Layout</div></div>
+      <div class="wz-pline" id="wz-line-1"></div>
+      <div class="wz-pi" id="wz-pi-2"><div class="wz-pi-dot" id="wz-dot-2">2</div><div class="wz-pi-lbl" data-es="Color" data-en="Color">Color</div></div>
+      <div class="wz-pline" id="wz-line-2"></div>
+      <div class="wz-pi" id="wz-pi-3"><div class="wz-pi-dot" id="wz-dot-3">3</div><div class="wz-pi-lbl" data-es="Cantidad" data-en="Quantity">Cantidad</div></div>
+      <div class="wz-pline" id="wz-line-3"></div>
+      <div class="wz-pi" id="wz-pi-4"><div class="wz-pi-dot" id="wz-dot-4">4</div><div class="wz-pi-lbl" data-es="Tus datos" data-en="Your info">Tus datos</div></div>
+    </div>
+
+    <div class="wz-panel active" id="wz-p1">
+      <div class="wz-card">
+        <div class="wz-hdr">
+          <div class="wz-num">01</div>
+          <div class="wz-hdr-text">
+            <div class="wz-q" data-es="¿Qué tipo de cocina querés armar?" data-en="What type of kitchen do you want to build?">¿Qué tipo de cocina querés armar?</div>
+            <div class="wz-hint" data-es="Seleccióná el layout que mejor se ajusta al espacio" data-en="Select the layout that best fits your space">Seleccióná el layout que mejor se ajusta al espacio</div>
+          </div>
+        </div>
+        <div class="lt-grid">
+          <button class="lt-btn active" data-lt="kitchenette" onclick="wzSelectLayout('kitchenette')">
+            <div class="lt-svg"><svg viewBox="0 0 100 54" width="90"><rect x="8" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="36" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="64" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="6" y="25" width="88" height="2" fill="#DEE1E6" rx="1"/><rect x="8" y="30" width="26" height="18" fill="#235CF2" rx="2"/><rect x="36" y="30" width="26" height="18" fill="#5B8CFF" rx="2"/><text x="50" y="42" font-size="7" fill="#fff" text-anchor="middle" font-weight="700">S</text><rect x="64" y="30" width="26" height="18" fill="#235CF2" rx="2"/></svg></div>
+            <div class="lt-name">Kitchenette</div>
+            <div class="lt-sub" data-es="6 gabinetes" data-en="6 cabinets">6 gabinetes</div>
+          </button>
+          <button class="lt-btn" data-lt="galley" onclick="wzSelectLayout('galley')">
+            <div class="lt-svg"><svg viewBox="0 0 156 54" width="90"><rect x="8" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="36" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="64" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="92" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="120" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="6" y="25" width="144" height="2" fill="#DEE1E6" rx="1"/><rect x="8" y="30" width="26" height="18" fill="#FF8001" rx="2"/><rect x="36" y="30" width="26" height="18" fill="#FF8001" rx="2"/><rect x="64" y="30" width="26" height="18" fill="#5B8CFF" rx="2"/><text x="78" y="42" font-size="7" fill="#fff" text-anchor="middle" font-weight="700">S</text><rect x="92" y="30" width="26" height="18" fill="#04B704" rx="2"/><text x="106" y="42" font-size="7" fill="#fff" text-anchor="middle" font-weight="700">D</text><rect x="120" y="30" width="26" height="18" fill="#FF8001" rx="2"/></svg></div>
+            <div class="lt-name">Galley</div>
+            <div class="lt-sub" data-es="10 gabinetes" data-en="10 cabinets">10 gabinetes</div>
+          </button>
+          <button class="lt-btn" data-lt="lshape" onclick="wzSelectLayout('lshape')">
+            <div class="lt-svg"><svg viewBox="0 0 100 90" width="70"><rect x="8" y="8" width="16" height="10" fill="#9AA0A9" rx="1.5"/><rect x="26" y="8" width="16" height="10" fill="#9AA0A9" rx="1.5"/><rect x="44" y="8" width="16" height="10" fill="#9AA0A9" rx="1.5"/><rect x="62" y="8" width="16" height="10" fill="#9AA0A9" rx="1.5"/><rect x="6" y="20" width="76" height="2" fill="#DEE1E6" rx="1"/><rect x="8" y="24" width="16" height="12" fill="#04B704" rx="1.5"/><rect x="26" y="24" width="16" height="12" fill="#04B704" rx="1.5"/><rect x="44" y="24" width="16" height="12" fill="#5B8CFF" rx="1.5"/><text x="52" y="33" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">S</text><rect x="62" y="24" width="16" height="12" fill="#FF8001" rx="1.5"/><text x="70" y="33" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">C</text><rect x="80" y="20" width="2" height="68" fill="#DEE1E6" rx="1"/><rect x="83" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="83" y="24" width="10" height="14" fill="#04B704" rx="1.5"/><rect x="83" y="40" width="10" height="14" fill="#04B704" rx="1.5"/><rect x="83" y="56" width="10" height="14" fill="#C2000B" rx="1.5"/><text x="88" y="65" font-size="4" fill="#fff" text-anchor="middle" font-weight="700">T</text></svg></div>
+            <div class="lt-name">L-Shape</div>
+            <div class="lt-sub" data-es="14 gabinetes" data-en="14 cabinets">14 gabinetes</div>
+          </button>
+          <button class="lt-btn" data-lt="ushape" onclick="wzSelectLayout('ushape')">
+            <div class="lt-svg"><svg viewBox="0 0 110 90" width="70"><rect x="4" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="4" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="4" y="38" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="4" y="52" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="14" y="20" width="2" height="48" fill="#DEE1E6" rx="1"/><rect x="18" y="62" width="74" height="2" fill="#DEE1E6" rx="1"/><rect x="18" y="66" width="14" height="12" fill="#C2000B" rx="1.5"/><rect x="34" y="66" width="14" height="12" fill="#5B8CFF" rx="1.5"/><text x="41" y="75" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">S</text><rect x="50" y="66" width="14" height="12" fill="#04B704" rx="1.5"/><text x="57" y="75" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">D</text><rect x="66" y="66" width="14" height="12" fill="#C2000B" rx="1.5"/><rect x="82" y="66" width="10" height="12" fill="#FF8001" rx="1.5"/><text x="87" y="75" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">C</text><rect x="92" y="20" width="2" height="48" fill="#DEE1E6" rx="1"/><rect x="18" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="30" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="42" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="54" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="66" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="78" y="8" width="14" height="10" fill="#9AA0A9" rx="1.5"/><rect x="18" y="20" width="74" height="2" fill="#DEE1E6" rx="1"/><rect x="18" y="24" width="14" height="12" fill="#C2000B" rx="1.5"/><rect x="34" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="46" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="58" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="70" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="82" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="94" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="94" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="94" y="38" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="94" y="52" width="10" height="12" fill="#C2000B" rx="1.5"/></svg></div>
+            <div class="lt-name">U-Shape</div>
+            <div class="lt-sub" data-es="18 gabinetes" data-en="18 cabinets">18 gabinetes</div>
+          </button>
+        </div>
+        <div class="wz-actions">
+          <button class="btn-next" onclick="wzGoStep(2)" data-es="Elegir color →" data-en="Choose color →">Elegir color →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="wz-panel" id="wz-p2">
+      <div class="wz-card">
+        <div class="wz-hdr">
+          <div class="wz-num">02</div>
+          <div class="wz-hdr-text">
+            <div class="wz-q" data-es="¿Qué color de gabinetes querés?" data-en="Which cabinet color do you prefer?">¿Qué color de gabinetes querés?</div>
+            <div class="wz-hint" data-es="Solo colores con stock suficiente para el layout elegido" data-en="Only colors with enough stock for your layout">Solo colores con stock suficiente para el layout elegido</div>
+          </div>
+        </div>
+        <div class="col-grid" id="wz-col-grid"></div>
+        <div class="wz-actions">
+          <button class="btn-ghost" onclick="wzGoStep(1)" data-es="← Volver" data-en="← Back">← Volver</button>
+          <button class="btn-next" onclick="wzGoStep(3)" data-es="Elegir cantidad →" data-en="Choose quantity →">Elegir cantidad →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="wz-panel" id="wz-p3">
+      <div class="wz-card">
+        <div class="wz-hdr">
+          <div class="wz-num">03</div>
+          <div class="wz-hdr-text">
+            <div class="wz-q" data-es="¿Cuántos kits necesitás?" data-en="How many kits do you need?">¿Cuántos kits necesitás?</div>
+            <div class="wz-hint" id="wz-qty-hint">Un kit = una cocina completa</div>
+          </div>
+        </div>
+        <div class="qty-row">
+          <button class="qty-btn" onclick="wzAdjQty(-1)">−</button>
+          <input class="qty-inp" type="number" id="wz-qty-inp" value="1" min="1" max="99" oninput="wzOnQtyChange()">
+          <button class="qty-btn" onclick="wzAdjQty(1)">+</button>
+          <div class="qty-meta" id="wz-qty-meta"></div>
+        </div>
+        <div id="wz-bom-preview"></div>
+        <div class="wz-actions">
+          <button class="btn-ghost" onclick="wzGoStep(2)" data-es="← Volver" data-en="← Back">← Volver</button>
+          <button class="btn-next" onclick="wzGoStep(4)" data-es="Continuar con mis datos →" data-en="Continue with my info →">Continuar con mis datos →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="wz-panel" id="wz-p4">
+      <div class="wz-card">
+        <div class="wz-hdr">
+          <div class="wz-num">04</div>
+          <div class="wz-hdr-text">
+            <div class="wz-q" data-es="Tus datos para el pedido" data-en="Your order details">Tus datos para el pedido</div>
+            <div class="wz-hint" data-es="Para que podamos procesar y confirmar tu orden" data-en="So we can process and confirm your order">Para que podamos procesar y confirmar tu orden</div>
+          </div>
+        </div>
+        <form class="wz-form" onsubmit="wzSubmitForm(event)">
+          <div class="form-row">
+            <div class="form-field">
+              <label class="form-lbl" data-es="Nombre" data-en="First name">Nombre</label>
+              <input class="form-inp" type="text" id="wz-fname" placeholder="Juan" required>
+            </div>
+            <div class="form-field">
+              <label class="form-lbl" data-es="Apellido" data-en="Last name">Apellido</label>
+              <input class="form-inp" type="text" id="wz-lname" placeholder="García" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label class="form-lbl" data-es="Teléfono / WhatsApp" data-en="Phone / WhatsApp">Teléfono / WhatsApp</label>
+              <input class="form-inp" type="tel" id="wz-tel" placeholder="+54 9 11 1234-5678" required>
+            </div>
+            <div class="form-field">
+              <label class="form-lbl" data-es="Email" data-en="Email">Email</label>
+              <input class="form-inp" type="email" id="wz-email" placeholder="juan@empresa.com" required>
+            </div>
+          </div>
+          <div class="wz-actions">
+            <button class="btn-ghost" type="button" onclick="wzGoStep(3)" data-es="← Volver" data-en="← Back">← Volver</button>
+            <button class="btn-next" type="submit" data-es="Ver resumen del pedido →" data-en="View order summary →">Ver resumen del pedido →</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="wz-panel" id="wz-p5">
+      <div id="wz-sum-card"></div>
+      <div class="wz-actions" style="margin-top:16px">
+        <a class="btn-wa" id="wz-wa-link" href="#" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          <span data-es="Enviar pedido por WhatsApp" data-en="Send order via WhatsApp">Enviar pedido por WhatsApp</span>
+        </a>
+        <button class="btn-ghost" onclick="wzRestart()" data-es="Nuevo pedido" data-en="New order">Nuevo pedido</button>
+      </div>
+    </div>
+    </div><!-- /wz-wrap -->
+  </div>
+</section>
+
+
 <!-- FILTER BAR -->
 <div class="filter-bar" id="filter-bar">
   <div class="filter-inner">
@@ -4691,156 +4843,6 @@ body{font-family:var(--font);background:var(--ink-50);color:var(--ink);line-heig
 .btn-wa:hover{filter:brightness(1.08)}
 </style>
 
-<section class="configurator" id="configurador">
-  <div class="section-wrap">
-    <div class="conf-hdr" style="max-width:860px;margin:0 auto 36px">
-      <div>
-        <div class="conf-title" data-es="Configurador de cocinas" data-en="Kitchen Configurator">Configurador de cocinas</div>
-        <div class="conf-title-main" data-es="Armá tu cocina con el stock actual" data-en="Build your kitchen from current stock">Armá tu cocina con el stock actual</div>
-        <div class="conf-sub" data-es="Seguí los pasos — generamos la lista exacta de SKUs y mandás el pedido por WhatsApp." data-en="Follow the steps — we generate the exact SKU list so you can send the order via WhatsApp.">Seguí los pasos — generamos la lista exacta de SKUs y mandás el pedido por WhatsApp.</div>
-      <span id="wz-inv-status" style="font-size:11px;color:var(--ink-500);display:block;margin-top:6px;min-height:16px"></span>
-      </div>
-    </div>
-
-    <div class="wz-wrap">
-    <div class="wz-prog" id="wz-prog">
-      <div class="wz-pi active" id="wz-pi-1"><div class="wz-pi-dot" id="wz-dot-1">1</div><div class="wz-pi-lbl" data-es="Layout" data-en="Layout">Layout</div></div>
-      <div class="wz-pline" id="wz-line-1"></div>
-      <div class="wz-pi" id="wz-pi-2"><div class="wz-pi-dot" id="wz-dot-2">2</div><div class="wz-pi-lbl" data-es="Color" data-en="Color">Color</div></div>
-      <div class="wz-pline" id="wz-line-2"></div>
-      <div class="wz-pi" id="wz-pi-3"><div class="wz-pi-dot" id="wz-dot-3">3</div><div class="wz-pi-lbl" data-es="Cantidad" data-en="Quantity">Cantidad</div></div>
-      <div class="wz-pline" id="wz-line-3"></div>
-      <div class="wz-pi" id="wz-pi-4"><div class="wz-pi-dot" id="wz-dot-4">4</div><div class="wz-pi-lbl" data-es="Tus datos" data-en="Your info">Tus datos</div></div>
-    </div>
-
-    <div class="wz-panel active" id="wz-p1">
-      <div class="wz-card">
-        <div class="wz-hdr">
-          <div class="wz-num">01</div>
-          <div class="wz-hdr-text">
-            <div class="wz-q" data-es="¿Qué tipo de cocina querés armar?" data-en="What type of kitchen do you want to build?">¿Qué tipo de cocina querés armar?</div>
-            <div class="wz-hint" data-es="Seleccióná el layout que mejor se ajusta al espacio" data-en="Select the layout that best fits your space">Seleccióná el layout que mejor se ajusta al espacio</div>
-          </div>
-        </div>
-        <div class="lt-grid">
-          <button class="lt-btn active" data-lt="kitchenette" onclick="wzSelectLayout('kitchenette')">
-            <div class="lt-svg"><svg viewBox="0 0 100 54" width="90"><rect x="8" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="36" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="64" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="6" y="25" width="88" height="2" fill="#DEE1E6" rx="1"/><rect x="8" y="30" width="26" height="18" fill="#235CF2" rx="2"/><rect x="36" y="30" width="26" height="18" fill="#5B8CFF" rx="2"/><text x="50" y="42" font-size="7" fill="#fff" text-anchor="middle" font-weight="700">S</text><rect x="64" y="30" width="26" height="18" fill="#235CF2" rx="2"/></svg></div>
-            <div class="lt-name">Kitchenette</div>
-            <div class="lt-sub" data-es="6 gabinetes" data-en="6 cabinets">6 gabinetes</div>
-          </button>
-          <button class="lt-btn" data-lt="galley" onclick="wzSelectLayout('galley')">
-            <div class="lt-svg"><svg viewBox="0 0 156 54" width="90"><rect x="8" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="36" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="64" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="92" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="120" y="8" width="26" height="14" fill="#9AA0A9" rx="2"/><rect x="6" y="25" width="144" height="2" fill="#DEE1E6" rx="1"/><rect x="8" y="30" width="26" height="18" fill="#FF8001" rx="2"/><rect x="36" y="30" width="26" height="18" fill="#FF8001" rx="2"/><rect x="64" y="30" width="26" height="18" fill="#5B8CFF" rx="2"/><text x="78" y="42" font-size="7" fill="#fff" text-anchor="middle" font-weight="700">S</text><rect x="92" y="30" width="26" height="18" fill="#04B704" rx="2"/><text x="106" y="42" font-size="7" fill="#fff" text-anchor="middle" font-weight="700">D</text><rect x="120" y="30" width="26" height="18" fill="#FF8001" rx="2"/></svg></div>
-            <div class="lt-name">Galley</div>
-            <div class="lt-sub" data-es="10 gabinetes" data-en="10 cabinets">10 gabinetes</div>
-          </button>
-          <button class="lt-btn" data-lt="lshape" onclick="wzSelectLayout('lshape')">
-            <div class="lt-svg"><svg viewBox="0 0 100 90" width="70"><rect x="8" y="8" width="16" height="10" fill="#9AA0A9" rx="1.5"/><rect x="26" y="8" width="16" height="10" fill="#9AA0A9" rx="1.5"/><rect x="44" y="8" width="16" height="10" fill="#9AA0A9" rx="1.5"/><rect x="62" y="8" width="16" height="10" fill="#9AA0A9" rx="1.5"/><rect x="6" y="20" width="76" height="2" fill="#DEE1E6" rx="1"/><rect x="8" y="24" width="16" height="12" fill="#04B704" rx="1.5"/><rect x="26" y="24" width="16" height="12" fill="#04B704" rx="1.5"/><rect x="44" y="24" width="16" height="12" fill="#5B8CFF" rx="1.5"/><text x="52" y="33" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">S</text><rect x="62" y="24" width="16" height="12" fill="#FF8001" rx="1.5"/><text x="70" y="33" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">C</text><rect x="80" y="20" width="2" height="68" fill="#DEE1E6" rx="1"/><rect x="83" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="83" y="24" width="10" height="14" fill="#04B704" rx="1.5"/><rect x="83" y="40" width="10" height="14" fill="#04B704" rx="1.5"/><rect x="83" y="56" width="10" height="14" fill="#C2000B" rx="1.5"/><text x="88" y="65" font-size="4" fill="#fff" text-anchor="middle" font-weight="700">T</text></svg></div>
-            <div class="lt-name">L-Shape</div>
-            <div class="lt-sub" data-es="14 gabinetes" data-en="14 cabinets">14 gabinetes</div>
-          </button>
-          <button class="lt-btn" data-lt="ushape" onclick="wzSelectLayout('ushape')">
-            <div class="lt-svg"><svg viewBox="0 0 110 90" width="70"><rect x="4" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="4" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="4" y="38" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="4" y="52" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="14" y="20" width="2" height="48" fill="#DEE1E6" rx="1"/><rect x="18" y="62" width="74" height="2" fill="#DEE1E6" rx="1"/><rect x="18" y="66" width="14" height="12" fill="#C2000B" rx="1.5"/><rect x="34" y="66" width="14" height="12" fill="#5B8CFF" rx="1.5"/><text x="41" y="75" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">S</text><rect x="50" y="66" width="14" height="12" fill="#04B704" rx="1.5"/><text x="57" y="75" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">D</text><rect x="66" y="66" width="14" height="12" fill="#C2000B" rx="1.5"/><rect x="82" y="66" width="10" height="12" fill="#FF8001" rx="1.5"/><text x="87" y="75" font-size="5" fill="#fff" text-anchor="middle" font-weight="700">C</text><rect x="92" y="20" width="2" height="48" fill="#DEE1E6" rx="1"/><rect x="18" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="30" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="42" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="54" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="66" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="78" y="8" width="14" height="10" fill="#9AA0A9" rx="1.5"/><rect x="18" y="20" width="74" height="2" fill="#DEE1E6" rx="1"/><rect x="18" y="24" width="14" height="12" fill="#C2000B" rx="1.5"/><rect x="34" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="46" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="58" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="70" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="82" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="94" y="8" width="10" height="10" fill="#9AA0A9" rx="1.5"/><rect x="94" y="24" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="94" y="38" width="10" height="12" fill="#C2000B" rx="1.5"/><rect x="94" y="52" width="10" height="12" fill="#C2000B" rx="1.5"/></svg></div>
-            <div class="lt-name">U-Shape</div>
-            <div class="lt-sub" data-es="18 gabinetes" data-en="18 cabinets">18 gabinetes</div>
-          </button>
-        </div>
-        <div class="wz-actions">
-          <button class="btn-next" onclick="wzGoStep(2)" data-es="Elegir color →" data-en="Choose color →">Elegir color →</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="wz-panel" id="wz-p2">
-      <div class="wz-card">
-        <div class="wz-hdr">
-          <div class="wz-num">02</div>
-          <div class="wz-hdr-text">
-            <div class="wz-q" data-es="¿Qué color de gabinetes querés?" data-en="Which cabinet color do you prefer?">¿Qué color de gabinetes querés?</div>
-            <div class="wz-hint" data-es="Solo colores con stock suficiente para el layout elegido" data-en="Only colors with enough stock for your layout">Solo colores con stock suficiente para el layout elegido</div>
-          </div>
-        </div>
-        <div class="col-grid" id="wz-col-grid"></div>
-        <div class="wz-actions">
-          <button class="btn-ghost" onclick="wzGoStep(1)" data-es="← Volver" data-en="← Back">← Volver</button>
-          <button class="btn-next" onclick="wzGoStep(3)" data-es="Elegir cantidad →" data-en="Choose quantity →">Elegir cantidad →</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="wz-panel" id="wz-p3">
-      <div class="wz-card">
-        <div class="wz-hdr">
-          <div class="wz-num">03</div>
-          <div class="wz-hdr-text">
-            <div class="wz-q" data-es="¿Cuántos kits necesitás?" data-en="How many kits do you need?">¿Cuántos kits necesitás?</div>
-            <div class="wz-hint" id="wz-qty-hint">Un kit = una cocina completa</div>
-          </div>
-        </div>
-        <div class="qty-row">
-          <button class="qty-btn" onclick="wzAdjQty(-1)">−</button>
-          <input class="qty-inp" type="number" id="wz-qty-inp" value="1" min="1" max="99" oninput="wzOnQtyChange()">
-          <button class="qty-btn" onclick="wzAdjQty(1)">+</button>
-          <div class="qty-meta" id="wz-qty-meta"></div>
-        </div>
-        <div id="wz-bom-preview"></div>
-        <div class="wz-actions">
-          <button class="btn-ghost" onclick="wzGoStep(2)" data-es="← Volver" data-en="← Back">← Volver</button>
-          <button class="btn-next" onclick="wzGoStep(4)" data-es="Continuar con mis datos →" data-en="Continue with my info →">Continuar con mis datos →</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="wz-panel" id="wz-p4">
-      <div class="wz-card">
-        <div class="wz-hdr">
-          <div class="wz-num">04</div>
-          <div class="wz-hdr-text">
-            <div class="wz-q" data-es="Tus datos para el pedido" data-en="Your order details">Tus datos para el pedido</div>
-            <div class="wz-hint" data-es="Para que podamos procesar y confirmar tu orden" data-en="So we can process and confirm your order">Para que podamos procesar y confirmar tu orden</div>
-          </div>
-        </div>
-        <form class="wz-form" onsubmit="wzSubmitForm(event)">
-          <div class="form-row">
-            <div class="form-field">
-              <label class="form-lbl" data-es="Nombre" data-en="First name">Nombre</label>
-              <input class="form-inp" type="text" id="wz-fname" placeholder="Juan" required>
-            </div>
-            <div class="form-field">
-              <label class="form-lbl" data-es="Apellido" data-en="Last name">Apellido</label>
-              <input class="form-inp" type="text" id="wz-lname" placeholder="García" required>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-field">
-              <label class="form-lbl" data-es="Teléfono / WhatsApp" data-en="Phone / WhatsApp">Teléfono / WhatsApp</label>
-              <input class="form-inp" type="tel" id="wz-tel" placeholder="+54 9 11 1234-5678" required>
-            </div>
-            <div class="form-field">
-              <label class="form-lbl" data-es="Email" data-en="Email">Email</label>
-              <input class="form-inp" type="email" id="wz-email" placeholder="juan@empresa.com" required>
-            </div>
-          </div>
-          <div class="wz-actions">
-            <button class="btn-ghost" type="button" onclick="wzGoStep(3)" data-es="← Volver" data-en="← Back">← Volver</button>
-            <button class="btn-next" type="submit" data-es="Ver resumen del pedido →" data-en="View order summary →">Ver resumen del pedido →</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <div class="wz-panel" id="wz-p5">
-      <div id="wz-sum-card"></div>
-      <div class="wz-actions" style="margin-top:16px">
-        <a class="btn-wa" id="wz-wa-link" href="#" target="_blank" rel="noopener">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          <span data-es="Enviar pedido por WhatsApp" data-en="Send order via WhatsApp">Enviar pedido por WhatsApp</span>
-        </a>
-        <button class="btn-ghost" onclick="wzRestart()" data-es="Nuevo pedido" data-en="New order">Nuevo pedido</button>
-      </div>
-    </div>
-    </div><!-- /wz-wrap -->
-  </div>
-</section>
 
 <div class="page-foot">
   <strong style="color:rgba(255,255,255,.7)">Rivero Commerce</strong> ·
