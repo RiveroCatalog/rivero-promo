@@ -5162,6 +5162,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ── Live inventory sync ──────────────────────────────────────────────────────
 var RIVERO_API_BASE = 'https://rivero-track-backend-production.up.railway.app';
+var CORS_PROXY = 'https://corsproxy.io/?';
 
 function wzLoadInventory() {
   var apiKey = (typeof window !== 'undefined' && window.RIVERO_API_KEY) || '';
@@ -5172,9 +5173,17 @@ function wzLoadInventory() {
   var statusEl = document.getElementById('wz-inv-status');
   if(statusEl) statusEl.textContent = (typeof lang !== 'undefined' && lang === 'en') ? 'Updating stock…' : 'Actualizando stock…';
 
-  fetch(RIVERO_API_BASE + '/inventory-items?limit=1000', {
-    headers: { 'x-api-key': apiKey }
-  })
+  var directUrl = RIVERO_API_BASE + '/inventory-items?limit=1000';
+  var proxyUrl  = CORS_PROXY + encodeURIComponent(directUrl);
+
+  // Try direct first; if CORS blocks it, fall back through proxy
+  function doFetch(url, useProxy) {
+    var hdrs = useProxy ? { 'x-api-key': apiKey } : { 'x-api-key': apiKey };
+    return fetch(url, { headers: hdrs });
+  }
+
+  doFetch(directUrl, false)
+  .catch(function() { return doFetch(proxyUrl, true); })
   .then(function(r) {
     if(!r.ok) throw new Error('HTTP ' + r.status);
     return r.json();
