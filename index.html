@@ -154,7 +154,7 @@ class Component extends DCLogic {
       return { ready: false, lang: L, t: I, esStyle, enStyle, flags: [],
         cats: CATS.map((c, i) => ({ name: dn(c.name), color: c.color, href: encodeURI(c.file) + qs, num: c.skus_fixed !== undefined ? (L === 'es' ? '★ NUEVO' : '★ NEW') : catWord + ' ' + String(i + 1).padStart(2, '0'), skus: c.skus_fixed !== undefined ? c.skus_fixed : '—', units: c.units_fixed !== undefined ? units(c.units_fixed) : '—', value: c.value_fixed !== undefined ? compact(c.value_fixed) : '—' })),
         totalSkus: '—', totalValue: '—', totalUnits: '—', catCount: CATS.length, fullHref: encodeURI('completo.html') + qs,
-        gabHref: encodeURI('gabinetes.html') + qs, gabSkus: 304, gabUnits: units(10907), gabValue: compact(776174),
+        gabHref: encodeURI('gabinetes.html') + qs, gabSkus: 373, gabUnits: units(14562), gabValue: compact(710922),
         gabEyebrow: L === 'es' ? '★ NUEVO — Gabinetes de Cocina' : '★ NEW — Kitchen Cabinets',
         gabTitle: L === 'es' ? 'Hampton Bay · KraftMaid · Leyton Slim Shaker' : 'Hampton Bay · KraftMaid · Leyton Slim Shaker' };
     }
@@ -189,7 +189,7 @@ class Component extends DCLogic {
       totalValue: compact(C.products.reduce((a, p) => a + p.price * p.qty, 0)),
       catCount: cats.filter((c) => c.skus > 0).length,
       fullHref: encodeURI('completo.html') + qs,
-      gabHref: encodeURI('gabinetes.html') + qs, gabSkus: 304, gabUnits: units(10907), gabValue: compact(776174),
+      gabHref: encodeURI('gabinetes.html') + qs, gabSkus: 373, gabUnits: units(14562), gabValue: compact(710922),
       gabEyebrow: L === 'es' ? '★ NUEVO — Gabinetes de Cocina' : '★ NEW — Kitchen Cabinets',
       gabTitle: L === 'es' ? 'Hampton Bay · KraftMaid · Leyton Slim Shaker' : 'Hampton Bay · KraftMaid · Leyton Slim Shaker',
     };
