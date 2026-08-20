@@ -8,6 +8,7 @@
   gtag('js',new Date());
   gtag('config','G-WHWTHDPS3T');
 </script>
+<script src="rivero-config.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700;900&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -4697,6 +4698,7 @@ body{font-family:var(--font);background:var(--ink-50);color:var(--ink);line-heig
         <div class="conf-title" data-es="Configurador de cocinas" data-en="Kitchen Configurator">Configurador de cocinas</div>
         <div class="conf-title-main" data-es="Armá tu cocina con el stock actual" data-en="Build your kitchen from current stock">Armá tu cocina con el stock actual</div>
         <div class="conf-sub" data-es="Seguí los pasos — generamos la lista exacta de SKUs y mandás el pedido por WhatsApp." data-en="Follow the steps — we generate the exact SKU list so you can send the order via WhatsApp.">Seguí los pasos — generamos la lista exacta de SKUs y mandás el pedido por WhatsApp.</div>
+      <span id="wz-inv-status" style="font-size:11px;color:var(--ink-500);display:block;margin-top:6px;min-height:16px"></span>
       </div>
     </div>
 
@@ -5154,8 +5156,65 @@ document.addEventListener('DOMContentLoaded', function() {
     var img = card.querySelector('.pc-img');
     if(sku && img && img.src) SKU_IMG[sku] = img.src;
   });
+  wzLoadInventory();
   wzGoStep(1);
 });
+
+// ── Live inventory sync ──────────────────────────────────────────────────────
+var RIVERO_API_BASE = 'https://rivero-track-backend-production.up.railway.app';
+
+function wzLoadInventory() {
+  var apiKey = (typeof window !== 'undefined' && window.RIVERO_API_KEY) || '';
+  if(!apiKey || apiKey === 'PASTE_YOUR_ROTATED_KEY_HERE') {
+    console.warn('Rivero: API key not configured in rivero-config.js — using static stock data.');
+    return;
+  }
+  var statusEl = document.getElementById('wz-inv-status');
+  if(statusEl) statusEl.textContent = (typeof lang !== 'undefined' && lang === 'en') ? 'Updating stock…' : 'Actualizando stock…';
+
+  fetch(RIVERO_API_BASE + '/inventory-items?limit=1000', {
+    headers: { 'x-api-key': apiKey }
+  })
+  .then(function(r) {
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  })
+  .then(function(data) {
+    // Accept array or {items:[…]} or {data:[…]} envelope
+    var items = Array.isArray(data) ? data : (data.items || data.data || []);
+    var liveQty = {}, liveImg = {};
+    items.forEach(function(item) {
+      var sku = String(item.modelId || item.id || '');
+      if(!sku) return;
+      if(typeof item.availableQty === 'number') liveQty[sku] = item.availableQty;
+      else if(typeof item.qty === 'number')      liveQty[sku] = item.qty;
+      if(item.image) liveImg[sku] = item.image;
+    });
+    // Patch CFG_PRODUCTS quantities from live data
+    var updated = 0;
+    CFG_PRODUCTS.forEach(function(p) {
+      var key = String(p.sku);
+      if(liveQty.hasOwnProperty(key)) { p.qty = liveQty[key]; updated++; }
+      if(liveImg[key]) SKU_IMG[key] = liveImg[key]; // prefer API image
+    });
+    if(statusEl) {
+      var isEn = (typeof lang !== 'undefined' && lang === 'en');
+      statusEl.textContent = isEn
+        ? '✓ Live stock loaded (' + updated + ' products)'
+        : '✓ Stock en vivo (' + updated + ' productos)';
+      setTimeout(function(){ if(statusEl) statusEl.textContent=''; }, 4000);
+    }
+    wzBuildColors(); // refresh availability with live quantities
+  })
+  .catch(function(err) {
+    console.warn('Rivero inventory fetch failed, using static data:', err.message);
+    if(statusEl) {
+      var isEn = (typeof lang !== 'undefined' && lang === 'en');
+      statusEl.textContent = isEn ? 'Stock: offline (cached data)' : 'Stock: sin conexión (datos en caché)';
+    }
+  });
+}
+
 
 
 // ── Wizard configurator
