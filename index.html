@@ -14,6 +14,7 @@
   <script src="inventory-data.js"></script>
   <script src="i18n.js"></script>
   <script src="analytics.js"></script>
+  <script src="rivero-live.js"></script>
 </helmet>
 <template id="__bundler_thumbnail">
   <svg viewBox="0 0 1200 1200" xmlns="http://www.w3.org/2000/svg">
@@ -115,7 +116,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900}}">
 class Component extends DCLogic {
-  componentDidMount() { this._tries = 0; this._poll(); }
+  componentDidMount() { this._tries = 0; this._poll(); window.addEventListener('rivero:live', () => this.forceUpdate()); }
   _poll() {
     if (window.INVENTORY) { this.forceUpdate(); return; }
     if (this._tries++ > 120) return;
