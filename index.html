@@ -159,7 +159,7 @@ class Component extends DCLogic {
         gabTitle: L === 'es' ? 'Hampton Bay · KraftMaid · Leyton Slim Shaker' : 'Hampton Bay · KraftMaid · Leyton Slim Shaker' };
     }
     const cats = CATS.map((c, i) => {
-      const items = C.products.filter((p) => p.cat === c.name);
+      const items = C.products.filter((p) => p.cat === c.name && !(c.name === 'Cocina' && /cabinet/i.test(p.name)));
       const u = items.reduce((a, p) => a + p.qty, 0);
       const v = items.reduce((a, p) => a + p.price * p.qty, 0);
       const skus = c.skus_fixed !== undefined ? c.skus_fixed : items.length;
