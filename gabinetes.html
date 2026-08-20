@@ -5161,28 +5161,14 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ── Live inventory sync ──────────────────────────────────────────────────────
-var RIVERO_API_BASE = 'https://rivero-track-backend-production.up.railway.app';
+var RIVERO_WORKER = 'https://rivero-catalog.lucas-af2.workers.dev';
 
 function wzLoadInventory() {
-  var apiKey = (typeof window !== 'undefined' && window.RIVERO_API_KEY) || '';
-  if(!apiKey || apiKey === 'PASTE_YOUR_ROTATED_KEY_HERE') {
-    console.warn('Rivero: API key not configured in rivero-config.js — using static stock data.');
-    return;
-  }
   var statusEl = document.getElementById('wz-inv-status');
   if(statusEl) statusEl.textContent = (typeof lang !== 'undefined' && lang === 'en') ? 'Updating stock…' : 'Actualizando stock…';
 
-  var directUrl = RIVERO_API_BASE + '/inventory-items?limit=500';
-  // corsproxy.io expects raw URL after '?' — no encodeURIComponent
-  var proxyUrl  = 'https://corsproxy.io/?' + directUrl;
-
-  function tryFetch(url) {
-    return fetch(url, { headers: { 'x-api-key': apiKey } })
-      .then(function(r) { if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
-  }
-
-  tryFetch(directUrl)
-  .catch(function() { return tryFetch(proxyUrl); })
+  fetch(RIVERO_WORKER)
+  .then(function(r) { if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
   .then(function(data) {
     // Accept array or {items:[…]} or {data:[…]} envelope
     var items = Array.isArray(data) ? data : (data.items || data.data || []);
