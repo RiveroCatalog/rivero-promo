@@ -301,7 +301,9 @@ img  { display: block; max-width: 100%; }
   <footer class="page-footer">
     <div class="footer-eyebrow" id="footer-eyebrow">Únete a nuestra red</div>
     <p class="footer-body" id="footer-body">Puede encontrarnos donde el superávit se une a la estrategia y la oportunidad no conoce fronteras.</p>
-    <a class="footer-cta" href="mailto:sales@riveroco.com">Sales@riveroco.com</a>
+    <p class="footer-addr">Rivero Exporting d/b/a Rivero Solutions · 4071 W 108th Street, Suite 14, Hialeah, FL 33018</p>
+    <a class="footer-cta" href="mailto:sales@riveroco.com">sales@riveroco.com</a>
+    <a class="footer-tel" href="tel:+15558016189">+1 (555) 801-6189</a>
   </footer>
 </main>
 
@@ -415,11 +417,13 @@ img  { display: block; max-width: 100%; }
             '<div class="card-price-lbl">' + priceLabel + '</div>' +
           '</div>' +
           stockHtml +
+          '<button class="rv-cart-btn" data-sku="' + esc(p.sku) + '" data-name="' + esc(name) + '" data-price="' + p.price + '" data-img="' + esc(p.img||'') + '">' + (isEN?'Add to cart':'Agregar') + '</button>' +
         '</div>' +
       '</div>';
   }
   document.getElementById('grid').innerHTML = html;
 })();
 </script>
+<script src="cart.js"></script>
 </body>
 </html>
