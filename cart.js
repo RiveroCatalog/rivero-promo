@@ -265,7 +265,7 @@ function wireGabineteCards() {
 window.RVCART = { add: addItem, remove: removeItem, changeQty: changeQty, open: openDrawer, close: closeDrawer, toggle: toggleDrawer };
 
 /* ── Inactivity reminder ── */
-var REMIND_MS = 120000;
+var REMIND_MS = 30000;
 var remindTimer = null;
 var remindShown = false;
 var remindEl = null;
