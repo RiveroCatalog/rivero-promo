@@ -59,7 +59,7 @@
         email: 'Email',
         whatsapp: 'WhatsApp',
         /* index */
-        idxHeroEyebrow: 'Catálogo mayorista · Julio 2026',
+        idxHeroEyebrow: 'Catálogo 2026',
         idxHeroTitle: 'Convertimos el exceso en oportunidad',
         idxHeroSub: 'Surtido consolidado de retail norteamericano, listo para contenedor: mobiliario, iluminación, cocina, baño, climatización, herramientas y jardín de marcas líderes — desde el depósito de Miami. Precios mayoristas USD; medidas en sistema métrico.',
         idxCtaFull: 'Ver catálogo completo',
@@ -95,7 +95,7 @@
         email: 'Email',
         whatsapp: 'WhatsApp',
         /* index */
-        idxHeroEyebrow: 'Wholesale catalog · July 2026',
+        idxHeroEyebrow: 'Catalog 2026',
         idxHeroTitle: 'We turn excess into opportunity',
         idxHeroSub: 'Consolidated North American retail assortment, container-ready: furniture, lighting, kitchen, bath, climate control, tools and garden from leading brands — from our Miami warehouse. Wholesale prices USD; imperial measurements.',
         idxCtaFull: 'View full catalog',
