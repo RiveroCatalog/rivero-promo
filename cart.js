@@ -284,10 +284,9 @@ function injectNewsletter() {
   document.getElementById('rv-nl-submit').onclick = function () {
     var email = (document.getElementById('rv-nl-email') || {}).value || '';
     if (!email || !email.includes('@')) return;
-    var msg = en
-      ? 'Hi, I\'d like to subscribe to the Rivero newsletter. My email: ' + email
-      : 'Hola, quiero suscribirme al newsletter de Rivero. Mi email: ' + email;
-    window.open('https://wa.me/' + WA_PHONE + '?text=' + encodeURIComponent(msg), '_blank', 'noopener');
+    var subject = encodeURIComponent(en ? 'Newsletter subscriber' : 'Suscriptor Newsletter Rivero');
+    var body = encodeURIComponent((en ? 'New newsletter subscription\n\nEmail: ' : 'Nueva suscripción al newsletter\n\nEmail: ') + email);
+    window.open('mailto:sales@riveroco.com?subject=' + subject + '&body=' + body, '_self');
     var thanks = document.getElementById('rv-nl-thanks');
     if (thanks) { thanks.style.display = 'block'; }
     wrap.querySelector('.rv-nl-row').style.display = 'none';
