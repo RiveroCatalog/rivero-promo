@@ -4593,7 +4593,7 @@ function goSlide(n){slides[cur].classList.remove('active');dots[cur].classList.r
 setInterval(function(){goSlide(cur+1);},4200);
 
 // ── State
-var lang='es', units='in';
+var lang='es', units='cm';
 var activeTab='leyton', activeColor='all', activeKmColor='all';
 
 // ── Language
@@ -4602,7 +4602,7 @@ function setLang(l) {
   ['btn-es','btn-en'].forEach(function(id){document.getElementById(id).classList.toggle('active',id==='btn-'+l);});
   // Show/hide unit toggle only in ES
   document.getElementById('unit-group').style.display = l==='es' ? 'flex' : 'none';
-  if(l==='en') setUnits('in');
+  setUnits(l==='es' ? 'cm' : 'in');
   applyI18n();
   wzBuildColors();
 }
@@ -5267,6 +5267,10 @@ document.addEventListener('DOMContentLoaded', function() {
     var img = card.querySelector('.pc-img');
     if(sku && img && img.src) SKU_IMG[sku] = img.src;
   });
+  // Apply initial unit and show unit toggle for ES
+  setUnits(units);
+  var ug = document.getElementById('unit-group');
+  if(ug) ug.style.display = lang==='es' ? 'flex' : 'none';
   wzLoadInventory();
   wzGoStep(1);
 });

@@ -27,7 +27,8 @@
   const clean = (s) => (s || '').replace(/"/g, '\u201D');
   const T = (k) => { const d = (window.RV_I18N && window.RV_I18N.ui) || { es: {}, en: {} }; return ((d[LANG()] || d.es || {})[k]) || ((d.es || {})[k]) || ''; };
   const catN = (n) => (LANG() === 'en' && window.RV_I18N && window.RV_I18N.catEN[n]) ? window.RV_I18N.catEN[n] : n;
-  const pn = (p) => (LANG() === 'en' ? (p.name_en || p.name) : p.name);
+  const inToCm = (s) => s ? s.replace(/(\d+(?:\.\d+)?)\s*in\./gi, (_, n) => Math.round(parseFloat(n) * 2.54) + ' cm') : s;
+  const pn = (p) => LANG() === 'en' ? (p.name_en || p.name) : inToCm(p.name);
   const mm = (C) => (LANG() === 'en' ? Object.assign({}, C.meta, C.meta_en) : C.meta);
   const ctc = (C) => (LANG() === 'en' ? Object.assign({}, C.contact, C.contact_en) : C.contact);
 
