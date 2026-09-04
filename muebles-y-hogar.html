@@ -403,7 +403,7 @@ img  { display: block; max-width: 100%; }
   for (var i = 0; i < items.length; i++) {
     var p = items[i];
     function inToCm(s){ return s ? s.replace(/(\d+(?:\.\d+)?)\s*in\./gi, function(_,n){ return Math.round(parseFloat(n)*2.54)+' cm'; }) : s; }
-    var name = (isEN && p.name_en) ? p.name_en : inToCm(p.name);
+    var name = (isEN && p.name_en) ? p.name_en : (p.name_es || inToCm(p.name));
     var imgSrc = p.img ? esc(p.img) : '';
     var imgHtml = imgSrc
       ? '<img class="product-img" src="' + imgSrc + '" alt="" loading="lazy" onerror="this.onerror=null;this.className=\'ph\';this.src=\'assets/rivero-symbol-white.png\'">'
