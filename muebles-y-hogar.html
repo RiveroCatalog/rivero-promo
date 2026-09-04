@@ -396,7 +396,7 @@ img  { display: block; max-width: 100%; }
   function fmt(n) { return '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
   function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   var priceLabel = isEN ? 'USD · wholesale price · FOB' : 'USD · precio mayorista · FOB';
-  var items = inv.products.filter(function(p){ return p.cat === 'Muebles & hogar'; });
+  var items = inv.products.filter(function(p){ return p.cat === 'Muebles & hogar' && !/Kitchen Cabinet/i.test(p.name); });
   document.getElementById('count').textContent = items.length + (isEN ? ' products' : ' productos');
   var html = '';
   var stockHtml, skuMsg;
