@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="colors_and_type.css">
 <script src="i18n.js"></script>
 <script src="inventory-data.js"></script>
+  <script src="rivero-live.js"></script>
 <script src="analytics.js" defer></script>
 <style>
 @page            { size: A4 portrait; margin: 12mm 14mm; }
@@ -416,7 +417,7 @@ img  { display: block; max-width: 100%; }
 </div>
 
 <script>
-(function () {
+function _rvPage() {
   var lang = window.RV_LANG || 'es';
   var isEN = lang === 'en';
   var i18n = window.RV_I18N || {};
@@ -450,7 +451,9 @@ img  { display: block; max-width: 100%; }
   if (el('wa-btn')) el('wa-btn').href = 'https://wa.me/15558016189?text=' + encodeURIComponent(waMsg);
 
   /* — Language toggle — */
+  if (!document.getElementById('rv-lang-toggle')) {
   var box = document.createElement('div');
+  box.setAttribute('id','rv-lang-toggle');
   box.style.cssText = 'position:fixed;top:12px;left:12px;z-index:2147483600;display:flex;gap:2px;padding:3px;border-radius:999px;background:rgba(255,255,255,.92);box-shadow:0 2px 12px rgba(0,0,0,.28);border:1px solid rgba(0,0,0,.08);font-family:Jost,system-ui,sans-serif';
   ['es','en'].forEach(function(l){
     var b = document.createElement('button');
@@ -461,6 +464,7 @@ img  { display: block; max-width: 100%; }
     box.appendChild(b);
   });
   document.body.appendChild(box);
+  }
 
   /* — Render products — */
   var inv = window.INVENTORY;
@@ -511,7 +515,9 @@ img  { display: block; max-width: 100%; }
       '</div>';
   }
   document.getElementById('grid').innerHTML = html;
-})();
+}
+_rvPage();
+window.addEventListener('rivero:live', _rvPage);
 </script>
 <script src="cart.js"></script>
 <script>
