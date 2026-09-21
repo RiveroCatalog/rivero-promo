@@ -1,0 +1,37 @@
+name: Sync Inventory Daily
+
+on:
+  schedule:
+    # Runs every day at 07:00 UTC (3 AM Miami / 2 AM CDMX)
+    - cron: '0 7 * * *'
+  workflow_dispatch: # allow manual trigger from GitHub Actions UI
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch live quantities and patch inventory-data.js
+        run: node scripts/sync-inventory.js
+
+      - name: Commit updated inventory (if changed)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add inventory-data.js
+          git diff --cached --quiet && echo "No changes to commit." || \
+            git commit -m "chore: sync live inventory quantities [$(date -u '+%Y-%m-%d')]"
+
+      - name: Push changes
+        run: git push
